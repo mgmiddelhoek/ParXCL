@@ -1,6 +1,15 @@
 # ParXCL
 
-The algorithms in ParX were developed as part of my Ph.D. thesis in April of 1992, as was their first implementation.
+ParX is a moddeling tool. With ParX you can:
+* Describe your model in a simple mathematical language.
+* Match your model against measured data.
+
+ParXCL is the legacy command line version of ParX, which is available as a Mac App.
+For more information please visit the [ParX support site](https://parx.middelhoek.com/index.html).
+
+## history
+
+The algorithms in ParX were developed as part of my [Ph.D. thesis in April of 1992](https://parx.middelhoek.com/assets/pdf/parx.pdf), as was their first implementation.
 
 ParX started life as a HP-UX command line tool. 
 A Yacc and Lex parser provided the user interface. 
@@ -20,5 +29,11 @@ so initially all models equations and their first-order derivatives had to be ha
 The Model Compiler was finally connected to the parser via POSIX pipes.
 Now it is integrated in ParXCL.
 
-ParXCL is still offered (as is) for embedded applications on the MacOS, Linux and Windows (via Cygwin) platforms. 
+ParXCL is still offered (as is) for embedded applications on the MacOS, Linux and Windows (via Cygwin) platforms.
 
+## building
+
+Before building ParX you have to install the build tool [TemplateManager](https://github.com/CvR42/template-manager).
+
+For the Linux and Windows platforms you also need the CBlas and Lapack libraries.
+Makefile templates are provided for guidance.

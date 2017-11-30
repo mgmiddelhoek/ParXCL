@@ -194,14 +194,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5B2DF9D81FD0706A001DA4F4 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Supporting Files";
-			path = ParXCL;
-			sourceTree = "<group>";
-		};
 		5B2DF9D91FD070B4001DA4F4 /* Error */ = {
 			isa = PBXGroup;
 			children = (
@@ -214,9 +206,8 @@
 		5B99C4CC1E32419E00F157D9 = {
 			isa = PBXGroup;
 			children = (
-				5BBA87201FD0730900D2F4DC /* Support */,
 				5B99C4D71E32419E00F157D9 /* ParXCL */,
-				5B2DF9D81FD0706A001DA4F4 /* Supporting Files */,
+				5BBA87201FD0730900D2F4DC /* Support */,
 				5B99C4D61E32419E00F157D9 /* Products */,
 				5B99C56F1E32AADD00F157D9 /* Frameworks */,
 			);
