@@ -1,0 +1,281 @@
+/*
+ * ParX - primtype.ht
+ * TM data structure definition for primitive types
+ *
+ * Copyright (c) 2009 M.G.Middelhoek <martin@middelhoek.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef __PRIMTYPE_H
+#define __PRIMTYPE_H
+
+..Definitions for primitive types
+
+#include "tmc.h"
+
+#if defined(__LP64__) /* In LP64 match sizes with the 32 bit ABI */
+    typedef int 		inum;       /* integer type, match with cLAPACK */
+    #define INUM_MAX    INT_MAX     /* maximum integer */
+    #define INUM_MIN    INT_MIN     /* minimum integer */
+    #define inumNIL		0
+#else
+    typedef long int 	inum;       /* integer type, match with cLAPACK */
+    #define INUM_MAX    LONG_MAX    /* maximum integer */
+    #define INUM_MIN    LONG_MIN    /* minimum integer */
+    #define inumNIL		0L
+#endif
+
+typedef double fnum;                /* floating point type, match with cLAPACK */
+#define fnumNIL		0.0
+#define FNUM_EPS	DBL_EPSILON		/* machine precision */
+#define FNUM_DIG	DBL_DIG			/* decimal digits of precision */
+#define INF         DBL_MAX			/* maximum number */
+#define MININF		(- DBL_MAX)		/* minimum number */
+
+#define FAIL	-1L
+#define OK	1L
+
+typedef enum {FALSE = 0, TRUE = 1} boolean;
+#define booleanNIL FALSE
+
+/* scaling of axis and variables */
+typedef enum {SLIN, SLN, SLOG, ALIN, ALN, ALOG} scaleflag;
+#define scaleflagNIL SLIN
+
+/* type of input data */
+typedef enum {UNKN, MEAS, CALC, FACT, STIM, SWEEP, ERR} stateflag;
+#define stateflagNIL UNKN
+
+/* data set group id's */
+typedef enum {FGROUP = -1, UGROUP = 0, SGROUP = 1} groupid;
+#define groupidNIL UGROUP
+
+typedef boolean (*procedure)();
+#define procedureNIL (procedure)0
+
+typedef FILE *codefile;
+#define codefileNIL (codefile)0
+
+/* optimalization type */
+typedef enum {MODES, BESTFIT, CHISQ, STRICT, CONSIST} opttype;
+
+/* array types */
+
+typedef stateflag *statearray;
+typedef boolean *boolarray;
+typedef inum *inumarray;
+typedef fnum *fnumarray;
+
+#define statearrayNIL (statearray)0
+#define boolarrayNIL (boolarray)0
+#define inumarrayNIL (inumarray)0
+#define fnumarrayNIL (fnumarray)0
+
+/* index table types */
+
+typedef fnum **fnumindex;
+#define fnumindexNIL (fnumindex)0
+
+/* insert tm types here */
+
+.insert primtype.t
+/*.include $(libpath)$(pathsep)calu.ht */
+.include calu.ht
+
+/************* define primitive type manipulation functions *************/
+
+/* functions on primitive atomic types */
+
+.foreach t inum fnum boolean scaleflag stateflag
+#define rfre_$t(p)
+#define rdup_$t(p) (p)
+.endforeach
+
+#define rfre_procedure(p)
+
+#define rfre_codefile(f)
+
+extern inum roundi(fnum f);
+
+extern void print_inum(TMPRINTSTATE *st, inum i);
+extern int fscan_inum(FILE *f, inum *p);
+extern void print_fnum(TMPRINTSTATE *st, fnum f);
+extern int fscan_fnum(FILE *f, fnum *p);
+extern void print_scaleflag(TMPRINTSTATE *st, scaleflag s);
+extern int fscan_scaleflag(FILE *f, scaleflag *s);
+extern void print_stateflag(TMPRINTSTATE *st, stateflag s);
+extern int fscan_stateflag(FILE *f, stateflag *s);
+extern void print_boolean(TMPRINTSTATE *st, boolean b);
+extern int fscan_boolean(FILE *f, boolean *b);
+extern void print_opttype(TMPRINTSTATE *st, opttype o);
+extern void print_procedure(TMPRINTSTATE *st, procedure p);
+extern void print_codefile(TMPRINTSTATE *st, codefile f);
+
+/* functions on list types */
+
+#define rfre_stateflag_list(p) fre_stateflag_list(p)
+#define rfre_boolean_list(p) fre_boolean_list(p)
+#define rfre_inum_list(p) fre_inum_list(p)
+#define rfre_fnum_list(p) fre_fnum_list(p)
+
+/* functions on array types */
+
+extern statearray new_statearray(inum sz);
+extern void fre_statearray(statearray s);
+extern boolarray new_boolarray(inum sz);
+extern void fre_boolarray(boolarray b);
+extern inumarray new_inumarray(inum sz);
+extern void fre_inumarray(inumarray i);
+extern fnumarray new_fnumarray(inum sz);
+extern void fre_fnumarray(fnumarray f);
+
+#define rfre_statearray(p) fre_statearray(p)
+#define rfre_fnumarray(p) fre_fnumarray(p)
+#define rfre_inumarray(p) fre_inumarray(p)
+#define rfre_boolarray(p) fre_boolarray(p)
+
+/* functions on vector types */
+
+extern statevector new_statevector(inum sz, statearray arr);
+extern statevector rnew_statevector(inum sz);
+extern void fre_statevector(statevector s);
+extern void rfre_statevector(statevector s);
+extern void print_statevector(TMPRINTSTATE *st, statevector s);
+extern statevector rdup_statevector(statevector s);
+
+extern boolvector new_boolvector(inum sz, boolarray arr);
+extern boolvector rnew_boolvector(inum sz);
+extern void fre_boolvector(boolvector b);
+extern void rfre_boolvector(boolvector b);
+extern void print_boolvector(TMPRINTSTATE *st, boolvector b);
+
+extern inumvector new_inumvector(inum sz, inumarray arr);
+extern inumvector rnew_inumvector(inum sz);
+extern void fre_inumvector(inumvector i);
+extern void rfre_inumvector(inumvector i);
+extern inumvector rdup_inumvector(inumvector v);
+extern void print_inumvector(TMPRINTSTATE *st, inumvector v);
+extern void copy_inumvector(inumvector va, inumvector vb);
+
+extern vector new_vector(inum sz, fnumarray arr);
+extern vector rnew_vector(inum sz);
+extern void fre_vector(vector v);
+extern void rfre_vector(vector v);
+extern void print_vector(TMPRINTSTATE *st, vector v);
+extern vector new_sub_vector(vector v);
+extern void sub_vector(vector v, inum i, inum n, vector sv);
+extern void fre_sub_vector(vector v);
+extern vector rdup_vector(vector v);
+
+/* functions on matrix types */
+
+extern matrix new_matrix(inum sz, fnumarray arr, inum szm, inum szn, fnumindex idx);
+extern matrix rnew_matrix(inum szm, inum szn);
+extern void fre_matrix(matrix mat);
+extern void rfre_matrix(matrix mat);
+extern matrix new_sub_matrix(matrix a);
+extern void sub_matrix(matrix a, inum im, inum in, inum m, inum n, matrix sa);
+extern void fre_sub_matrix(matrix a);
+extern matrix mat_vector(vector v);
+extern void print_matrix(TMPRINTSTATE *st, matrix m);
+extern fnumindex new_fnumindex(inum sz);
+extern void fre_fnumindex(fnumindex idx);
+
+
+/*********** Access macros for non atomic primitive types **************/
+
+/* An illegal pointer value, that can not be dereferenced */
+
+#ifdef RANGECHECK
+extern void range_violation(char *f, int l, inum r, inum i);
+#define BADPOINTER(R,I)	(range_violation(__FILE__,__LINE__,R,I))
+#endif
+
+/* access fields and elements of a Tm list structure */
+
+#define LSTA(L)		((L)->arr)		/* storage array */
+#define LSTR(L)		((L)->room)		/* number of elements */
+#define LSTS(L)		((L)->sz)		/* actual number of elements */
+
+#define LSTP(L,I)	(LSTA(L) + (I))		/* pointer to element */
+
+#ifdef RANGECHECK
+#define LST(L,I)	(* (((I) < LSTS(L)) ? LSTP(L,I) : \
+	(BADPOINTER(LSTS(L),(I)), LSTP(L,0))))
+#else
+#define LST(L,I)	(* LSTP(L,I))
+#endif
+
+/* access elements of an array type */
+
+#define ARR(A,I)	(* ((A) + (I)))
+
+/* access fields and elements of a vector type */
+
+/* storage vector */
+#define VECA(V)		((V)->arr)	/* storage array */
+#define VECS(V)		((V)->sz)	/* maximum number of elements */
+#define VECN(V)		((V)->n)	/* actual number of elements */
+
+#define VECP(V,I)	(VECA(V) + (I))	/* pointer to element */
+
+#ifdef RANGECHECK
+#define VEC(V,I)	(* (((I) < VECN(V)) ? VECP(V,I) : \
+	(BADPOINTER(VECN(V),(I)), VECP(V,0))))
+#else
+#define VEC(V,I)	(* VECP(V,I))
+#endif
+
+/* access fields and elements of a matrix type */
+/* elements are stored in column order */
+
+/* storage matrix */
+#define MATA(M)		((M)->arr)	/* storage array */
+#define MATS(M)		((M)->sz)	/* number of elements */
+#define MATSM(M)	((M)->szm)	/* number of rows in arr */
+#define MATSN(M)	((M)->szn)	/* number of colums in arr */
+#define MATI(M)		((M)->idx)	/* column index table */
+#define MATM(M)		((M)->m)	/* actual number of rows */
+#define MATN(M)		((M)->n)	/* actual number of colums */
+
+/* pointer arithmetic is faster than idexing */
+#define MATP(M,R,C)	(*(MATI(M) + (C)) + (R))
+
+#ifdef RANGECHECK
+#define MAT(M,R,C)	(* (((R) < MATM(M) && ((C) < MATN(M))) ? MATP(M,R,C) : \
+	(BADPOINTER(0,0), MATP(M,0,0))))
+#else
+#define MAT(M,R,C)	(* MATP(M,R,C))
+#endif
+
+/************************************************************************/
+
+/* some useful macros on number types */
+
+/* Macros for min/max. */
+#ifndef MIN
+#define	MIN(a,b) (((a)<(b))?(a):(b))
+#endif /* MIN */
+#ifndef MAX
+#define	MAX(a,b) (((a)>(b))?(a):(b))
+#endif	/* MAX */
+
+#define SIGN(a)		((a)>0?1:(a)<0?-1:0)
+
+/************************************************************************/
+
+extern void stat_atoms(FILE *f);	/* statitics */
+
+#endif

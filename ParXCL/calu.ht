@@ -1,0 +1,969 @@
+.. File: macros.t
+.. Macros used by all templates.
+..
+.. Given a function class 'cl' (e.g. 'setroom_list') and 
+.. a function template 'tpl', generate forward declarations
+.. with prototypes for all functions that are supposed to be
+.. static.
+.. The template 'tpl' is supposed to contain '$t' at the appropriate
+.. places.
+.macro ansi_static cl tpl
+.set tl ${excl $(need_$(cl)) "" $(want_$(cl))}
+.if ${len $(tl)}
+.foreach t $(tl)
+static ${eval "$(tpl)"};
+.endforeach
+.endif
+.endmacro
+..
+.. Given a type `t' representing a Tm type with elements and a list of
+.. elements of this type 'el', return a ANSI style function
+.. prototype.
+.macro ansi_nproto t el
+. set tl
+. set sep
+. foreach e $(el)
+.  set tl "$(tl)$(sep)${type $t $e} p_$e"
+.  set sep ", "
+. endforeach
+. if ${== ${len $(tl)} 0}
+.  set tl void
+. endif
+. return "$(tl)"
+.endmacro
+..
+.. Given a type `t' representing a Tm type with elements and a list of
+.. elements of this type 'el', return a ANSI style function
+.. prototype, suitable for lognew purposes.
+.macro ansi_nproto_lognew t el
+. set tl
+. set sep
+. foreach e $(el)
+.  set tl "$(tl)$(sep)${type $t $e} p_$e"
+.  set sep ", "
+. endforeach
+. set tl "$(tl)$(sep)const char *_f, const int _l"
+. return "$(tl)"
+.endmacro
+..
+.. Given a list name (without the last '_list') return the
+.. link name for that list name
+.macro linkname nm
+.return ${subs ${stemname $(nm)}(*) next\1  $(nm)}
+.endmacro
+..
+.. Given a list of types, ensure that none of these types is
+.. virtual and has no subclasses
+.macro no_childless_virtual l
+.set bad 0
+.foreach t $l
+.if ${isvirtual $t}
+.if $[${len ${subclasses $t}}<1]
+.error '$t' is virtual but has no children.
+.set bad 1
+.endif
+.endif
+.endforeach
+.if $(bad)
+.exit 1
+.endif
+.endmacro
+..
+.. Given a list of types, ensure that none of these types has
+.. multiple inheritance
+.macro no_multiple_inheritance l
+.set bad 0
+.foreach t $l
+.if $[${len ${inherits $t}}>1]
+.if $(bad)
+.else
+.error Multiple inheritance not supported in this template.
+.set bad 1
+.endif
+.error $t inherits ${seplist ", " ${inherits $t}}
+.endif
+.endforeach
+.if $(bad)
+.exit 1
+.endif
+.endmacro
+..
+.. Given a type t, return its root class
+.macro rootclass t
+.if ${member $t ${typelist}}
+.set root ${inherits $t}
+.while ${len $(root)}
+.set t $(root)
+.set root ${inherits $t}
+.endwhile
+.endif
+.return $t
+.endmacro
+..
+.. Apply all aliases, and delete the alias types.
+.macro apply_aliases
+.foreach t ${aliases}
+.set nt ${alias $t}
+.. They must be deleted, since they would cause circular definitions
+.. complaints. After all, after application each alias
+..    told -> tnew;
+.. would read:
+..    tnew -> tnew;
+.deletetype $t
+.rename $t $(nt)
+.endforeach
+.endmacro
+.. File: aluid.t
+.. Tell need.t that this is for the alu template
+.set template alu
+.if ${len ${classlist}}
+.error Class types not supported: ${seplist ", " ${classlist}}
+.exit 1
+.endif
+.. Tm - an interface code generator.
+.. Author: C. van Reeuwijk.
+..
+.. All rights reserved.
+..
+.. File: need.t
+..
+.. Analysis of required code for given set of routines.
+.. Given a list of wanted routines and ds definitions in the variable
+.. 'wantdefs', construct a list of wanted types for each groups of definitions
+.. in the variables 'want_<classlist>', and 'want_<classlist>_list' where
+.. <classlist> is an element from the list below. Deduce the contents of the
+.. variables 'need_<classlist>'. Using knowledge about the definition of
+.. the various routines, deduce the required definitions and set them
+.. in the variables 'need_<classlist>'.
+..
+.. The variables 'need_<classlist>' are restricted to types occurring.
+.. For list classes arbitrary types are allowed.
+..
+.. If the variable 'alldefs' is set, all the variables are simply set to
+.. ${typelist}.
+..
+.. Some initial checks
+.set minvers 36
+.if ${< $(tmvers) $(minvers)}
+. error ${tplfilename}: at least tm version $(minvers) required.
+. exit 1
+.endif
+.call apply_aliases
+.set bad 0
+.if ${not ${defined basename}}
+. error '${tplfilename}': definition of basename required.
+. set bad 1
+.endif
+.if ${and ${not ${defined alldefs}} ${not ${defined wantdefs}}}
+. error '${tplfilename}': no definitions specified.
+. error At least one of 'alldefs' and 'wantdefs' must be set.
+. set bad 1
+.endif
+..
+.if ${not ${defined notwantdefs}}
+.set notwantdefs
+.endif
+..
+.. Now check for forbidden field names.
+.foreach t ${typelist}
+. set fields = ${fields $t}
+. if ${member tag $(fields)}
+.  error "Error: type $t contains reserved field name 'tag'"
+.  set bad 1
+. endif
+.endforeach
+..
+.if $(bad)
+. exit 1
+.endif
+..
+.. Prefix and suffix used to construct a list type name from a name
+.set listpre
+.set listsuff _list
+..
+.. Define the list of definition classes
+.set groups      ds cmp isequal new fre rfre rdup print fprint fscan
+.. These are only useful for lists.
+.set listgroups append concat slice setroom insert delete reverse extract
+.append listgroups extractlist insertlist deletelist
+.append groups $(listgroups)
+.set misccode stat_$(basename) get_balance_$(basename)
+.if ${eq $(template) ald}
+.append groups null
+.endif
+.if ${eq $(template) tmc}
+.append groups is
+.endif
+..
+.. Reset all want_<groups> variables
+.foreach g $(groups) stat
+.set want_$g
+.endforeach
+.set want_misc
+..
+.if ${defined alldefs}
+.. All classes want all types
+. foreach g ${excl $(groups) "" $(listgroups)}
+.  set want_$g ${ctypelist} ${tuplelist} ${classlist}
+. endforeach
+. foreach g $(groups)
+.  set want_$g ${suffix $(listsuff) ${ctypelist} ${tuplelist} ${classlist}}
+. endforeach
+. set want_misc $(misccode)
+.endif
+.set wantdefs ${uniq $(wantdefs)}
+.. Extract the contents of the 'want_<group>' variables from the
+.. 'wantdefs'.
+.. Single defined type names.
+.set want_ds ${comm ${typelist} "" $(wantdefs)}
+.set wantdefs ${excl $(wantdefs) "" $(want_ds)}
+.. Operations on single elements
+.foreach g ${rmlist ds $(groups)}
+.. Extract all requests starting with $g
+. set want_$g ${filt $g_(*) \1 $(wantdefs)}
+. set badtypes ${excl ${singletypes $(want_$g)} "" ${typelist}}
+. if ${len $(badtypes)}
+.  error Don't know how to generate: ${prefix $g_ $(badtypes)}
+.  exit 1
+. endif
+. set wantdefs ${excl $(wantdefs) "" ${prefix $g_ $(want_$g)}}
+.endforeach
+.. Miscellaneous functions
+.set want_misc ${comm $(wantdefs) "" $(misccode)}
+.set wantdefs ${excl $(wantdefs) "" $(want_misc)}
+.. At this point all functions on lists should have been filtered out..
+.. This fact is used below..
+.set want_ds_list ${filt (*)_list & $(wantdefs)}
+.set wantdefs ${excl $(wantdefs) "" $(want_ds_list)}
+.if ${len $(wantdefs)}
+. error Cannot handle definition: $(wantdefs)
+. exit 1
+.endif
+..
+.. For all wanted new_<t> of virtual types add their inheritors to the
+.. want list.
+.foreach t $(want_ds)
+.if ${isvirtual $t}
+.append want_ds "${subclasses $t}"
+.endif
+.endforeach
+.set want_ds ${uniq $(want_ds)}
+..
+.. Macros to calculate all need variables.
+..
+.. The following macro invokes a 'req_*' macro. The extra layer allows
+.. tracing, weeding out of invocations with empty parameterlists, etc
+.if ${defined verbose}
+.set reqlevel 0
+.macro require g l
+.set l ${excl ${uniq $l} "" $(need_$g)}
+.if ${len $l}
+. globalappend need_$g $l
+/* required: ${strpad "" $(reqlevel) "."}${prefix $g_ $l} */
+.set reqlevel $[$(reqlevel)+1]
+. call req_$g "$l"
+.set reqlevel $[$(reqlevel)-1]
+.endif
+.endmacro
+.else
+.macro require g l
+.set l ${excl ${uniq $l} "" $(need_$g)}
+.if ${len $l}
+. globalappend need_$g $l
+. call req_$g "$l"
+.endif
+.endmacro
+.endif
+..
+.. The following macros invoke 'require' recursively to ensure that
+.. the functions required by their group functions is available.
+..
+.. ** slice **
+.macro req_slice l
+.call require rdup "$l"
+.call require new "$l"
+.call require setroom "$l"
+.call require append "$l"
+.endmacro
+..
+.. ** rdup **
+.macro req_rdup l
+.call require new "${nonvirtual $l}"
+.call require setroom "${listtypes $l}"
+.call require rdup "${delisttypes $l} ${types $l}"
+.if ${eq $(template) tmc}
+.call require rdup "${nonvirtual ${reach $l}}"
+.else
+.call require rdup "${types ${subclasses $l}}"
+.call require new "${nonvirtual ${subclasses $l}}"
+.endif
+.endmacro
+..
+.. ** fscan **
+.macro req_fscan l
+.call require new "${nonvirtual $l ${subclasses $l}}"
+.call require append "${listtypes $l}"
+.call require fscan "${delisttypes $l} ${types ${singletypes $l}}"
+.call require fscan "${types ${subclasses $l}}"
+.endmacro
+..
+.. ** print **
+.macro req_print l
+.call require ds "$l"
+.call require print "${delisttypes $l}"
+.call require print "${types ${singletypes $l} ${subclasses $l}}"
+.if ${eq $(template) tmc}
+.call require print "${nonvirtual ${subclasses $l}}"
+.endif
+.endmacro
+..
+.. ** fprint **
+.macro req_fprint l
+.call require ds "$l"
+.call require fprint "${delisttypes $l}"
+.call require fprint "${types ${singletypes $l} ${subclasses $l}}"
+.if ${eq $(template) tmc}
+.call require fprint "${nonvirtual ${subclasses $l}}"
+.endif
+.endmacro
+..
+.. ** cmp **
+.macro req_cmp l
+.call require ds "$l"
+.call require cmp "${delisttypes $l}"
+.call require cmp "${types ${singletypes $l} ${subclasses $l}}"
+.if ${eq $(template) tmc}
+.call require cmp "${nonvirtual ${subclasses $l}}"
+.endif
+.endmacro
+..
+.. ** isequal **
+.macro req_isequal l
+.call require ds "$l"
+.call require isequal "${delisttypes $l}"
+.call require isequal "${types ${singletypes $l} ${subclasses $l}}"
+.if ${eq $(template) tmc}
+.call require isequal "${nonvirtual ${subclasses $l}}"
+.endif
+.endmacro
+..
+.. ** append **
+.macro req_append l
+.call require setroom "$l"
+.endmacro
+..
+.. ** concat **
+.macro req_concat l
+.call require fre "$l"
+.call require setroom "$l"
+.endmacro
+..
+.. ** reverse **
+.macro req_reverse l
+.call require ds "$l"
+.endmacro
+..
+.. ** insertlist **
+.macro req_insertlist l
+.call require setroom "$l"
+.call require fre "$l"
+.endmacro
+..
+.. ** insert **
+.macro req_insert l
+.call require setroom "$l"
+.endmacro
+..
+.. ** extractlist **
+.macro req_extractlist l
+.call require setroom "$l"
+.call require new "$l"
+.endmacro
+..
+.. ** extract **
+.macro req_extract l
+.call require ds "$l"
+.endmacro
+..
+.. ** delete **
+.macro req_delete l
+.call require rfre "${delisttypes $l}"
+.call require ds "$l"
+.endmacro
+..
+.. ** deletelist **
+.macro req_deletelist l
+.call require rfre "${delisttypes $l}"
+.call require ds "$l"
+.endmacro
+..
+.. ** setroom **
+.macro req_setroom l
+.call require ds "$l"
+.endmacro
+..
+.. ** rfre **
+.macro req_rfre l
+.call require fre "${nonvirtual $l}"
+.call require rfre "${delisttypes $l}"
+.call require rfre "${alltypes ${singletypes $l}}"
+.if ${eq $(template) tmc}
+.call require rfre "${nonvirtual ${subclasses $l}}"
+.call require fre "${nonvirtual $l}"
+.else
+.call require fre "$l"
+.call require rfre "${types ${subclasses $l}}"
+.endif
+.endmacro
+..
+.. ** null **
+.if ${eq $(template) ald}
+.macro req_null l
+.call require null "${delisttypes $l}"
+.call require null "${types ${singletypes $l} ${subclasses $l}}"
+.call require ds "$l"
+.endmacro
+.endif
+..
+.. ** is **
+.if ${eq $(template) tmc}
+.macro req_is l
+.call require ds "$l"
+.endmacro
+.endif
+..
+.. ** fre **
+.macro req_fre l
+.call require ds "$l"
+.if ${eq $(template) tmc}
+.call require fre "${nonvirtual ${subclasses $l}}"
+.else
+.call require stat "${nonvirtual ${subclasses $l}}"
+.endif
+.call require stat "${nonvirtual $l}"
+.endmacro
+..
+.. ** new **
+.macro req_new l
+.call require ds "$l"
+.call require stat "${nonvirtual $l}"
+.if ${neq $(template) tmc}
+.call require new "${subclasses ${virtual $l}}"
+.endif
+.endmacro
+..
+.. ** stat **
+.macro req_stat l
+.if ${neq $(template) tmc}
+.call require stat "${nonvirtual ${subclasses $l}}"
+.endif
+.endmacro
+..
+.. ** ds **
+.macro req_ds l
+.call require ds "${delisttypes $l}"
+.call require ds "${types ${singletypes $l} ${subclasses $l}}"
+.if ${eq $(template) tmc}
+.call require ds "${subclasses $l} ${superclasses $l}"
+.endif
+.endmacro
+..
+.. From the request for new_<virtual class>, deduce the desire for
+.. its subclasses.
+.. Note that this modifies the *want_new* variable, *not* the need_new
+.. variable that is set in the deductions below.
+.if ${neq $(template) tmc}
+.append want_new "${subclasses ${virtual $(want_new)}}"
+.endif
+..
+.. Reset all need_<group> variables.
+.foreach g $(groups) stat
+. set need_$g
+.endforeach
+.set need_misc
+..
+.. Set all need_<group> variables.
+.foreach g $(groups)
+. call require $g "$(want_$g)"
+.endforeach
+.set need_misc $(want_misc)
+..
+.. Enforce notwantdefs
+.set notwantdefs ${uniq $(notwantdefs)}
+.if ${len $(notwantdefs)}
+. foreach g ${rmlist ds $(groups)}
+.  foreach t $(need_$g)
+.   if ${member $g_$t $(notwantdefs)}
+.    set need_$g ${rmlist $t $(need_$g)}
+.    set want_$g ${rmlist $t $(want_$g)}
+.   endif
+.  endforeach
+. endforeach
+. foreach t $(need_ds)
+.  if ${member $t $(notwantdefs)}
+.   set need_ds ${rmlist $t $(need_ds)}
+.   set want_ds ${rmlist $t $(want_ds)}
+.  endif
+. endforeach
+. foreach f $(misccode)
+.  if ${member $f $(notwantdefs)}
+.   set need_misc ${rmlist $f $(need_misc)}
+.   set want_misc ${rmlist $f $(want_misc)}
+.  endif
+. endforeach
+.endif
+..
+.. ** derived definitions **
+.set statcode ${or ${member stat_$(basename) $(need_misc)} ${member isbalanced_$(basename) $(need_misc)}}
+.if ${not $(statcode)}
+.if ${defined verbose}
+/* No statistics code needed. */
+.endif
+. set need_stat
+. set want_stat
+.endif
+..
+.. Derive the contents of the want_*_list and need_*_list variables
+.. from the want_ and need_ variables
+..
+.foreach g $(groups) stat
+. set want_$g_list ${delisttypes $(want_$g)}
+. set want_$g ${singletypes $(want_$g)}
+. set need_$g_list ${delisttypes $(need_$g)}
+. set need_$g ${comm ${singletypes $(need_$g)} "" ${typelist}}
+.endforeach
+.set need_ds ${comm $(need_ds) "" ${typelist}}
+.if ${defined verbose}
+.foreach g $(groups) stat
+/* want_$g: $(want_$g) */
+/* need_$g: $(need_$g) */
+/* want_$g_list: $(want_$g_list) */
+/* need_$g_list: $(need_$g_list) */
+.endforeach
+/* statcode: $(statcode) */
+.endif
+/* Requirement analysis took ${processortime} milliseconds. */
+.. Tm - an interface code generator.
+.. Author: C. van Reeuwijk.
+..
+.. All rights reserved.
+..
+.. file: calu.ht
+.. Tm C support. Variant: array lists.
+/*** WARNING: THIS IS GENERATED CODE. ***/
+
+/* ---- start of ${tplfilename} ---- */
+/* External definitions (Version for array list).
+
+   template file:      ${tplfilename}
+   datastructure file: ${dsfilename}
+   tm version:         $(tmvers)
+   tm kernel version:  $(kernel-version)
+ */
+
+/* data structures */
+
+/* forward reference typedefs for all types.
+ * C does not like the use of undefined types, but does not
+ * mind the use of pointers to (yet) undefined types.
+ */
+.foreach t $(need_ds_list)
+typedef struct str_$t_list *$t_list;
+.endforeach
+.foreach t ${depsort ${excl $(need_ds) "" ${conslist $(need_ds)}}}
+typedef struct str_$t *$t;
+.endforeach
+
+.foreach t $(need_ds)
+#define $tNIL ($t)0
+.endforeach
+.foreach t $(need_ds_list)
+#define $t_listNIL ($t_list)0
+.endforeach
+
+.foreach t ${comm $(need_ds) "" ${ctypelist}}
+.set l ${conslist $t}
+.if ${len $l}
+typedef enum en_tags_$t {
+.set lastelm ${first ${rev $l}}
+.foreach e $l
+.if ${eq $e $(lastelm)}
+    TAG$e
+.else
+    TAG$e,
+.endif
+.endforeach
+} tags_$t;
+.else
+typedef int tags_$t;
+.endif
+
+.endforeach
+
+.foreach t ${depsort $(need_ds)}
+.switch ${metatype $t}
+.case alias
+.error Internal error: alias $t still present.
+.case constructorbase
+.. Constructor type
+.. Structure definitions for all the constructors of the type
+.. That have elements (C does not like empty structures or unions).
+.. Generate structure definitions for all constructors with
+.. fields.
+.. Also set 'makeunion' if at least one such structure is
+.. generated, because otherwise no union must be generated for
+.. the structure of the entire type.
+.set makeunion 0
+.foreach c ${conslist $t}
+.. Constructors with 0 elements do not have a structure..
+.if ${len ${allfields $c}}
+.set makeunion 1
+/* Structure for constructor $c */
+typedef struct str_$c {
+.foreach e ${allfields $c}
+    ${type $c $e} $e;
+.endforeach
+} C_$c;
+.else
+/* No str_$c: Constructor $c has no fields */
+.endif
+
+.endforeach
+/* Constructor type $t */
+struct str_$t {
+    tags_$t tag;
+.if $(makeunion)
+    union uni_$t {
+.foreach c ${conslist $t}
+.. Constructors with 0 elements do not have a structure..
+.if ${len ${allfields $c}}
+	C_$c ue_$c;
+.endif
+.endforeach
+    } u;
+.endif
+#ifdef LOGNEW
+    long int lognew_id;
+#endif
+};
+.case tuple class
+struct str_$t {
+.foreach e ${allfields $t}
+    ${type $t $e} $e;
+.endforeach
+.if ${not ${len ${allfields $t}}}
+    int _dummy_field;
+.endif
+#ifdef LOGNEW
+    long int lognew_id;
+#endif
+};
+.case constructor
+.endswitch
+
+.endforeach
+.foreach t $(need_ds_list)
+struct str_$t_list {
+    unsigned int sz;
+    unsigned int room;
+    $t *arr;
+#ifdef LOGNEW
+    long int lognew_id;
+#endif
+};
+
+.endforeach
+/* Type casting macros. */
+.foreach t $(need_ds)
+.switch ${metatype $t}
+.case constructor
+.case alias
+.error Internal error: alias $t still present.
+.case tuple class
+.foreach e ${fields $t}
+#define to_$t(e) (e)
+.endforeach
+.case constructorbase
+.foreach c ${conslist $t}
+.foreach e ${fields $c}
+#define to_$c(e) (&(e->u.ue_$c))
+#define $c u.ue_$c
+.endforeach
+.endforeach
+.endswitch
+.endforeach
+
+.. new_<type> routines
+#ifdef LOGNEW
+.foreach t ${nonvirtual $(want_new)}
+.switch ${metatype $t}
+.case alias
+.error Internal error: alias $t still present.
+.case tuple class constructor
+#define new_$t(${seplist , ${allfields $t}}) real_new_$t(${seplist , ${allfields $t} __FILE__ __LINE__})
+.case constructorbase
+.foreach c ${conslist $t}
+..#define new_$c(${seplist , ${allfields $c}}) real_new_$c(${seplist , ${allfields $c} __FILE__ __LINE__})
+.endforeach
+.endswitch
+.endforeach
+.foreach t $(want_new_list)
+#define new_$t_list() real_new_$t_list(__FILE__,__LINE__)
+.endforeach
+..
+.. slice_<type>() routines
+.foreach t $(want_slice_list)
+#define slice_$t_list(l,b,e) real_slice_$t_list(l,b,e,__FILE__,__LINE__)
+.endforeach
+..
+.. rdup_<type>() routines
+.foreach t $(want_rdup)
+#define rdup_$t(e) real_rdup_$t(e,__FILE__,__LINE__)
+.endforeach
+.foreach t $(want_rdup_list)
+#define rdup_$t_list(e) real_rdup_$t_list(e,__FILE__,__LINE__)
+.endforeach
+..
+.. fscan_<type>() routines
+.foreach t $(want_fscan)
+#define fscan_$t(f,e) real_fscan_$t(f,e,__FILE__,__LINE__)
+.endforeach
+.foreach t $(want_fscan_list)
+#define fscan_$t_list(f,l) real_fscan_$t_list(f,l,__FILE__,__LINE__)
+.endforeach
+..
+.. extractlist_<type>() routines
+.foreach t $(want_extractlist_list)
+#define extractlist_$t_list(l,b,e,res) real_extractlist_$t_list(l,b,e,res,__FILE__,__LINE__)
+.endforeach
+#endif
+
+.. new_<cons> and new_<type> routines
+.foreach t $(want_new)
+.switch ${metatype $t}
+.case constructor
+.. Nothing: is done by constructorbase
+.case alias
+.error Internal error: alias $t still present.
+.case tuple class
+.set tl
+.foreach e ${allfields $t}
+.append tl ${type $t $e}
+.endforeach
+#ifdef LOGNEW
+.if ${len $(tl)}
+extern $t real_new_$t( ${seplist ", " $(tl)}, const char *, const int );
+.else
+extern $t real_new_$t( const char *, const int );
+.endif
+#else
+.if ${len $(tl)}
+extern $t new_$t( ${seplist ", " $(tl)} );
+.else
+extern $t new_$t( void );
+.endif
+#endif
+.case constructorbase
+.foreach c ${conslist $t}
+.set tl
+.foreach e ${allfields $c}
+.append tl ${type $c $e}
+.endforeach
+#ifdef LOGNEW
+.if ${len $(tl)}
+extern $t real_new_$c( ${seplist ", " $(tl)}, const char *, const int );
+.else
+extern $t real_new_$c( const char *, const int );
+.endif
+#else
+.if ${len $(tl)}
+extern $t new_$c( ${seplist ", " $(tl)} );
+.else
+extern $t new_$c( void );
+.endif
+#endif
+.endforeach
+.endswitch
+.endforeach
+#ifdef LOGNEW
+.foreach t $(want_new_list)
+extern $t_list real_new_$t_list( const char *file, const int line );
+.endforeach
+#else
+.foreach t $(want_new_list)
+extern $t_list new_$t_list( void );
+.endforeach
+#endif
+..
+.. setroom_<type>_list functions.
+.. For this library they are dummy functions.
+.foreach t $(want_setroom_list)
+extern $t_list setroom_$t_list( $t_list, unsigned int );
+.endforeach
+..
+.. append_<type>_list() routines.
+.foreach t $(want_append_list)
+extern $t_list append_$t_list( $t_list, $t );
+.endforeach
+..
+.. reverse_<type>_list() routines.
+.foreach t $(want_reverse_list)
+extern $t_list reverse_$t_list( $t_list );
+.endforeach
+..
+.. insert_<type>_list() routines.
+.foreach t $(want_insert_list)
+extern $t_list insert_$t_list( $t_list, unsigned int, $t  );
+.endforeach
+..
+.. insertlist_<type>_list() routines.
+.foreach t $(want_insertlist_list)
+extern $t_list insertlist_$t_list( $t_list, unsigned int, $t_list  );
+.endforeach
+..
+.. delete_<type>_list() routines.
+.foreach t $(want_delete_list)
+extern $t_list delete_$t_list( $t_list, unsigned int );
+.endforeach
+..
+.. deletelist_<type>_list() routines.
+.foreach t $(want_deletelist_list)
+extern $t_list deletelist_$t_list( $t_list, unsigned int, unsigned int );
+.endforeach
+..
+.. extract_<type>_list() routines.
+.foreach t $(want_extract_list)
+extern $t_list extract_$t_list( $t_list, unsigned int, /*@out@*/ $t *, /*@out@*/ int * );
+.endforeach
+..
+.. extractlist_<type>_list() routines.
+#ifdef LOGNEW
+.foreach t $(want_extractlist_list)
+extern $t_list real_extractlist_$t_list( $t_list, unsigned int, unsigned int, /*@out@*/ $t_list *, const char *, const int );
+.endforeach
+#else
+.foreach t $(want_extractlist_list)
+extern $t_list extractlist_$t_list( $t_list, unsigned int, unsigned int, /*@out@*/ $t_list * );
+.endforeach
+#endif
+..
+.. concat_<type>_list() routines
+.foreach t $(want_concat_list)
+extern $t_list concat_$t_list( $t_list, $t_list );
+.endforeach
+..
+.. fre_<type>_list() routines
+.foreach t $(want_fre_list)
+extern void fre_$t_list( $t_list );
+.endforeach
+.foreach t $(want_fre)
+extern void fre_$t( $t );
+.endforeach
+..
+.. rfre_<type>_list() routines
+.foreach t $(want_rfre_list)
+extern void rfre_$t_list( $t_list );
+.endforeach
+.foreach t $(want_rfre)
+extern void rfre_$t( $t );
+.endforeach
+..
+.. print_<type>() routines
+.foreach t $(want_print)
+extern void print_$t( TMPRINTSTATE *, const $t );
+.endforeach
+.foreach t $(want_print_list)
+extern void print_$t_list( TMPRINTSTATE *, const $t_list );
+.endforeach
+..
+.. fprint_<type>() routines
+.foreach t $(want_fprint)
+extern void fprint_$t( FILE *, const $t );
+.endforeach
+.foreach t $(want_fprint_list)
+extern void fprint_$t_list( FILE *, const $t_list );
+.endforeach
+..
+.. slice_<type>() routines
+.if ${len $(want_slice_list)}
+#ifdef LOGNEW
+.foreach t $(want_slice_list)
+extern $t_list real_slice_$t_list(
+ const $t_list l,
+ unsigned int b,
+ unsigned int e,
+ const char *_f,
+ const int _l
+);
+.endforeach
+#else
+.foreach t $(want_slice_list)
+extern $t_list slice_$t_list( $t_list, unsigned int, unsigned int );
+.endforeach
+#endif
+.endif
+..
+.. rdup_<type>() routines
+.if ${len $(want_rdup) $(want_rdup_list)}
+#ifdef LOGNEW
+.foreach t $(want_rdup)
+extern $t real_rdup_$t( const $t, const char *_f, const int _l );
+.endforeach
+.foreach t $(want_rdup_list)
+extern $t_list real_rdup_$t_list( const $t_list, const char *_f, const int _l );
+.endforeach
+#else
+.foreach t $(want_rdup)
+extern $t rdup_$t( const $t );
+.endforeach
+.foreach t $(want_rdup_list)
+extern $t_list rdup_$t_list( const $t_list );
+.endforeach
+#endif
+.endif
+..
+.. fscan_<type>() routines
+.if ${len $(want_fscan) $(want_fscan_list)}
+#ifdef LOGNEW
+.foreach t $(want_fscan)
+extern int real_fscan_$t( FILE *, $t *, const char *, const int );
+.endforeach
+.foreach t $(want_fscan_list)
+extern int real_fscan_$t_list( FILE *, $t_list *, const char *, const int );
+.endforeach
+#else
+.foreach t $(want_fscan)
+extern int fscan_$t( FILE *, $t * );
+.endforeach
+.foreach t $(want_fscan_list)
+extern int fscan_$t_list( FILE *, $t_list * );
+.endforeach
+#endif
+.endif
+..
+.. cmp_<type>() routines
+.foreach t $(want_cmp)
+extern int cmp_$t( const $t, const $t );
+.endforeach
+.foreach t $(want_cmp_list)
+extern int cmp_$t_list( const $t_list, const $t_list );
+.endforeach
+..
+.. isequal_<type>() routines
+.foreach t $(want_isequal)
+extern tmbool isequal_$t( const $t, const $t );
+.endforeach
+.foreach t $(want_isequal_list)
+extern tmbool isequal_$t_list( const $t_list, const $t_list );
+.endforeach
+..
+.. Misc. functions.
+.if ${member stat_$(basename) $(want_misc)}
+extern void stat_$(basename)( FILE * );
+.endif
+.if ${member get_balance_$(basename) $(want_misc)}
+extern int get_balance_$(basename)( void );
+.endif
+..
+/* ---- end of ${tplfilename} ---- */
+/* Code generation required ${processortime} milliseconds. */

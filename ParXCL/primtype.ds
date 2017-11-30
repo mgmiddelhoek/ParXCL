@@ -1,0 +1,72 @@
+|| ParX - primtype.ds
+|| TM data structure definition for primitive types
+||
+|| Copyright (c) 2009 M.G.Middelhoek <martin@middelhoek.com>
+||
+|| This program is free software: you can redistribute it and/or modify
+|| it under the terms of the GNU General Public License as published by
+|| the Free Software Foundation, either version 3 of the License, or
+|| (at your option) any later version.
+||
+|| This program is distributed in the hope that it will be useful,
+|| but WITHOUT ANY WARRANTY; without even the implied warranty of
+|| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+|| GNU General Public License for more details.
+||
+|| You should have received a copy of the GNU General Public License
+|| along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+|| These vector and matrix types are structures of fixed length
+|| partly compatible with the dynamic length array list structures of TM.
+|| They do support the use of sub-vectors and sub-matrices
+
+|| The field names of all vector and matrix types must be the same
+|| due to the access macro's.
+
+|| vector of state flags
+statevector == (
+	|| linear array storage
+	sz:inum,		|| maximum number of elements
+	n:inum, 		|| actual number of elements
+	arr:statearray	|| linear array of state flags
+);
+
+|| vector of booleans
+boolvector == (
+	|| linear array storage
+	sz:inum,		|| maximum number of elements
+	n:inum, 		|| actual number of elements
+	arr:boolarray	|| linear array of booleans
+);
+
+|| vector of integers
+inumvector == (
+	|| linear array storage
+	sz:inum,		|| maximum number of elements
+	n:inum, 		|| actual number of elements
+	arr:inumarray	|| linear array of integers
+);
+
+|| vector of floating point numbers
+vector == (
+	|| linear array storage
+	sz:inum,		|| maximum number of elements
+	n:inum, 		|| actual number of elements
+	arr:fnumarray	|| linear array of floats
+);
+
+|| two dimensional matrix (m x n) of floating point numbers
+|| elements are stored in column order for compatability with FORTRAN
+|| an index table is used to find the first element of a column
+matrix == (
+    || linear storage array
+	sz:inum,		|| total number of elements
+	arr:fnumarray,	|| linear array of fnums, its size is (szm x szn)
+    || matrix organization:
+	szm:inum,		|| total number of rows
+	szn:inum,		|| total number of columns
+	idx:fnumindex,	|| column index table
+	m:inum,			|| actual number of rows
+	n:inum			|| actual number of columns
+);
