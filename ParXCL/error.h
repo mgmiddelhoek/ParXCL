@@ -13,7 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -28,7 +28,6 @@ extern inum errcode;
 extern void error(tmstring s);
 
 extern inum prx_errcode; /* error code of interpreter */
-
 
 /* user defined error codes are negative to avoid conflicts with sys errors */
 
@@ -95,6 +94,5 @@ extern inum prx_errcode; /* error code of interpreter */
 /* security error codes */
 
 #define DNG_DERR		(DERR-1)
-
 
 #endif

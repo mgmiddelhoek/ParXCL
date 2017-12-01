@@ -325,10 +325,10 @@
 				5B99C50F1E32421800F157D9 /* modes.c */,
 				5B99C4F21E32421800F157D9 /* objectiv.h */,
 				5B99C5141E32421800F157D9 /* objectiv.c */,
-				5B99C4E61E32421800F157D9 /* distance.h */,
-				5B99C5081E32421800F157D9 /* distance.c */,
 				5B99C4FB1E32421800F157D9 /* residual.h */,
 				5B99C5241E32421900F157D9 /* residual.c */,
+				5B99C4E61E32421800F157D9 /* distance.h */,
+				5B99C5081E32421800F157D9 /* distance.c */,
 				5B99C4EE1E32421800F157D9 /* modify.h */,
 				5B99C5101E32421800F157D9 /* modify.c */,
 			);
@@ -604,6 +604,7 @@
 			buildSettings = {
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9P48A42BZN;
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
 					"DEBUG=1",
@@ -616,6 +617,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -624,6 +626,7 @@
 			buildSettings = {
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9P48A42BZN;
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "OSX=1";
 				LIBRARY_SEARCH_PATHS = (
@@ -632,6 +635,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};

@@ -2,18 +2,17 @@
  * ParX - main.c
  *
  ****************************************************************************
- 
- PPPPPP       AAAA       RRRRRR      XX   XX
- PP   PP     AA  AA      RR   RR     XX   XX
- PP   PP    AA    AA     RR   RR      XX XX
- PPPPPP     AAAAAAAA     RRRRRR        XXX
- PP         AA    AA     RR  RR       XX XX
- PP         AA    AA     RR   RR     XX   XX
- PP         AA    AA     RR   RR     XX   XX
- 
- 
- Parameter eXtraction program for analytical device models
- 
+ *
+ *      PPPPPP       AAAA       RRRRRR      XX   XX
+ *      PP   PP     AA  AA      RR   RR     XX   XX
+ *      PP   PP    AA    AA     RR   RR      XX XX
+ *      PPPPPP     AAAAAAAA     RRRRRR        XXX
+ *      PP         AA    AA     RR  RR       XX XX
+ *      PP         AA    AA     RR   RR     XX   XX
+ *      PP         AA    AA     RR   RR     XX   XX
+ *
+ * Parameter eXtraction program for analytical device models
+ *
  ****************************************************************************
  *
  * Copyright (c) 1990 M.G.Middelhoek <martin@middelhoek.com>
@@ -27,7 +26,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */

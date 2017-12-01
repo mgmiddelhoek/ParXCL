@@ -1,6 +1,6 @@
 # ParXCL
 
-ParX is a moddeling tool. With ParX you can:
+ParX is a modeling tool. With ParX you can:
 * Describe your model in a simple mathematical language.
 * Match your model against measured data.
 
@@ -24,7 +24,7 @@ which in later incarnations was transplanted by LAPACK and BLAS.
 Both libraries are written in FORTRAN, 
 so the vector and matrix data structures in ParX follow the FORTRAN memory-layout conventions.
 
-The Model Compiler was still in the early planning stages, 
+The [Model Compiler](https://www.middelhoek.com/projects/modelcompiler.html) was still in the early planning stages, 
 so initially all models equations and their first-order derivatives had to be hand- and hard-coded in C. 
 The Model Compiler was finally connected to the parser via POSIX pipes.
 Now it is integrated in ParXCL.
@@ -35,5 +35,5 @@ ParXCL is still offered (as is) for embedded applications on the MacOS, Linux an
 
 Before building ParX you have to install the build tool [TemplateManager](https://github.com/CvR42/template-manager).
 
-For the Linux and Windows platforms you also need the CBlas and Lapack libraries.
+For the Linux and Windows platforms you also need the CBlas and CLapack libraries.
 Makefile templates are provided for guidance.
