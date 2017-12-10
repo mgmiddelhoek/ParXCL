@@ -98,6 +98,7 @@
 		5B2DF9D51FD041F0001DA4F4 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = SOURCE_ROOT; };
 		5B2DF9D61FD06D97001DA4F4 /* makefile.win.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = makefile.win.mk; sourceTree = "<group>"; };
 		5B2DF9D71FD06D97001DA4F4 /* makefile.linux.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = makefile.linux.mk; sourceTree = "<group>"; };
+		5B4BC2311FDD7FE0002D9933 /* manual.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = manual.pdf; sourceTree = "<group>"; };
 		5B99C4D51E32419E00F157D9 /* ParXCL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ParXCL; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B99C4D81E32419E00F157D9 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		5B99C4DF1E32421800F157D9 /* actions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = actions.h; sourceTree = "<group>"; };
@@ -252,6 +253,7 @@
 		5BBA87201FD0730900D2F4DC /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				5B4BC2311FDD7FE0002D9933 /* manual.pdf */,
 				5B2DF9D51FD041F0001DA4F4 /* LICENSE */,
 				5B2DF9D41FD03FFC001DA4F4 /* README.md */,
 			);

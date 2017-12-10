@@ -187,7 +187,7 @@ datarow == (
 || representation of data for numerical routines
 numblock == (
 	mod:modres,			|| model info
-	modi:moddat,                    || model interface
+	modi:moddat,        || model interface
 	p:[pset],			|| sets of parameters
 	c:[cset],			|| sets of constants
 	f:[fset],			|| sets of flags
