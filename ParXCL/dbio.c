@@ -424,5 +424,9 @@ void put_datatable(datatemplate dt, tmstring fname) {
         write_data_json(fp, dt);
     }
     
+    if (csv == TRUE) { /* do nothing, not implemented yet */
+        
+    }
+    
     fclose(fp);
 }

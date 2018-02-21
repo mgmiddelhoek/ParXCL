@@ -337,8 +337,9 @@ boolean modes(
         if ((alpha == 0.0) && (moddir == FALSE)) { /* no step size found */
             errcode = NO_LOWP_CERR;
             error("ext");
-            if (trace >= 1)
+            if (trace >= 1) {
                 fputs("No step size found\n", trace_stream);
+            }
             break;
         } else if (alpha == 1.0) {
             fullstep++;
@@ -347,10 +348,17 @@ boolean modes(
         }
         
         condn = fabs(VEC(s_val, 0) / VEC(s_val, rank - 1));
+        if (trace >= 1) {
+            fprintf(trace_stream, "Condition number = %.*e\n", FNUM_DIG, condn);
+        }
         
-        for (consist = 1.0, i = 0; i < rank; i++)
+        for (consist = 1.0, i = 0; i < rank; i++) {
             consist *= res_norm / VEC(s_val, i);
+        }
         consist = pow(consist, 1.0 / ((double) rank));
+        if (trace >= 1) {
+            fprintf(trace_stream, "Consistency = %.*e\n", FNUM_DIG, consist);
+        }
         
         for (i = 0; i < VECN(p); i++) /* go for it */
             VEC(p, i) += alpha * VEC(dp, i);

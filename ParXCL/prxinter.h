@@ -23,6 +23,7 @@
 
 #include "primtype.h"
 #include "modlib.h"
+#include <assert.h>
 
 /* Input and adaptation of interpreter code (once per ParX execution) */
 extern boolean prx_inCode(moddat dat, FILE *inFile);

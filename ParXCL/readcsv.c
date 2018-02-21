@@ -36,7 +36,7 @@ inum readcsv(FILE *fp, datatemplate dt) {
     inum crvid;
     stateflag state;
     inum idx, iv, ie;
-    inum ssign0, ssign1, ncurve, ncurves, nflyb, nrow;
+    inum ssign0, ssign1, ncurve, ncurves, nflyb;
     
     
     head = colheadNIL;
@@ -59,8 +59,9 @@ inum readcsv(FILE *fp, datatemplate dt) {
                 
             case '\n': if (cc == 1) { /* empty line separates curves */
                 crvid++;
-                if (data && dr)
+                if (data && dr) {
                     dr->crvid = crvid;
+                }
                 tm_lineno++;
                 cc = 0;
                 continue;
@@ -69,9 +70,9 @@ inum readcsv(FILE *fp, datatemplate dt) {
                     (void) strcpy(tm_errmsg, "open string at eol");
                     goto error;
                 }
-                if (!data) /* header line defines number of columns */
+                if (!data) { /* header line defines number of columns */
                     ncol = ++col;
-                else if (col != ncol) { /* eol unexpected */
+                } else if (col != ncol) { /* eol unexpected */
                     (void) strcpy(tm_errmsg, "missing data column");
                     goto error;
                 }
@@ -89,7 +90,9 @@ inum readcsv(FILE *fp, datatemplate dt) {
                         dti->header = append_colhead_list(dti->header, head);
                     } else { /* parse header */
                         state = FACT; /* determine type */
-                        if (strstr(token, ":sw")) state = SWEEP;
+                        if (strstr(token, ":sw")) {
+                            state = SWEEP;
+                        }
                         if (strstr(token, ":x")) {
                             if (strstr(token, ":x0")) {
                                 state = SWEEP;
@@ -209,17 +212,13 @@ inum readcsv(FILE *fp, datatemplate dt) {
     
     /* determine if data is ordered in curves on sweep variable*/
     
-    ssign0 = 0;
     ssign1 = 0;
     ncurve = 1;
     ncurves = 1;
     nflyb = 0;
-    nrow = 0;
     
     if (sweep != colheadNIL && dt->data != datarowNIL) {
-        nrow = 1;
         for (dr = dt->data; dr->next != datarowNIL; dr = dr->next) {
-            nrow++;
             
             if (LST(dr->row, 0) == LST(dr->next->row, 0)) ssign0 = 0;
             else if (LST(dr->row, 0) < LST(dr->next->row, 0)) ssign0 = 1;
@@ -240,7 +239,7 @@ inum readcsv(FILE *fp, datatemplate dt) {
         if (nflyb == (ncurves - 1) && ncurve == ncurves); /* nothing to do */
         else if (ncurve != ncurves); /* is split in curves, but not on sweep */
         else { /* split in curves */
-            ssign0 = ssign1 = 0;
+            ssign1 = 0;
             ncurve = 2;
             for (dr = dt->data; dr->next != datarowNIL; dr = dr->next) {
                 if (LST(dr->row, 0) == LST(dr->next->row, 0)) ssign0 = 0;

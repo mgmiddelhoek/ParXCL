@@ -19,6 +19,7 @@
  */
 
 #include <stdlib.h>
+#include <assert.h>
 #include "bt_def.h"
 
 #define E_BALANCE	1
@@ -145,6 +146,7 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
             return p1;
         } else {
             p2 = p1->li;
+            assert(p2 != NULL);
             p->re = p2->li;
             p1->li = p2->re;
             p2->li = p;
@@ -171,6 +173,7 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
             return p1;
         } else {
             p2 = p1->re;
+            assert(p2 != NULL);
             p->li = p2->re;
             p1->re = p2->li;
             p2->re = p;

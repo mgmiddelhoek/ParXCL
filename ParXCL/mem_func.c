@@ -66,10 +66,8 @@ void *mem_slot(struct MEM_TREE * tptr, size_t size) {
 
 size_t mem_free(struct MEM_TREE * tptr) {
     struct MEM_LEAF *lptr, *next;
-    long cnt;
     size_t size;
     
-    cnt = tptr->cnt;
     size = tptr->size;
     
     if (tptr == NULL)

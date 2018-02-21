@@ -22,6 +22,7 @@
 #include "mem_def.h"
 #include "bt_def.h"
 #include "prx_def.h"
+#include <assert.h>
 
 #define ERROR(s)       { printf("%s:%d: error: %s\n", prx_filename, prx_lineno, s); \
 bError |= 2;  return 0; }
@@ -1155,8 +1156,8 @@ int prx_deriv(PRX_OPD * pOpd) {
     int i;
     int level; /* if-level */
     PRX_NODE *pElse;
-    PRX_NODE * IfNode[MAXLEVEL]; /* pos. of last if-node */
-    PRX_NODE * ElseNode[MAXLEVEL]; /* pos. of last else-node */
+    PRX_NODE * IfNode[MAXLEVEL] = { NULL }; /* pos. of last if-node */
+    PRX_NODE * ElseNode[MAXLEVEL] = { NULL }; /* pos. of last else-node */
     
     for (i = 0; i < nTmp; i++)
         TmpTyp[i] = 0;
@@ -1195,6 +1196,7 @@ int prx_deriv(PRX_OPD * pOpd) {
                 ElseNode[level] = NULL;
                 break;
             case FI:
+                assert(IfNode[level] != NULL);
                 if (IfNode[level--]->abl) {
                     pNode->abl = pNode;
                     if (level > 0) {
@@ -1286,6 +1288,7 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             p->abl = N_0;
             break;
         case NEG:
+            assert(p1 != NULL);
             p1a = p1->abl;
             if (p1a == N_0)
                 p->abl = p1a;
@@ -1295,6 +1298,8 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             }
             break;
         case ADD:
+            assert(p1 != NULL);
+            assert(p2 != NULL);
             p1a = p1->abl;
             p2a = p2->abl;
             if (p1a == N_0)
@@ -1308,6 +1313,8 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             }
             break;
         case SUB:
+            assert(p1 != NULL);
+            assert(p2 != NULL);
             p1a = p1->abl;
             p2a = p2->abl;
             if (p1a == N_0) {
@@ -1325,6 +1332,8 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             }
             break;
         case MUL:
+            assert(p1 != NULL);
+            assert(p2 != NULL);
             p1a = p1->abl;
             p2a = p2->abl;
             if (p1a == N_0) {
@@ -1368,6 +1377,8 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             }
             break;
         case DIV:
+            assert(p1 != NULL);
+            assert(p2 != NULL);
             p1a = p1->abl;
             p2a = p2->abl;
             if (p2a == N_0) {
@@ -1420,6 +1431,8 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             }
             break;
         case POW:
+            assert(p1 != NULL);
+            assert(p2 != NULL);
             p1a = p1->abl;
             p2a = p2->abl;
             if (p1a == N_0) {
@@ -1469,6 +1482,7 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             }
             break;
         case REV:
+            assert(p1 != NULL);
             p1a = p1->abl;
             if (p1a == N_0)
                 p->abl = N_0;
@@ -1484,6 +1498,7 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             }
             break;
         case EQU:
+            assert(p1 != NULL);
             p->abl = p1->abl;
             break;
         case OPD:
@@ -1503,6 +1518,7 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
             p->abl = N_0;
             break;
         case ASS:
+            assert(p1 != NULL);
             NODED(pD, ASS, p1->abl, NULL);
             pD->c.optr = p->c.optr;
             p->abl = pD;
@@ -1522,6 +1538,7 @@ int prx_deriv_expr(PRX_NODE * p, PRX_OPD * arg, PRX_OPD * fval) {
         case SQRT:
         case ABS:
         case SQR:
+            assert(p1 != NULL);
             p1a = p1->abl;
             if (p1a == N_0) {
                 p->abl = N_0;
@@ -1634,6 +1651,7 @@ int prx_simplify(PRX_NODE * p) {
     }
     switch (opr) {
         case NEG:
+            assert(p1 != NULL);
             if (p1->opr == NEG) {
                 p->opr = EQU;
                 p->o1 = p1->o1;
@@ -1655,6 +1673,7 @@ int prx_simplify(PRX_NODE * p) {
             }
             break;
         case ADD:
+            assert(p2 != NULL);
             if (p2->opr == NEG) {
                 p->opr = SUB;
                 p->c.o2 = p2->o1;
@@ -1672,6 +1691,7 @@ int prx_simplify(PRX_NODE * p) {
             }
             break;
         case SUB:
+            assert(p2 != NULL);
             if (p2->opr == NEG) {
                 p->opr = ADD;
                 p->c.o2 = p2->o1;
@@ -1698,6 +1718,8 @@ int prx_simplify(PRX_NODE * p) {
             }
             break;
         case MUL:
+            assert(p1 != NULL);
+            assert(p2 != NULL);
             if (p1 == N_1) {
                 p->opr = EQU;
                 p->o1 = p2;
@@ -1745,6 +1767,8 @@ int prx_simplify(PRX_NODE * p) {
             }
             break;
         case DIV:
+            assert(p1 != NULL);
+            assert(p2 != NULL);
             if (p2 == N_1) {
                 p->opr = EQU;
                 p->c.o2 = NULL;
@@ -1785,6 +1809,7 @@ int prx_simplify(PRX_NODE * p) {
             }
             break;
         case REV:
+            assert(p1 != NULL);
             if (p1->opr == REV) {
                 p->opr = EQU;
                 p->o1 = p1->o1;
@@ -1820,6 +1845,7 @@ int prx_simplify(PRX_NODE * p) {
             }
             break;
         case EXP:
+            assert(p1 != NULL);
             if (p1->opr == LOG) {
                 p->opr = EQU;
                 p->o1 = p1->o1;
@@ -1827,6 +1853,7 @@ int prx_simplify(PRX_NODE * p) {
             }
             break;
         case LOG:
+            assert(p1 != NULL);
             if (p1->opr == EXP) {
                 p->opr = EQU;
                 p->o1 = p1->o1;

@@ -219,6 +219,9 @@ boolean distance(
         
         ddn_norm = norm_vector(ddn);
         ddt_norm = norm_vector(ddt);
+        if (trace >= 2) {
+            fprintf(trace_stream, "Distance normal:tangent = %.*e:%.*e\n", FNUM_DIG, ddn_norm, FNUM_DIG, ddt_norm);
+        }
         
         for (i = 0; i < VECN(powmu); i++) {
             if (iter == 0) {

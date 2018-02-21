@@ -62,8 +62,8 @@ boolean prx_inCode(moddat dat, FILE * inFile) {
     int kod; /* kind of derivatives (var, aux or par) */
     CODE *code; /* pointer in interpreter code */
     int nFree; /* available positions in current code buffer */
-    CODE * IfPos[MAXLEVEL + 1];
-    CODE * ElsePos[MAXLEVEL + 1];
+    CODE * IfPos[MAXLEVEL + 1] = { NULL };
+    CODE * ElsePos[MAXLEVEL + 1] = { NULL };
     int level;
     int nItems;
     int i;
@@ -178,14 +178,17 @@ boolean prx_inCode(moddat dat, FILE * inFile) {
             case ELSE:
                 (*code++).o = JMP;
                 ElsePos[level] = code++;
+                assert(IfPos[level] != NULL);
                 (*IfPos[level]).c = code;
                 nFree -= 2;
                 break;
             case FI:
                 if (ElsePos[level])
                     (*ElsePos[level]).c = code;
-                else
+                else {
+                    assert(IfPos[level] != NULL);
                     (*IfPos[level]).c = code;
+                }
                 level--;
                 break;
             case EOD: /* End Of (single) Derivative */
@@ -249,6 +252,7 @@ fnum *prx_getAddress(TYP typ, int ind, moddat dat) {
             adr = Tmp + ind;
             break;
         case DRES:
+            assert(jac != NULL);
             adr = MATP(jac, ind, iDvt);
             break;
         case DTMP:
@@ -265,9 +269,9 @@ fnum *prx_getAddress(TYP typ, int ind, moddat dat) {
 
 /* Execution of interpreter code */
 boolean prx_compute(moddat dat) {
-    int kod; /* kind of derivatives            */
-    CODE *code; /* interpreter code pointer       */
-    fnum *pSt; /* operand stack pointer          */
+    int kod; /* kind of derivatives */
+    CODE *code; /* interpreter code pointer */
+    fnum *pSt; /* operand stack pointer */
     
     prx_errcode = 0;
     

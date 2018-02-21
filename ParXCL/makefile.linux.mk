@@ -1,7 +1,7 @@
 # Makefile for ParX on Linux
 # Copyright (c) 1989-2017 M.G.Middelhoek
 
-VERSION = "\"6.5 rev. `date +"%Y-%m-%d"`\""
+VERSION = "\"6.6 rev. `date +"%Y-%m-%d"`\""
 
 SYSTEM = LINUX
 
