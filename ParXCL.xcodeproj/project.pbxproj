@@ -58,6 +58,8 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.ht";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/${INPUT_FILE_BASE}.h",
@@ -69,11 +71,13 @@
 			compilerSpec = com.apple.compilers.proxy.script;
 			filePatterns = "*.ct";
 			fileType = pattern.proxy;
+			inputFiles = (
+			);
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/${INPUT_FILE_BASE}.c",
 			);
-			script = "/usr/local/bin/tm -I ${INPUT_FILE_DIR} ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}.ds <${INPUT_FILE_PATH} >${DERIVED_FILE_DIR}/${INPUT_FILE_BASE}.c";
+			script = "/usr/local/bin/tm -I ${INPUT_FILE_DIR} ${INPUT_FILE_DIR}/${INPUT_FILE_BASE}.ds <${INPUT_FILE_PATH} >${DERIVED_FILE_DIR}/${INPUT_FILE_BASE}.c\n";
 		};
 /* End PBXBuildRule section */
 
@@ -423,7 +427,7 @@
 		5B99C4CD1E32419E00F157D9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1120;
 				ORGANIZATIONNAME = "Martin Middelhoek";
 				TargetAttributes = {
 					5B99C4D41E32419E00F157D9 = {
@@ -435,10 +439,11 @@
 			};
 			buildConfigurationList = 5B99C4D01E32419E00F157D9 /* Build configuration list for PBXProject "ParXCL" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 5B99C4CC1E32419E00F157D9;
 			productRefGroup = 5B99C4D61E32419E00F157D9 /* Products */;
@@ -506,6 +511,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -561,6 +567,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -612,6 +619,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9P48A42BZN;
+				ENABLE_HARDENED_RUNTIME = YES;
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -634,6 +642,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9P48A42BZN;
+				ENABLE_HARDENED_RUNTIME = YES;
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "OSX=1";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
