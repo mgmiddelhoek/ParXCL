@@ -1,7 +1,5 @@
-# Makefile for ParX on Linux
-# Copyright (c) 1989-2017 M.G.Middelhoek
-
-VERSION = "\"6.6 rev. `date +"%Y-%m-%d"`\""
+# Makefile for ParXCL on Linux
+# Copyright (c) 1989-2020 M.G.Middelhoek
 
 SYSTEM = LINUX
 
@@ -14,7 +12,7 @@ BDIR = $(PARXDIR)/bin
 
 # Compiler
 CC = gcc
-CFLAGS = -D$(SYSTEM) -DVERSION=$(VERSION) -Wall -pedantic -O3
+CFLAGS = -D$(SYSTEM) -O3
 
 # Linker
 LINKER = $(CC)
@@ -28,80 +26,80 @@ LEX = flex
 LFLAGS = -I
 
 YACC = bison
-YFLAGS = -d -v
+YFLAGS = -d
 
 # Libraries
 
-LIBS = -L/usr/local/lib -ltmc -llapack -lcblas -lblas -lgfortran -lm
-TOOLLIBS = -L/usr/local/lib -ltmc -lm
+LIBS = -L/usr/local/lib -ltmc -llapacke -llapack -lopenblas -lgfortran -lpthread -lquadmath -lm
 
 .SUFFIXES: .y .l .t .ds .ht .ct .h .c .o
 
-OBJS= parx.o banner.o \
-	actions.o datastruct.o datatpl.o dbase.o dbio.o distance.o \
-	error.o extract.o golden.o minbrent.o \
-	modes.o modify.o modlib.o newton.o numdat.o \
-	objectiv.o parser.o parxlex.o parxyacc.o pprint.o \
-	primtype.o prob.o residual.o simulate.o stim2dat.o \
-	subset.o vecmat.o readcsv.o cJSON.o jsonio.o \
-	mem_func.o bt_func.o prx_func.o prx.o prxinter.o prxcompile.o
+OBJS= main.o banner.o \
+    actions.o datastruct.o datatpl.o dbase.o dbio.o distance.o \
+    error.o extract.o golden.o minbrent.o \
+    modes.o modify.o modlib.o newton.o numdat.o \
+    objectiv.o parser.o parxlex.o parxyacc.o pprint.o \
+    primtype.o prob.o residual.o simulate.o stim2dat.o \
+    subset.o vecmat.o readcsv.o cJSON.o jsonio.o \
+    mem_func.o bt_func.o prx_func.o prx.o prxinter.o prxcompile.o
 
 MODOBJS= parxmods.o
 
 # .h files generated from tm modules
-TMHDRS=	primtype.h datastruct.h
+TMHDRS=    primtype.h datastruct.h
 
 # .c files generated from tm modules
-TMSRCS=	primtype.c datastruct.c
+TMSRCS=    primtype.c datastruct.c
 
 JUNK = lex.yy.c y.tab.h y.output y.tab.c \
-	parxlex.c parxyacc.c parxyacc.h parxyacc.out tm.sts parx.st \
-	exin.nb exout.nb simin.nb simout.nb
+    parxlex.c parxyacc.c parxyacc.h parxyacc.out tm.sts parx.st \
+    exin.nb exout.nb simin.nb simout.nb
 
 help :
-	@echo " Possible make targets:"
-	@echo "all          Create local running programs."
-	@echo "parx         Create ParX program."
-	@echo "clean        Free disk space."
-	@echo "install      Install relevant files."
+    @echo " Possible make targets:"
+    @echo "all          Create local running programs."
+    @echo "parx         Create ParX program."
+    @echo "clean        Free disk space."
+    @echo "install      Install relevant files."
 
-all	: $(PROGRAM)
+all    : $(PROGRAM)
 
 $(PROGRAM): $(OBJS) $(MODOBJS)
-	$(LINKER) $(LDFLAGS) $(OBJS) $(MODOBJS) $(LIBS) -o $(PROGRAM)
+    $(LINKER) $(LDFLAGS) $(OBJS) $(MODOBJS) $(LIBS) -o $(PROGRAM)
 
-install	: all
-	cp $(PROGRAM) $(BDIR)
+install    : all
+    cp $(PROGRAM) $(BDIR)
 
 clean:
-	rm -f $(OBJS) $(MODOBJS)
-	rm -f $(TMSRCS) $(TMHDRS)
-	rm -f $(PROGRAM)
-	rm -f $(JUNK)
+    rm -f $(OBJS) $(MODOBJS)
+    rm -f $(TMSRCS) $(TMHDRS)
+    rm -f $(PROGRAM)
+    rm -f $(JUNK)
 
 # make rules
 
 %.o : %.c
-	$(CC) $(CFLAGS) -c $<
+    $(CC) $(CFLAGS) -c $<
 
 %.c : %.y
-	$(YACC) $(YFLAGS) $<
-	mv $*.tab.c $*.c
-	mv $*.tab.h $*.h
+    $(YACC) $(YFLAGS) $<
+    mv $*.tab.c $*.c
+    mv $*.tab.h $*.h
 
 %.h : %.y
-	$(YACC) $(YFLAGS) $<
-	mv $*.tab.h $*.h
+    $(YACC) $(YFLAGS) $<
+    mv $*.tab.c $*.c
+    mv $*.tab.h $*.h
 
 %.c : %.l
-	$(LEX) $(LFLAGS) $<
-	mv lex.yy.c $*.c
+    $(LEX) $(LFLAGS) $<
+    mv lex.yy.c $*.c
 
 %.h : %.ht
-	$(TM) $(TMFLAGS) $*.ds $< > $*.h
+    $(TM) $(TMFLAGS) $*.ds $< > $*.h
 
 %.c : %.ct
-	$(TM) $(TMFLAGS) $*.ds $< > $*.c
+    $(TM) $(TMFLAGS) $*.ds $< > $*.c
 
 # Dependencies
 
@@ -123,22 +121,22 @@ primtype.o: parx.h error.h primtype.h
 datastruct.o: parx.h error.h primtype.h datastruct.h
 
 # ParX
-parx.o: parx.h error.h $(TMHDRS)
+main.o: parx.h error.h $(TMHDRS)
 banner.o: parx.h
 actions.o: parx.h error.h parser.h subset.h simulate.h \
-	stim2dat.h extract.h actions.h $(TMHDRS)
+    stim2dat.h extract.h actions.h $(TMHDRS)
 datatpl.o: parx.h error.h $(TMHDRS)
 dbase.o: parx.h error.h dbio.h $(TMHDRS)
 dbio.o: parx.h error.h dbio.h $(TMHDRS)
 distance.o: parx.h error.h primtype.h vecmat.h \
-	golden.h residual.h distance.h
+    golden.h residual.h distance.h
 error.o: parx.h error.h parser.h primtype.h
 extract.o: parx.h error.h modes.h objectiv.h residual.h extract.h $(TMHDRS)
 golden.o: parx.h error.h primtype.h golden.h
 parser.o: parx.h error.h parser.h $(TMHDRS)
 minbrent.o: parx.h error.h primtype.h minbrent.h
 modes.o: parx.h error.h primtype.h vecmat.h residual.h minbrent.h \
-	modify.h objectiv.h modes.h
+    modify.h objectiv.h modes.h
 modify.o: parx.h error.h primtype.h vecmat.h prob.h objectiv.h modify.h
 modlib.o: parx.h error.h primtype.h modlib.h
 newton.o: parx.h error.h primtype.h minbrent.h vecmat.h simulate.h newton.h

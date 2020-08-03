@@ -40,7 +40,7 @@ extern char *model_path; /* Model subdirectory */
 extern char *input_path; /* Input subdirectory */
 
 #define VERSION     "Version: 6.7\n"
-#define COPYRIGHT   "Copyright (c) 1989-2019 M.G. Middelhoek.\n" \
+#define COPYRIGHT   "Copyright (c) 1989-2020 M.G. Middelhoek.\n" \
                     "This program comes with ABSOLUTELY NO WARRANTY.\n" \
                     "This is free software, and you are welcome to redistribute it under certain conditions.\n" \
                     "You should have received a copy of the GNU General Public License along with this program.\n" \

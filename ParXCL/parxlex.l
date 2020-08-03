@@ -29,7 +29,12 @@
 #include "parser.h"
 #include "dbase.h"
 
+#if defined(LINUX) || defined(MSDOS) || defined(WINDOWS) || defined(WIN32) || defined(WIN64)
+#include "parxyacc.h"
+#elif defined(OSX)
 #include "y.tab.h"
+#endif
+
 
 #define INRETURN(T)         {yysubprompt(); return(T);}        /* inside statement */
 #define ENDRETURN(T)        {yymainprompt(); return(T);}       /* outside statement */

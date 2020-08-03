@@ -24,7 +24,6 @@
 
 #if defined(LINUX) || defined(MSDOS) || defined(WINDOWS) || defined(WIN32) || defined(WIN64)
 #include <cblas.h>
-#include <cblas_f77.h>
 #include "clapack.h"
 #elif defined(OSX)
 #include <Accelerate/Accelerate.h>
