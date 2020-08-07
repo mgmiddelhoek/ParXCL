@@ -48,20 +48,21 @@ void call_subset(tmstring smeas, tmstring sdata_s, tmstring sdata_d) {
     datatemplate datat_d;
     
     node = find_dbnode(smeas, TAGMeasurement);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     meast = to_Measurement(node)->measdata;
     
     node = find_dbnode(sdata_s, TAGDatatable);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     datat_s = to_Datatable(node)->datdata;
     
     node = find_dbnode(sdata_d, TAGDatatable);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     
     datat_d = subset_data(meast, datat_s);
     
-    if (datat_d == datatemplateNIL) return;
-    else {
+    if (datat_d == datatemplateNIL) {
+        return;
+    } else {
         rfre_datatemplate(to_Datatable(node)->datdata);
         to_Datatable(node)->datdata = datat_d;
     }
@@ -79,30 +80,31 @@ void call_simulate(tmstring sstim, tmstring ssys, tmstring sdata,
     numblock numb;
     
     node = find_dbnode(sstim, TAGStimulus);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     stimt = to_Stimulus(node)->stimdata;
     
     node = find_dbnode(ssys, TAGSystem);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     syst = to_System(node)->sysdata;
     
     node = find_dbnode(syst->model, TAGModel);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     modt = to_Model(node)->moddata;
     
     node = find_dbnode(sdata, TAGDatatable);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     
     datat = stim2dat(stimt, modt);
     
-    if (datat == datatemplateNIL) return;
-    else {
+    if (datat == datatemplateNIL) {
+        return;
+    } else {
         rfre_datatemplate(to_Datatable(node)->datdata);
         to_Datatable(node)->datdata = datat;
     }
     
     numb = make_numblock(modt, syst, datat, trace);
-    if (numb == numblockNIL) return;
+    if (numb == numblockNIL) { return; }
     
 #ifdef STAT
     write_numblock(numb, "simin.nb"); /* DEBUGGING CODE */
@@ -131,19 +133,19 @@ void call_extract(tmstring ssys, tmstring sdata, fnum prec, fnum tol,
     numblock numb;
     
     node = find_dbnode(ssys, TAGSystem);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     syst = to_System(node)->sysdata;
     
     node = find_dbnode(syst->model, TAGModel);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     modt = to_Model(node)->moddata;
     
     node = find_dbnode(sdata, TAGDatatable);
-    if (node == dbnodeNIL) return;
+    if (node == dbnodeNIL) { return; }
     datat = to_Datatable(node)->datdata;
     
     numb = make_numblock(modt, syst, datat, trace);
-    if (numb == numblockNIL) return;
+    if (numb == numblockNIL) { return; }
     
 #ifdef STAT
     write_numblock(numb, "extin.nb"); /* DEBUGGING CODE */

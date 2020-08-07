@@ -267,8 +267,9 @@ static void T_jx_jxv(matrix jx, vector norm, matrix jxv) {
     for (c = 0; c < LSTS(xtrans); c++) {
         cindex = LST(xtrans, c);
         s = VEC(norm, c);
-        for (r = 0; r < MATM(jxv); r++)
+        for (r = 0; r < MATM(jxv); r++) {
             MAT(jxv, r, c) = s * MAT(jx, r, cindex);
+        }
     }
 }
 
@@ -308,8 +309,9 @@ static void T_jp_jpv(matrix jp, vector norm, matrix jpv) {
     for (c = 0; c < LSTS(ptrans); c++) {
         cindex = LST(ptrans, c);
         s = VEC(norm, c);
-        for (r = 0; r < MATM(jpv); r++)
+        for (r = 0; r < MATM(jpv); r++) {
             MAT(jpv, r, c) = s * MAT(jp, r, cindex);
+        }
     }
 }
 
@@ -359,8 +361,9 @@ void new_pvar(
     *plow = rnew_vector(np);
     *pup = rnew_vector(np);
     
-    for (i = 0; i < np; i++)
+    for (i = 0; i < np; i++) {
         VEC(p_scale, i) = 1.0; /* first just transpose */
+    }
     
     T_p_pv(ps->val, p_scale, *pval);
     T_p_pv(ps->lb, p_scale, p_low);
@@ -417,10 +420,11 @@ void set_p_scale(
         
         p = VEC(val, i);
         
-        if ((fabs(p / INF) * fabs(so / INF)) >= 1.0)
+        if ((fabs(p / INF) * fabs(so / INF)) >= 1.0) {
             p = INF * SIGN(p) * SIGN(so);
-        else
+        } else {
             p *= so; /* un-scale p */
+        }
         
         l = VEC(p_low, i);
         u = VEC(p_up, i);
@@ -432,8 +436,9 @@ void set_p_scale(
             sn = MIN(sn, u);
         }
         
-        if (sn == 0.0) /* don't scale */
+        if (sn == 0.0) { /* don't scale */
             sn = 1.0;
+        }
         
         VEC(p_scale, i) = sn;
         VEC(val, i) = p / sn;
@@ -444,9 +449,11 @@ void set_p_scale(
         
         sn /= so;
         
-        if (jacp != matrixNIL)
-            for (j = 0; j < MATM(jacp); j++)
+        if (jacp != matrixNIL) {
+            for (j = 0; j < MATM(jacp); j++) {
                 MAT(jacp, j, i) *= sn;
+            }
+        }
     }
 }
 
@@ -483,8 +490,9 @@ boolean residual(
     copy_vector(xs->val, x_ref);
     zero_vector(xs->delta);
     
-    for (i = 0; i < VECN(x_scale); i++)
+    for (i = 0; i < VECN(x_scale); i++) {
         VEC(x_scale, i) = MAX(MAX(fabs(VEC(xs->err, i)), fabs(tolerance * VEC(xs->val, i))), fabs(VEC(xs->abserr, i)));
+    }
     
     
     /* we have no initial values for dist and lambda */
@@ -501,9 +509,10 @@ boolean residual(
     
     if (b == FALSE) {
         
-        if (trace >= 1)
+        if (trace >= 1) {
             fprintf(trace_stream,
                     "point %ld: distance evaluation failed\n", (long) (xs->id));
+        }
         return (FALSE);
     }
     
@@ -522,9 +531,10 @@ boolean residual(
     
     if (b == FALSE) {
         
-        if (trace >= 1)
+        if (trace >= 1) {
             fprintf(trace_stream,
                     "point %ld: model Jp evaluation failed\n", (long) (xs->id));
+        }
         return (FALSE);
     }
     
@@ -557,27 +567,32 @@ boolean residual(
             }
         }
         if (piv == 0.0) {
-            if (trace >= 1)
+            if (trace >= 1) {
                 fprintf(trace_stream,
                         "point %ld: row reduction failed for aux. var %ld\n",
                         (long) (xs->id), (long) a);
+            }
             return (FALSE);
         }
         
         /* remove aux. rows from Jacx, Jaca and Jacp */
         
-        for (c = 0; c < nx; c++)
+        for (c = 0; c < nx; c++) {
             VEC(facx, c) = MAT(jacx, rp, c) / piv;
+        }
         
-        for (c = 0; c < na; c++)
+        for (c = 0; c < na; c++) {
             VEC(faca, c) = MAT(jaca, rp, c) / piv;
+        }
         
-        for (c = 0; (jpf == TRUE) && (c < np); c++)
+        for (c = 0; (jpf == TRUE) && (c < np); c++) {
             VEC(facp, c) = MAT(jacp, rp, c) / piv;
+        }
         
         for (rd = 0, rs = 0; rd < ncl - 1; rd++, rs++) {
-            if (rs == rp) rs++; /* skip pivot row */
-            
+            if (rs == rp) { /* skip pivot row */
+                rs++;
+            }
             f = MAT(jaca, rs, a);
             for (c = 0; c < nx; c++) {
                 MAT(jacx, rd, c) = MAT(jacx, rs, c) - f * VEC(facx, c);
@@ -608,23 +623,28 @@ boolean residual(
     
     if (rank != MATM(jacx_s)) {
         
-        if (trace >= 1)
+        if (trace >= 1) {
             fprintf(trace_stream,
                     "point %ld: decomposition failed, rank = %ld\n", (long) xs->id, (long) rank);
+        }
         return (FALSE);
     }
     
     /* copy to r and jp and scale */
     
-    if (rf == TRUE)
+    if (rf == TRUE) {
         mul_mat_vec(c_trans_x, dist, r);
+    }
     
     if (jpf == TRUE) {
         mul_matt_mat(c_trans_l, jacp_s, jp);
         for (i = 0; i < MATM(jp); i++) {
             f = -VEC(c_scale, i);
-            if (f == 0.0) f = 0.0;
-            else f = 1.0 / f;
+            if (f == 0.0) {
+                f = 0.0;
+            } else {
+                f = 1.0 / f;
+            }
             for (c = 0; c < MATN(jp); c++) {
                 MAT(jp, i, c) *= f;
             }
@@ -634,8 +654,11 @@ boolean residual(
     if (sf == TRUE) /* transpose scale matrix */
         for (i = 0; i < MATM(s); i++) {
             f = VEC(c_scale, i);
-            if (f == 0.0) f = 0.0;
-            else f = 1.0 / f;
+            if (f == 0.0) {
+                f = 0.0;
+            } else {
+                f = 1.0 / f;
+            }
             for (c = 0; c < MATN(s); c++) {
                 MAT(s, i, c) = f * MAT(c_trans_l, c, i);
             }
@@ -656,8 +679,9 @@ boolean ext_constraints(
                         matrix jav, /* Jacobian a */
                         inum trace /* trace level */
 ) {
-    if ((rf == FALSE) && (jxf == FALSE)) /* no information needed */
+    if ((rf == FALSE) && (jxf == FALSE)) { /* no information needed */
         return (TRUE);
+    }
     
     /* substitute variable x and add dx */
     
@@ -665,11 +689,13 @@ boolean ext_constraints(
     copy_vector(auxv, model_interface->a);
     add_dist_x(dxv, x_scale, model_interface->x);
     
-    if (eval_model(rf, jxf, FALSE, trace) == FALSE)
+    if (eval_model(rf, jxf, FALSE, trace) == FALSE) {
         return (FALSE);
+    }
     
-    if (rf == TRUE)
+    if (rf == TRUE) {
         copy_vector(model_interface->r, rv);
+    }
     
     if (jxf == TRUE) {
         T_jx_jxv(model_interface->jx, x_scale, jxv);
@@ -702,10 +728,15 @@ boolean eval_model(boolean rf, boolean jxf, boolean jpf, inum trace) {
         tm_endprint(pst);
     }
     
-    if (rf == TRUE) model_calls_r++;
-    if (jxf == TRUE) model_calls_jx++;
-    if (jpf == TRUE) model_calls_jp++;
-    
+    if (rf == TRUE) {
+        model_calls_r++;
+    }
+    if (jxf == TRUE) {
+        model_calls_jx++;
+    }
+    if (jpf == TRUE) {
+        model_calls_jp++;
+    }
     
     model_interface->rf = rf;
     model_interface->jxf = jxf;
@@ -716,7 +747,9 @@ boolean eval_model(boolean rf, boolean jxf, boolean jpf, inum trace) {
     rc = (*model_code)(model_interface); /* call model */
     
     if (rc == FALSE) {
-        if (trace > 0) fputs("Model: illegal return\n\n", trace_stream);
+        if (trace > 0) {
+            fputs("Model: illegal return\n\n", trace_stream);
+        }
         fesetenv(&env); /* restore environment */
         return (FALSE);
     }
@@ -746,19 +779,25 @@ boolean eval_model(boolean rf, boolean jxf, boolean jpf, inum trace) {
     if ((rf != model_interface->rf) || (model_interface->jxf != jxf) ||
         (jpf != model_interface->jpf)) {
         
-        if (trace >= 1) fputs("Model: incomplete return\n", trace_stream);
+        if (trace >= 1) {
+            fputs("Model: incomplete return\n", trace_stream);
+        }
         fesetenv(&env); /* restore environment */
         return (FALSE);
     }
     
     /* test for floating point exception flags */
     if (fetestexcept(FE_DIVBYZERO | FE_OVERFLOW | FE_INVALID)) {
-        if (trace >= 1) fputs("Model: floating point exception\n", trace_stream);
+        if (trace >= 1) {
+            fputs("Model: floating point exception\n", trace_stream);
+        }
         fesetenv(&env); /* restore environment */
         return (FALSE);
     }
     
-    if (trace >= 1) fputc('\n', trace_stream);
+    if (trace >= 1) {
+        fputc('\n', trace_stream);
+    }
     
     fesetenv(&env); /* restore environment */
     return (TRUE);

@@ -31,8 +31,9 @@ struct MEM_TREE *mem_tree(void) {
     struct MEM_TREE *tptr;
     
     tptr = (struct MEM_TREE *) malloc(sizeof (struct MEM_TREE));
-    if (tptr == NULL)
+    if (tptr == NULL) {
         mem_noroom();
+    }
     tptr->first = NULL;
     tptr->last = NULL;
     tptr->cnt = 0;
@@ -47,8 +48,9 @@ void *mem_slot(struct MEM_TREE * tptr, size_t size) {
     
     lptr = (struct MEM_LEAF *) malloc(sizeof (struct MEM_LEAF));
     mem = malloc(size);
-    if (tptr == NULL || mem == NULL)
+    if (tptr == NULL || mem == NULL) {
         mem_noroom();
+    }
     lptr->next = NULL;
     lptr->mem = mem;
     
@@ -70,8 +72,9 @@ size_t mem_free(struct MEM_TREE * tptr) {
     
     size = tptr->size;
     
-    if (tptr == NULL)
+    if (tptr == NULL) {
         return 0;
+    }
     
     lptr = tptr->first;
     

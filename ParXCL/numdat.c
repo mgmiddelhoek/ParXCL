@@ -101,10 +101,12 @@ numblock make_numblock(modeltemplate mt, systemtemplate st,
     fprintf(trace_stream, "Model author  : %s\n", mt->author);
     fprintf(trace_stream, "Model date    : %s\n", mt->date);
     fprintf(trace_stream, "Model info.   : %s\n\n", mt->info);
-    if (strlen(dt->info) != 0)
+    if (strlen(dt->info) != 0) {
         fprintf(trace_stream, "Data info.    : %s\n\n", dt->info);
-    if (strlen(st->info) != 0)
+    }
+    if (strlen(st->info) != 0) {
         fprintf(trace_stream, "System info.  : %s\n\n", st->info);
+    }
     
     
     /* check if data available */
@@ -117,8 +119,9 @@ numblock make_numblock(modeltemplate mt, systemtemplate st,
     
     for (xs = mt->xext; xs != xspecNIL; xs = xs->next) {
         for (header = dt->header; header != colheadNIL; header = header->next) {
-            if (strcmp(xs->name, header->name) == 0)
+            if (strcmp(xs->name, header->name) == 0) {
                 break;
+            }
         }
         if (header == colheadNIL) {
             errcode = NO_KEY_SERR;
@@ -247,8 +250,9 @@ numblock make_numblock(modeltemplate mt, systemtemplate st,
         /* shared data */
         fre_statevector(xstatv);
         fre_statevector(pstatv);
-        if (modex == FALSE && mrq != modreqNIL)
+        if (modex == FALSE && mrq != modreqNIL) {
             fre_modreq(mrq);
+        }
     }
     
     /* free all unused data */
@@ -278,14 +282,16 @@ void get_xst(modeltemplate mt, datatemplate dt, fnum_list xval,
     inum idxm = 1;
     inum i = 1;
     
-    if (trace >= 1)
+    if (trace >= 1) {
         fprintf(trace_stream, "\nVariable Mapping:\n\n");
+    }
     
     for (xs = mt->xext; xs != xspecNIL; xs = xs->next) {
         
         for (header = dt->header, index = 0; header != colheadNIL; header = header->next, index++) {
-            if (strcmp(xs->name, header->name) == 0)
+            if (strcmp(xs->name, header->name) == 0) {
                 break;
+            }
         }
         
         assert(header != colheadNIL);
@@ -335,7 +341,8 @@ void get_xst(modeltemplate mt, datatemplate dt, fnum_list xval,
                     fprintf(trace_stream, "%-3ld:   -   - (St): %s\n", (long) i++, xs->name);
                 }
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 }
@@ -405,7 +412,8 @@ void get_pst(modeltemplate mt, systemtemplate st, stateflag_list pstat,
                     fprintf(trace_stream, "= %.8e\n", to_Pfact(pv)->factval);
                 }
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 }
@@ -435,7 +443,8 @@ void get_fst(modeltemplate mt, systemtemplate st, fnum_list fval, inum trace) {
                     fprintf(trace_stream, "= %.8e\n", to_Pflag(pv)->flagval);
                 }
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 }
@@ -446,8 +455,9 @@ void get_cst(modeltemplate mt, systemtemplate st, fnum_list cval, inum trace) {
     parmval pv;
     inum i = 1;
     
-    if ((trace >= 1) && (mt->cons != cspecNIL))
+    if ((trace >= 1) && (mt->cons != cspecNIL)) {
         fprintf(trace_stream, "\nConstant Mapping:\n\n");
+    }
     
     for (cs = mt->cons; cs != cspecNIL; cs = cs->next) {
         parm = find_syspar(st->parm, cs->name);
@@ -474,8 +484,7 @@ inum get_rmt(modeltemplate mt) {
     rspec rs;
     inum nres;
     
-    for (rs = mt->ress, nres = 0; rs != rspecNIL;
-         rs = rs->next, nres++);
+    for (rs = mt->ress, nres = 0; rs != rspecNIL; rs = rs->next, nres++);
     
     return (nres);
 }
@@ -485,11 +494,11 @@ inum get_amt(modeltemplate mt, fnum_list aval, inum trace) {
     inum naux;
     inum i = 1;
     
-    if ((trace >= 1) && (mt->auxs != aspecNIL))
+    if ((trace >= 1) && (mt->auxs != aspecNIL)) {
         fprintf(trace_stream, "\nAux. Mapping:\n\n");
+    }
     
-    for (as = mt->auxs, naux = 0; as != aspecNIL;
-         as = as->next, naux++) {
+    for (as = mt->auxs, naux = 0; as != aspecNIL; as = as->next, naux++) {
         aval = append_fnum_list(aval, as->dval);
         if (trace >= 1) {
             fprintf(trace_stream, "%-3ld: %-8s ", (long) i++, as->name);
@@ -776,7 +785,8 @@ void read_numblock_p(modres mrs, pset pi, modeltemplate mt, systemtemplate st) {
             case TAGPfact:
                 to_Pfact(pv)->factval = VEC(pe->val, index);
                 break;
-            default: break;
+            default:
+                break;
         }
     }
     
@@ -845,15 +855,17 @@ inum set_xst(modeltemplate mt, datatemplate dt, stateflag_list xstat, inum_list 
                 xstat = append_stateflag_list(xstat, STIM);
                 xtrans = append_inum_list(xtrans, index);
                 break;
-            default: break;
+            default:
+                break;
         }
     }
     
     /* add residual header to database */
     
     for (header = dt->header, index = 0; header != colheadNIL; header = header->next, index++) {
-        if (strcmp(RESNORM, header->name) == 0)
+        if (strcmp(RESNORM, header->name) == 0) {
             break;
+        }
     }
     if (header == colheadNIL) { /* add header */
         dt->header = append_colhead_list(dt->header, new_colhead(new_tmstring(RESNORM), FACT));
@@ -905,8 +917,9 @@ void read_numblock_x(modres mrs, xgroup_list xg, modeltemplate mt, datatemplate 
     /* find residual index */
     
     for (header = dt->header, residx = 0; header != colheadNIL; header = header->next, residx++) {
-        if (strcmp(RESNORM, header->name) == 0)
+        if (strcmp(RESNORM, header->name) == 0) {
             break;
+        }
     }
     assert(header != colheadNIL);
     
@@ -964,8 +977,9 @@ void read_numblock_x(modres mrs, xgroup_list xg, modeltemplate mt, datatemplate 
     fre_statevector(xstatv);
     fre_inum_list(xtrans);
     
-    if (Txi != procedureNIL)
+    if (Txi != procedureNIL) {
         rfre_xset(xe); /* clean up package */
+    }
 }
 
 void write_numblock(numblock numb, tmstring s) /* DEBUGGING CODE */ {

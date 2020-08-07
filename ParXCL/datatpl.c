@@ -39,13 +39,15 @@ datarow find_datarow(datarow_list l, datarow_list last, inum id) {
     
     /* start by searching the remainder of the list */
     for (r = last; r != datarowNIL; r = r->next) {
-        if (id == r->rowid)
+        if (id == r->rowid) {
             return (r);
+        }
     }
     /* search top part */
     for (r = l; r != last; r = r->next) {
-        if (id == r->rowid)
+        if (id == r->rowid) {
             return (r);
+        }
     }
     return (datarowNIL);
 }

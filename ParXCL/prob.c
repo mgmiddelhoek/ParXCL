@@ -26,19 +26,24 @@
 fnum gammaln(fnum x) {
     fnum z, series, denom;
     inum i;
-    static fnum c[6] = {76.18009172947146, -86.50532032941677,
+    static fnum c[6] = {
+        76.18009172947146, -86.50532032941677,
         24.01409824083091, -1.231739572450155,
-        0.120865097386617e-2, -0.5395239384953e-5};
+        0.120865097386617e-2, -0.5395239384953e-5
+    };
     
-    if (x <= 0.0) return (INF);
+    if (x <= 0.0) {
+        return (INF);
+    }
     
     z = x + 5.5;
     z -= (x + 0.5) * log(z);
     
     series = 1.000000000190015;
     denom = x;
-    for (i = 0; i <= 5; i++)
+    for (i = 0; i <= 5; i++) {
         series += c[i] / ++denom;
+    }
     
     return ( -z + log(2.5066282746310005 * series / x));
 }
@@ -56,8 +61,9 @@ static fnum gamma_sr(fnum x, fnum a) {
     for (i = 1; i <= 100; i++) {
         delta *= x / ++denom;
         series += delta;
-        if (fabs(delta) < fabs(series) * DBL_EPSILON)
+        if (fabs(delta) < fabs(series) * DBL_EPSILON) {
             return (series * exp(-x + a * log(x) - gln));
+        }
     }
     return (0.0);
 }
@@ -78,14 +84,19 @@ static fnum gamma_cf(fnum x, fnum a) {
         num = -(double) i * ((double) i - a);
         denom += 2.0;
         d = num * d + denom;
-        if (fabs(d) < DBL_MIN) d = DBL_MIN;
+        if (fabs(d) < DBL_MIN) {
+            d = DBL_MIN;
+        }
         c = denom + num / c;
-        if (fabs(c) < DBL_MIN) c = DBL_MIN;
+        if (fabs(c) < DBL_MIN) {
+            c = DBL_MIN;
+        }
         d = 1.0 / d;
         delta = d * c;
         frac *= delta;
-        if (fabs(delta - 1.0) < DBL_EPSILON)
+        if (fabs(delta - 1.0) < DBL_EPSILON) {
             return (frac * exp(-x + a * log(x) - gln));
+        }
     }
     return (1.0);
 }
@@ -93,18 +104,30 @@ static fnum gamma_cf(fnum x, fnum a) {
 /* Incomplete Gamma function P */
 
 fnum gammap(fnum x, fnum a) {
-    if (a <= 0.0) return (1.0);
-    if (x <= 0.0) return (0.0);
-    if (x < (a + 1.0)) return (gamma_sr(x, a));
+    if (a <= 0.0) {
+        return (1.0);
+    }
+    if (x <= 0.0) {
+        return (0.0);
+    }
+    if (x < (a + 1.0)) {
+        return (gamma_sr(x, a));
+    }
     return (1.0 - gamma_cf(x, a));
 }
 
 /* Incomplete Gamma function Q = 1 - P */
 
 fnum gammaq(fnum x, fnum a) {
-    if (a <= 0.0) return (0.0);
-    if (x <= 0.0) return (1.0);
-    if (x < (a + 1.0)) return (1.0 - gamma_sr(x, a));
+    if (a <= 0.0) {
+        return (0.0);
+    }
+    if (x <= 0.0) {
+        return (1.0);
+    }
+    if (x < (a + 1.0)) {
+        return (1.0 - gamma_sr(x, a));
+    }
     return (gamma_cf(x, a));
 }
 

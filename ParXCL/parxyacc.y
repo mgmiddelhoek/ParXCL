@@ -156,7 +156,7 @@ inputoutput :	parxsymbol	_INPUT	_STRING	';'
 assignment  :	parxsymbol	'='
 			{	/* select destination node */
 				dst_dbnode = find_dbnode(SYM($1), TAGName);
-				if (dst_dbnode == dbnodeNIL) YYERROR;
+                if (dst_dbnode == dbnodeNIL) { YYERROR; }
 				dst_tag = tag_dbnode(dst_dbnode);
 			}
                 source
@@ -165,7 +165,7 @@ assignment  :	parxsymbol	'='
 source      :	parxsymbol
 			{	/* select source node and copy */
 				src_dbnode = find_dbnode(SYM($1), dst_tag);
-				if (src_dbnode == dbnodeNIL) YYERROR;
+                if (src_dbnode == dbnodeNIL) { YYERROR; }
 				copy_dbnode(dst_dbnode, src_dbnode);
 			}
 			|	'@'
@@ -183,15 +183,15 @@ set			:	parxsymbol
 				switch (dst_tag) {
 				case TAGSystem:
 					set.sys = sys_set(dst_dbnode, SYM($1));
-					if (set.sys == sysparNIL) YYERROR;
+                    if (set.sys == sysparNIL) { YYERROR; }
 					break;
 				case TAGMeasurement:
 					set.meas = meas_set(dst_dbnode, SYM($1));
-					if (set.meas == meastemplateNIL) YYERROR;
+                    if (set.meas == meastemplateNIL) { YYERROR; }
 					break;
 				case TAGStimulus:
 					set.stim = stim_set(dst_dbnode, SYM($1));
-					if (set.stim == stimtemplateNIL) YYERROR;
+                    if (set.stim == stimtemplateNIL) { YYERROR; }
 					break;
 				default:
 					errcode = ILL_ASSIGN_PERR;

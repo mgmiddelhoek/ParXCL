@@ -38,8 +38,9 @@ struct BT_HEAD *bt_define_tree(struct MEM_TREE * tptr, int (*cmp)()) {
     
     compare = cmp;
     h = (struct BT_HEAD *) mem_slot(tptr, sizeof (*h));
-    if (h == NULL)
+    if (h == NULL) {
         return NULL;
+    }
     h->tptr = tptr;
     h->wu = NULL;
     h->fp = NULL;
@@ -53,17 +54,21 @@ struct BT_HEAD *bt_define_tree(struct MEM_TREE * tptr, int (*cmp)()) {
 static int traverse(struct BT_ITEM * p, int (*act) (char *)) {
     int stat;
     
-    if (p == NULL)
+    if (p == NULL) {
         return 0;
+    }
     stat = traverse(p->li, act);
-    if (stat)
+    if (stat) {
         return stat;
+    }
     stat = (*act) (p->inh);
-    if (stat)
+    if (stat) {
         return stat;
+    }
     stat = traverse(p->re, act);
-    if (stat)
+    if (stat) {
         return stat;
+    }
     return 0;
 }
 
@@ -109,8 +114,9 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
         vflag = 1;
         return p1;
     }
-    if ((*cmp) (crec, p->inh) == 0)
+    if ((*cmp) (crec, p->inh) == 0) {
         return NULL;
+    }
     if ((*cmp) (crec, p->inh) < 0) {
         p1 = insert(p->li);
         f = -1;
@@ -118,14 +124,17 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
         p1 = insert(p->re);
         f = 1;
     }
-    if (p1 == NULL)
+    if (p1 == NULL) {
         return NULL;
-    if (f > 0)
+    }
+    if (f > 0) {
         p->re = p1;
-    else
+    } else {
         p->li = p1;
-    if (vflag == 0)
+    }
+    if (vflag == 0) {
         return p; /* same level */
+    }
     if (p->fl == 0) {
         p->fl = f;
         return p;
@@ -153,10 +162,12 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
             p2->re = p1;
             p1->fl = 0;
             p->fl = 0;
-            if (p2->fl > 0)
+            if (p2->fl > 0) {
                 p->fl = -1;
-            if (p2->fl < 0)
+            }
+            if (p2->fl < 0) {
                 p1->fl = 1;
+            }
         }
     } else { /* partial tree is left heavy */
         if (f > 0) {
@@ -180,10 +191,12 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
             p2->li = p1;
             p1->fl = 0;
             p->fl = 0;
-            if (p2->fl < 0)
+            if (p2->fl < 0) {
                 p->fl = 1;
-            if (p2->fl > 0)
+            }
+            if (p2->fl > 0) {
                 p1->fl = -1;
+            }
         }
     }
     p2->fl = 0;
@@ -221,12 +234,14 @@ char *bt_search(struct BT_HEAD * head, char *rec) {
     p = head->wu;
     while (p != NULL) {
         stat = (*(head->cmp)) (rec, p->inh);
-        if (stat == 0)
+        if (stat == 0) {
             return (p->inh);
-        if (stat < 0)
+        }
+        if (stat < 0) {
             p = p->li;
-        else
+        } else {
             p = p->re;
+        }
     }
     return (NULL);
 }
@@ -246,10 +261,11 @@ bt_search_replace(struct BT_HEAD * head, char *rec) {
             p->inh = rec;
             return (p->inh);
         }
-        if (stat < 0)
+        if (stat < 0) {
             p = p->li;
-        else
+        } else {
             p = p->re;
+        }
     }
     return (NULL);
 }

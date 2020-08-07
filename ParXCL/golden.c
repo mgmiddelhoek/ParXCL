@@ -82,8 +82,9 @@ boolean golden(
         *fmin = f2;
     }
     
-    if (iter > (*itmax))
-        return (FALSE); /* to many iterations */
+    if (iter > (*itmax)) { /* to many iterations */
+        return (FALSE);
+    }
     
     *itmax = iter;
     

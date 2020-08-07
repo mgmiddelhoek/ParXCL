@@ -77,8 +77,8 @@ inum roundi(fnum f)
 {
 	inum i;
 
-	if (f >= ((fnum)INUM_MAX)) return(INUM_MAX);
-	if (f <= ((fnum)INUM_MIN)) return(INUM_MIN);
+    if (f >= ((fnum)INUM_MAX)) { return(INUM_MAX); }
+    if (f <= ((fnum)INUM_MIN)) { return(INUM_MIN); }
 
 	i = (inum)lrint(f);
 
@@ -97,16 +97,18 @@ statearray new_statearray(inum sz)
 #ifdef STAT
 	newcnt_statearray++;
 #endif
-	for (i = 0; i < sz; i++)	/* initialize */
+    for (i = 0; i < sz; i++) {	/* initialize */
 		s[i] = stateflagNIL;
+    }
 
 	return(s);
 }
 
 void fre_statearray(statearray s)
 {
-	if (s == statearrayNIL)
+    if (s == statearrayNIL) {
 		return;
+    }
 	TM_FREE( s);
 #ifdef STAT
 	frecnt_statearray++;
@@ -124,16 +126,18 @@ boolarray new_boolarray(inum sz)
 	newcnt_boolarray++;
 #endif
 
-	for (i = 0; i < sz; i++)
+    for (i = 0; i < sz; i++) {
 		b[i] = booleanNIL;
+    }
 
 	return(b);
 }
 
 void fre_boolarray(boolarray b)
 {
-	if (b == boolarrayNIL)
+    if (b == boolarrayNIL) {
 		return;
+    }
 	TM_FREE( b);
 #ifdef STAT
 	frecnt_boolarray++;
@@ -151,16 +155,18 @@ inumarray new_inumarray(inum sz)
 	newcnt_inumarray++;
 #endif
 
-	for (i = 0; i < sz; i++)
+    for (i = 0; i < sz; i++) {
 		ia[i] = inumNIL;
+    }
 
 	return(ia);
 }
 
 void fre_inumarray(inumarray i)
 {
-	if (i == inumarrayNIL)
+    if (i == inumarrayNIL) {
 		return;
+    }
 	TM_FREE( i);
 #ifdef STAT
 	frecnt_inumarray++;
@@ -178,16 +184,18 @@ fnumarray new_fnumarray(inum sz)
 	newcnt_fnumarray++;
 #endif
 
-	for (i = 0; i < sz; i++)
+    for (i = 0; i < sz; i++) {
 		f[i] = fnumNIL;
+    }
 
 	return(f);
 }
 
 void fre_fnumarray(fnumarray f)
 {
-	if (f == fnumarrayNIL)
+    if (f == fnumarrayNIL) {
 		return;
+    }
 	TM_FREE( f);
 #ifdef STAT
 	frecnt_fnumarray++;
@@ -226,16 +234,18 @@ statevector rdup_statevector(statevector s)
 	sc = rnew_statevector(s->sz);
 	sc->n = s->n;
 
-	for (i = 0; i < s->sz; i++)
+    for (i = 0; i < s->sz; i++) {
 		VEC(sc, i) = VEC(s, i);
+    }
 
 	return(sc);
 }
 
 void fre_statevector(statevector s)
 {
-	if (s == statevectorNIL)
+    if (s == statevectorNIL) {
 		return;
+    }
 	TM_FREE( s);
 #ifdef STAT
 	frecnt_statevector++;
@@ -244,8 +254,9 @@ void fre_statevector(statevector s)
 
 void rfre_statevector(statevector s)
 {
-	if (s == statevectorNIL)
+    if (s == statevectorNIL) {
 		return;
+    }
 	fre_statearray(s->arr);
 	fre_statevector(s);
 }
@@ -274,8 +285,9 @@ boolvector rnew_boolvector(inum sz)
 
 void fre_boolvector(boolvector b)
 {
-	if (b == boolvectorNIL)
+    if (b == boolvectorNIL) {
 		return;
+    }
 	TM_FREE( b);
 #ifdef STAT
 	frecnt_boolvector++;
@@ -284,8 +296,9 @@ void fre_boolvector(boolvector b)
 
 void rfre_boolvector(boolvector b)
 {
-	if (b == boolvectorNIL)
+    if (b == boolvectorNIL) {
 		return;
+    }
 	fre_boolarray(b->arr);
 	fre_boolvector(b);
 }
@@ -314,8 +327,9 @@ inumvector rnew_inumvector(inum sz)
 
 void fre_inumvector(inumvector i)
 {
-	if (i == inumvectorNIL)
+    if (i == inumvectorNIL) {
 		return;
+    }
 	TM_FREE( i);
 #ifdef STAT
 	frecnt_inumvector++;
@@ -324,8 +338,9 @@ void fre_inumvector(inumvector i)
 
 void rfre_inumvector(inumvector i)
 {
-	if (i == inumvectorNIL)
+    if (i == inumvectorNIL) {
 		return;
+    }
 	fre_inumarray(i->arr);
 	fre_inumvector(i);
 }
@@ -354,8 +369,9 @@ vector rnew_vector(inum sz)
 
 void fre_vector(vector v)
 {
-	if (v == vectorNIL)
+    if (v == vectorNIL) {
 		return;
+    }
 	TM_FREE( v);
 #ifdef STAT
 	frecnt_vector++;
@@ -364,8 +380,9 @@ void fre_vector(vector v)
 
 void rfre_vector(vector v)
 {
-	if (v == vectorNIL)
+    if (v == vectorNIL) {
 		return;
+    }
 	fre_fnumarray(v->arr);
 	fre_vector(v);
 }
@@ -383,16 +400,18 @@ fnumindex new_fnumindex(inum sz)
 	newcnt_fnumindex++;
 #endif
 
-	for (i = 0; i < sz; i++)
+    for (i = 0; i < sz; i++) {
 		idx[i] = (fnum*)0;
+    }
 
 	return(idx);
 }
 
 void fre_fnumindex(fnumindex idx)
 {
-	if (idx == fnumindexNIL)
+    if (idx == fnumindexNIL) {
 		return;
+    }
 	TM_FREE( idx);
 #ifdef STAT
 	frecnt_fnumindex++;
@@ -429,8 +448,9 @@ matrix rnew_matrix(inum szm, inum szn)
 	arr = en > 0 ? new_fnumarray(en) : fnumarrayNIL;
 	idx = szn > 0 ? new_fnumindex(szn) : fnumindexNIL;
 
-	for (i = 0, j = 0; i < szn; i++, j += szm)
+    for (i = 0, j = 0; i < szn; i++, j += szm) {
 		idx[i] = arr + j;
+    }
 
 	mat = new_matrix(en, arr, szm, szn, idx);
 
@@ -439,8 +459,9 @@ matrix rnew_matrix(inum szm, inum szn)
 
 void fre_matrix(matrix mat)
 {
-	if (mat == matrixNIL)
+    if (mat == matrixNIL) {
 		return;
+    }
 	TM_FREE( mat);
 #ifdef STAT
 	frecnt_matrix++;
@@ -449,8 +470,9 @@ void fre_matrix(matrix mat)
 
 void rfre_matrix(matrix mat)
 {
-	if (mat == matrixNIL)
+    if (mat == matrixNIL) {
 		return;
+    }
 	fre_fnumarray(mat->arr);
 	fre_fnumindex(mat->idx);
 	fre_matrix(mat);
@@ -466,8 +488,9 @@ void copy_inumvector(inumvector va, inumvector vb)
 	assert(va->n <= vb->n);
 #endif
 
-	for (i = 0; i < vb->n; i++)
+    for (i = 0; i < vb->n; i++) {
 		vb->arr[i] = va->arr[i];
+    }
 
 	vb->n = va->n;
 
@@ -481,8 +504,9 @@ inumvector rdup_inumvector(inumvector v)
 
 	c = rnew_inumvector(v->sz);
 
-	for (i = 0; i < v->sz; i++)
+    for (i = 0; i < v->sz; i++) {
 		c->arr[i] = v->arr[i];
+    }
 
 	c->n = v->n;
 
@@ -496,8 +520,9 @@ vector rdup_vector(vector v)
 
 	c = rnew_vector(v->sz);
 
-	for (i = 0; i < v->sz; i++)
+    for (i = 0; i < v->sz; i++) {
 		c->arr[i] = v->arr[i];
+    }
 
 	c->n = v->n;
 
@@ -563,8 +588,9 @@ void sub_matrix(matrix a, inum im, inum in, inum m, inum n, matrix sa)
 	sa->m = m;
 	sa->n = n;
 	sa->arr = (a->idx)[in] + im;
-	for(i = 0; i < n; i++)
+    for(i = 0; i < n; i++) {
 		(sa->idx)[i] = (a->idx)[in + i] + im;
+    }
 }
 
 /* package a vector in a column matrix */
@@ -591,7 +617,7 @@ void print_inum(TMPRINTSTATE *st, inum i)
 
 int fscan_inum(FILE *f, inum *p)
 {
-        long int li;
+    long int li;
 
 	*p = (inum) 0;
 
@@ -607,10 +633,11 @@ void print_fnum(TMPRINTSTATE *st, fnum f)
 {
 	static char buf[FNUM_DIG + 20];
 
-	if(f < 0)
+    if(f < 0) {
 		(void)sprintf(buf, "(%.*e)", FNUM_DIG, f);
-	else
+    } else {
 		(void)sprintf(buf, "(%+.*e)", FNUM_DIG, f);
+    }
 
 	tm_printword(st, buf);
 }
@@ -667,17 +694,23 @@ int fscan_boolean(FILE *f, boolean *b)
 void print_scaleflag(TMPRINTSTATE *st, scaleflag s)
 {
 	switch (s) {
-	case SLIN:	tm_printword(st, "lin");
+	case SLIN:
+            tm_printword(st, "lin");
 			break;
-	case SLN:	tm_printword(st, "ln");
+	case SLN:
+            tm_printword(st, "ln");
 			break;
-	case SLOG:	tm_printword(st, "log");
+	case SLOG:
+            tm_printword(st, "log");
 			break;
-	case ALIN:	tm_printword(st, "alin");
+	case ALIN:
+            tm_printword(st, "alin");
 			break;
-	case ALN:	tm_printword(st, "aln");
+	case ALN:
+            tm_printword(st, "aln");
 			break;
-	case ALOG:	tm_printword(st, "alog");
+	case ALOG:
+            tm_printword(st, "alog");
 			break;
 	}
 }
@@ -723,19 +756,26 @@ int fscan_scaleflag(FILE *f, scaleflag *s)
 void print_stateflag(TMPRINTSTATE *st, stateflag s)
 {
 	switch (s) {
-	case UNKN:	tm_printword(st, "unkn");
+	case UNKN:
+            tm_printword(st, "unkn");
 			break;
-	case MEAS:	tm_printword(st, "meas");
+	case MEAS:
+            tm_printword(st, "meas");
 			break;
-	case CALC:	tm_printword(st, "calc");
+	case CALC:
+            tm_printword(st, "calc");
 			break;
-	case FACT:	tm_printword(st, "fact");
+	case FACT:
+            tm_printword(st, "fact");
 			break;
-	case STIM:	tm_printword(st, "stim");
+	case STIM:
+            tm_printword(st, "stim");
 			break;
-	case SWEEP:	tm_printword(st, "sweep");
+	case SWEEP:
+            tm_printword(st, "sweep");
 			break;
-	case ERR:	tm_printword(st, "err");
+	case ERR:
+            tm_printword(st, "err");
 			break;
 	}
 }
@@ -785,15 +825,20 @@ int fscan_stateflag(FILE *f, stateflag *s)
 void print_opttype(TMPRINTSTATE *st, opttype o)
 {
 	switch (o) {
-	case MODES:	tm_printword(st, "modes");
+	case MODES:
+            tm_printword(st, "modes");
 			break;
-	case BESTFIT:	tm_printword(st, "bestfit");
+	case BESTFIT:
+            tm_printword(st, "bestfit");
 			break;
-	case CHISQ:	tm_printword(st, "chisq");
+	case CHISQ:
+            tm_printword(st, "chisq");
 			break;
-	case STRICT:	tm_printword(st, "strict");
+	case STRICT:
+            tm_printword(st, "strict");
 			break;
-	case CONSIST:	tm_printword(st, "consist");
+	case CONSIST:
+            tm_printword(st, "consist");
 			break;
 	}
 }
@@ -825,8 +870,9 @@ void print_statevector(TMPRINTSTATE *st, statevector s)
 		return;
 	}
 	tm_openlist(st);
-	for (i = 0; i < s->n; i++)
+    for (i = 0; i < s->n; i++) {
 		print_stateflag(st, s->arr[i]);
+    }
 	tm_closelist(st);
 }
 
@@ -839,8 +885,9 @@ void print_boolvector(TMPRINTSTATE *st, boolvector b)
 		return;
 	}
 	tm_openlist(st);
-	for (i = 0; i < b->n; i++)
+    for (i = 0; i < b->n; i++) {
 		print_boolean(st, b->arr[i]);
+    }
 	tm_closelist(st);
 }
 
@@ -853,8 +900,9 @@ void print_inumvector(TMPRINTSTATE *st, inumvector v)
 		return;
 	}
 	tm_openlist(st);
-	for (i = 0; i < v->n; i++)
+    for (i = 0; i < v->n; i++) {
 		print_inum(st, v->arr[i]);
+    }
 	tm_closelist(st);
 }
 
@@ -867,8 +915,9 @@ void print_vector(TMPRINTSTATE *st, vector v)
 		return;
 	}
 	tm_openlist(st);
-	for (i = 0; i < v->n; i++)
+    for (i = 0; i < v->n; i++) {
 		print_fnum(st, v->arr[i]);
+    }
 	tm_closelist(st);
 }
 

@@ -23,7 +23,7 @@
 #include "dbase.h"
 #include "parser.h"
 
-static char mainprompt[] = "-> "; /* statement prompt */
+static char mainprompt[] = "parx> "; /* statement prompt */
 static char subprompt[] = "+> "; /* sub-statement prompt */
 static char *prompt; /* current prompt */
 
@@ -35,8 +35,9 @@ tmstring yyfilename = ""; /* current input stream */
 boolean set_input_stream(tmstring fname) {
     FILE *istream;
     
-    if (fname == tmstringNIL)
+    if (fname == tmstringNIL) {
         return (FALSE);
+    }
     
     istream = fopen(fname, "r");
     
@@ -45,7 +46,9 @@ boolean set_input_stream(tmstring fname) {
         yylineno = 1L;
         yyfilename = new_tmstring(fname);
         return (TRUE);
-    } else return (FALSE);
+    } else {
+        return (FALSE);
+    }
 }
 
 /* YACC and LEX Support functions */

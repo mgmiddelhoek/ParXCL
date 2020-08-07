@@ -182,9 +182,11 @@ datarow_list makedata(colhead_list header, stimtemplate_list st) {
         if ((h->type == STIM) || (h->type == SWEEP)) {
             s = find_stim(st, h->name);
             assert(s != stimtemplateNIL);
-            if (np == 0)
+            if (np == 0) {
                 np = s->nint + 1;
-            else np *= s->nint + 1;
+            } else {
+                np *= s->nint + 1;
+            }
         }
     }
     
@@ -240,7 +242,9 @@ datarow_list makedata(colhead_list header, stimtemplate_list st) {
         
         if (s->nint > 0) {
             step = (upperb - lowerb) / s->nint;
-        } else step = 0.0;
+        } else {
+            step = 0.0;
+        }
         
         /* fill the column assigned to the unit */
         
@@ -268,7 +272,9 @@ datarow_list makedata(colhead_list header, stimtemplate_list st) {
             }
             dr->row = append_fnum_list(dr->row, val);
             dr->err = append_fnum_list(dr->err, 0.0);
-            if (rep == 0) dr->crvid = crvid;
+            if (rep == 0) {
+                dr->crvid = crvid;
+            }
             
             if (++same >= rep) {
                 same = 0;
@@ -280,8 +286,11 @@ datarow_list makedata(colhead_list header, stimtemplate_list st) {
             }
         }
         
-        if (rep == 0) rep = s->nint + 1;
-        else rep = rep * (s->nint + 1); /* repeat for next column */
+        if (rep == 0) {
+            rep = s->nint + 1;
+        } else {
+            rep = rep * (s->nint + 1); /* repeat for next column */
+        }
     }
     return (data);
 }

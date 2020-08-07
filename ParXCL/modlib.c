@@ -26,8 +26,9 @@ parxmodel find_model_proc(tmstring name) {
     inum i;
     
     for (i = 0; i < modlib_size; i++) {
-        if (strcmp(modlib[i].name, name) == 0)
+        if (strcmp(modlib[i].name, name) == 0) {
             return (modlib[i].p);
+        }
     }
     return (parxmodelNIL);
 }

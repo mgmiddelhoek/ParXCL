@@ -72,8 +72,9 @@ boolean objective(
     TMPRINTSTATE *pst;
     
     
-    if ((rf == FALSE) && (jf == FALSE)) /* easy question */
+    if ((rf == FALSE) && (jf == FALSE)) { /* easy question */
         return (TRUE);
+    }
     
     if (trace >= 1) {
         fputs("\nobjective function evaluation.\nparameters:\n", trace_stream);
@@ -122,11 +123,14 @@ boolean objective(
     for (grp = 0; grp <= (all == TRUE ? 2 : 0); grp++) {
         
         switch (grp) {
-            case 0: xs = xg_in->g;
+            case 0:
+                xs = xg_in->g;
                 break;
-            case 1: xs = xg_out->g;
+            case 1:
+                xs = xg_out->g;
                 break;
-            default: xs = xg_fail->g;
+            default:
+                xs = xg_fail->g;
                 break;
         }
         
@@ -139,11 +143,13 @@ boolean objective(
                 tm_endprint(pst);
             }
             
-            if (rf == TRUE) /* set sub residual */
+            if (rf == TRUE) { /* set sub residual */
                 sub_vector(res, i, nr, subr);
+            }
             
-            if (jf == TRUE) /* set sub Jacobian */
+            if (jf == TRUE) { /* set sub Jacobian */
                 sub_matrix(jacp, i, 0, nr, np, subj);
+            }
             
             *(xsindex + xi) = xs; /* setup xsindex to point */
             
@@ -154,8 +160,9 @@ boolean objective(
                 
                 xs->res = -1.0; /* no valid residual */
                 
-                if (trace >= 2)
+                if (trace >= 2) {
                     fputs("residual calculation failed\n", trace_stream);
+                }
                 
                 if (all == TRUE) { /* ignore point and go on */
                     xs = xs->next;
@@ -225,8 +232,9 @@ boolean objective(
         fre_sub_matrix(subj);
     }
     
-    if (sf == TRUE)
+    if (sf == TRUE) {
         rfre_matrix(s);
+    }
     
     /* add evaluation count */
     
@@ -279,8 +287,9 @@ boolean new_objective(
     
     /* setup residual function */
     
-    if (new_residual(numb->mod, numb->modi, prec, tol, numb->a->val, &np)
-        == FALSE) return (FALSE);
+    if (new_residual(numb->mod, numb->modi, prec, tol, numb->a->val, &np) == FALSE) {
+        return (FALSE);
+    }
     
     xg_in = numb->x;
     xg_out = new_xgroup(UGROUP, 0, new_xset_list());
@@ -319,15 +328,17 @@ void fre_objective(numblock numb) {
     if (xg_in->n != 0)
         numb->x = xg_in;
     
-    if (xg_out->n != 0)
+    if (xg_out->n != 0) {
         numb->x = append_xgroup_list(numb->x, xg_out);
-    else
+    } else {
         rfre_xgroup(xg_out);
+    }
     
-    if (xg_fail->n != 0)
+    if (xg_fail->n != 0) {
         numb->x = append_xgroup_list(numb->x, xg_fail);
-    else
+    } else {
         rfre_xgroup(xg_fail);
+    }
     
     fre_residual();
     
@@ -343,10 +354,11 @@ inum remove_data_point(
 ) {
     TMPRINTSTATE *pst;
     
-    if (n == 0) /* first point in the list */
+    if (n == 0) { /* first point in the list */
         xg_in->g = (xsindex[n])->next;
-    else
+    } else {
         (xsindex[n - 1])->next = (xsindex[n])->next;
+    }
     
     xg_in->n--;
     

@@ -48,8 +48,9 @@ int prx_compile(tmstring mdlFileName) {
         return (1);
     }
     pe = strrchr(fileName, '.');
-    if (!pe || strcmp(pe, MODEL_EXT)) /* no extension, add one */
+    if (!pe || strcmp(pe, MODEL_EXT)) { /* no extension, add one */
         strcat(fileName, MODEL_EXT);
+    }
     
     strcpy(prx_filename, fileName); /* copy input filename to global */
     
@@ -57,7 +58,9 @@ int prx_compile(tmstring mdlFileName) {
     if (!inFile) {
         printf("Error opening model file '%s'\n", fileName);
         return (1);
-    } else printf("   Reading '%s'\n", fileName);
+    } else {
+        printf("   Reading '%s'\n", fileName);
+    }
     
     pe = strrchr(fileName, '.');
     strcpy(pe, MODEL_CODE_EXT);
@@ -66,7 +69,9 @@ int prx_compile(tmstring mdlFileName) {
         printf("Error opening code file for writing '%s'\n", fileName);
         fclose(inFile);
         return (1);
-    } else printf("   Writing code file '%s'\n", fileName);
+    } else {
+        printf("   Writing code file '%s'\n", fileName);
+    }
     
     strcpy(pe, MODEL_INTERFACE_EXT);
     modFile = fopen(fileName, "w");
@@ -75,31 +80,40 @@ int prx_compile(tmstring mdlFileName) {
         fclose(inFile);
         fclose(codeFile);
         return (1);
-    } else printf("   Writing definition file '%s'\n\n", fileName);
+    } else {
+        printf("   Writing definition file '%s'\n\n", fileName);
+    }
     
     /* initialization of variables and fields */
-    if (!prx_init(codeFile, modFile))
+    if (!prx_init(codeFile, modFile)) {
         goto error;
+    }
     
     /* parse the model file */
-    if (!prx_parse(inFile))
+    if (!prx_parse(inFile)) {
         goto error;
+    }
     
     bError = prx_error();
-    if (bError & 2)
+    if (bError & 2) {
         goto error;
+    }
     
-    if (!prx_check())
+    if (!prx_check()) {
         goto error;
+    }
     
-    if (!prx_deriv_all())
+    if (!prx_deriv_all()) {
         goto error;
+    }
     
     bError = prx_error();
-    if (bError & 2)
+    if (bError & 2) {
         goto error;
-    if (bError & 1)
+    }
+    if (bError & 1) {
         printf("Warning(s) during creation of model code\n");
+    }
     
     prx_exit();
     
@@ -141,15 +155,18 @@ int prx_parse(FILE *inFile) {
             if (!bComment && !bCont) {
                 if (pa != Cmd) {
                     *pa = 0;
-                    if (prx_header(Cmd) == 2)
+                    if (prx_header(Cmd) == 2) {
                         break;
+                    }
                     pa = Cmd;
                 }
             }
-            if (bCont)
+            if (bCont) {
                 pa--;
-            if (!fgets(Buf, MAXLINE, inFile))
+            }
+            if (!fgets(Buf, MAXLINE, inFile)) {
                 break;
+            }
             prx_lineno++;
             pe = Buf;
             bString = 0;
@@ -212,10 +229,12 @@ int prx_parse(FILE *inFile) {
         *(pa++) = *(pe++);
     }
     
-    if (prx_error() & 2)
+    if (prx_error() & 2) {
         return 0;
-    if (!prx_derivLists())
+    }
+    if (!prx_derivLists()) {
         return 0;
+    }
     
     /* parsing equation part of PARX model description file */
     bComment = bLineComment = bCont = 0;
@@ -227,14 +246,17 @@ int prx_parse(FILE *inFile) {
             bLineComment = 0;
             if (!bComment && !bCont) {
                 *pa = 0;
-                if (!prx_equation(Cmd)) /* break at first error */
+                if (!prx_equation(Cmd)) { /* break at first error */
                     return 0;
+                }
                 pa = Cmd;
             }
-            if (bCont)
+            if (bCont) {
                 pa--;
-            if (!fgets(Buf, MAXLINE, inFile))
+            }
+            if (!fgets(Buf, MAXLINE, inFile)) {
                 break;
+            }
             prx_lineno++;
             pe = Buf;
             bCont = 0;
@@ -275,8 +297,9 @@ int prx_parse(FILE *inFile) {
         }
         if (*pe == ';') {
             *pa = 0;
-            if (!prx_equation(Cmd))
+            if (!prx_equation(Cmd)) {
                 return 0;
+            }
             pa = Cmd;
             pe++;
             continue;

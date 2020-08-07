@@ -74,8 +74,9 @@ void copy_vector(vector va, vector vb) {
 #endif
     
     VECN(vb) = VECN(va);
-    for (i = 0; i < VECN(va); i++)
+    for (i = 0; i < VECN(va); i++) {
         VEC(vb, i) = VEC(va, i);
+    }
     
 }
 
@@ -89,9 +90,11 @@ void copy_matrix(matrix ma, matrix mb) {
     
     MATM(mb) = MATM(ma);
     MATN(mb) = MATN(ma);
-    for (c = 0; c < MATN(ma); c++)
-        for (r = 0; r < MATM(ma); r++)
+    for (c = 0; c < MATN(ma); c++) {
+        for (r = 0; r < MATM(ma); r++) {
             MAT(mb, r, c) = MAT(ma, r, c);
+        }
+    }
 }
 
 void copy_vec_col(vector v, matrix m, inum c) {
@@ -101,8 +104,9 @@ void copy_vec_col(vector v, matrix m, inum c) {
     assert(VECN(v) == MATM(m));
 #endif
     
-    for (i = 0; i < VECN(v); i++)
+    for (i = 0; i < VECN(v); i++) {
         MAT(m, i, c) = VEC(v, i);
+    }
 }
 
 void copy_vec_row(vector v, matrix m, inum r) {
@@ -112,8 +116,9 @@ void copy_vec_row(vector v, matrix m, inum r) {
     assert(VECN(v) == MATN(m));
 #endif
     
-    for (i = 0; i < VECN(v); i++)
+    for (i = 0; i < VECN(v); i++) {
         MAT(m, r, i) = VEC(v, i);
+    }
 }
 
 void copy_col_vec(matrix m, inum c, vector v) {
@@ -123,8 +128,9 @@ void copy_col_vec(matrix m, inum c, vector v) {
     assert(VECN(v) == MATM(m));
 #endif
     
-    for (i = 0; i < MATM(m); i++)
+    for (i = 0; i < MATM(m); i++) {
         VEC(v, i) = MAT(m, i, c);
+    }
 }
 
 void copy_row_vec(matrix m, inum r, vector v) {
@@ -134,8 +140,9 @@ void copy_row_vec(matrix m, inum r, vector v) {
     assert(VECN(v) == MATN(m));
 #endif
     
-    for (i = 0; i < MATN(m); i++)
+    for (i = 0; i < MATN(m); i++) {
         VEC(v, i) = MAT(m, r, i);
+    }
 }
 
 /************** vector and matrix arithmetic functions *****************/
@@ -145,8 +152,9 @@ void copy_row_vec(matrix m, inum r, vector v) {
 void zero_vector(vector v) {
     inum i;
     
-    for (i = 0; i < VECN(v); i++)
+    for (i = 0; i < VECN(v); i++) {
         VEC(v, i) = 0.0;
+    }
 }
 
 /* transpose a matrix */
@@ -159,9 +167,11 @@ void trans_matrix(matrix a, matrix at) {
     assert(MATN(at) == MATM(a));
 #endif
     
-    for (c = 0; c < MATN(a); c++)
-        for (r = 0; r < MATM(a); r++)
+    for (c = 0; c < MATN(a); c++) {
+        for (r = 0; r < MATM(a); r++) {
             MAT(at, c, r) = MAT(a, r, c);
+        }
+    }
 }
 
 /* calculate the norm of a vector */
@@ -171,8 +181,9 @@ fnum norm_vector(vector v) {
     inum n, incx;
     fnum *dx;
     
-    if (VECN(v) == 1) /* quick return */
+    if (VECN(v) == 1) { /* quick return */
         return (fabs(VEC(v, 0)));
+    }
     
     n = VECN(v);
     dx = VECA(v);
@@ -192,8 +203,9 @@ fnum inp_vector(vector a, vector b) {
     assert(VECN(a) == VECN(b));
 #endif
     
-    if (VECN(a) == 1) /* quick return */
+    if (VECN(a) == 1) { /* quick return */
         return (VEC(a, 0) * VEC(b, 0));
+    }
     
     n = VECN(a);
     dx = VECA(a);
@@ -340,15 +352,21 @@ inum svd(
     
     inum i, rank;
     
-    if (a == matrixNIL) return (FAIL);
+    if (a == matrixNIL) {
+        return (FAIL);
+    }
     m = MATM(a);
     n = MATN(a);
     lda = MATSM(a);
     fa = MATA(a);
     
-    if (s == vectorNIL) return (FAIL);
+    if (s == vectorNIL) {
+        return (FAIL);
+    }
     fs = VECA(s);
-    if (u == vt) return (FAIL);
+    if (u == vt) {
+        return (FAIL);
+    }
     
     if (u == matrixNIL) { /* U not required */
         jobu = 'N';
@@ -390,8 +408,9 @@ inum svd(
     (void) dgesvd_(&jobu, &jobvt, &m, &n, fa, &lda, fs, fu, &ldu,
                    fvt, &ldvt, fwork, &lwork, &info);
     
-    if (info != 0)
+    if (info != 0) {
         return (FAIL);
+    }
     
     /* determine rank */
     
@@ -402,7 +421,9 @@ inum svd(
         tol *= fabs(VEC(s, 0));
         
         for (rank = 0, i = 0; i < VECN(s); i++) {
-            if (fabs(VEC(s, i)) < tol) break;
+            if (fabs(VEC(s, i)) < tol) {
+                break;
+            }
             rank++;
         }
     }
@@ -425,13 +446,16 @@ boolean crout(matrix a, vector x, vector b) {
 #endif
     
     if (VECN(x) == 1) { /* use short cut */
-        if ((m = MAT(a, 0, 0)) == 0.0)
+        if ((m = MAT(a, 0, 0)) == 0.0) {
             return (FALSE);
+        }
         VEC(x, 0) = VEC(b, 0) / m;
         return (TRUE);
     }
     
-    if (b != x) copy_vector(b, x);
+    if (b != x) {
+        copy_vector(b, x);
+    }
     
     n = VECN(b);
     nrhs = 1;
@@ -440,14 +464,18 @@ boolean crout(matrix a, vector x, vector b) {
     fb = VECA(x);
     ldb = n;
     
-    if (VECN(inum_wrk) < n) return (FALSE); /* not enough workspace */
+    if (VECN(inum_wrk) < n) { /* not enough workspace */
+        return (FALSE);
+    }
     ipiv = VECA(inum_wrk);
     
     info = 0;
     
     (void) dgesv_(&n, &nrhs, fa, &lda, ipiv, fb, &ldb, &info);
     
-    if (info != 0) return (FALSE);
+    if (info != 0) {
+        return (FALSE);
+    }
     
     return (TRUE);
 }
@@ -469,13 +497,16 @@ boolean solvesym_v(matrix a, vector x, vector b) {
 #endif
     
     if (VECN(x) == 1) { /* use short cut */
-        if ((m = MAT(a, 0, 0)) == 0.0)
+        if ((m = MAT(a, 0, 0)) == 0.0) {
             return (FALSE);
+        }
         VEC(x, 0) = VEC(b, 0) / m;
         return (TRUE);
     }
     
-    if (b != x) copy_vector(b, x);
+    if (b != x) {
+        copy_vector(b, x);
+    }
     
     uplo = 'U';
     n = VECN(b);
@@ -484,8 +515,10 @@ boolean solvesym_v(matrix a, vector x, vector b) {
     lda = MATSM(a);
     fb = VECA(x);
     ldb = n;
-    
-    if (VECN(inum_wrk) < n) return (FALSE); /* not enough workspace */
+
+    if (VECN(inum_wrk) < n) { /* not enough workspace */
+        return (FALSE);
+    }
     ipiv = VECA(inum_wrk);
     work = VECA(fnum_wrk);
     lwork = VECN(fnum_wrk);
@@ -495,7 +528,9 @@ boolean solvesym_v(matrix a, vector x, vector b) {
     (void) dsysv_(&uplo, &n, &nrhs, fa, &lda, ipiv, fb, &ldb,
                   work, &lwork, &info);
     
-    if (info != 0) return (FALSE);
+    if (info != 0) {
+        return (FALSE);
+    }
     
     return (TRUE);
 }
@@ -519,14 +554,18 @@ boolean solvesym_m(matrix a, matrix x, matrix b) {
 #endif
     
     if (MATM(a) == 1) { /* use short cut */
-        if ((m = MAT(a, 0, 0)) == 0.0)
+        if ((m = MAT(a, 0, 0)) == 0.0) {
             return (FALSE);
-        for (i = 0; i < MATN(x); i++)
+        }
+        for (i = 0; i < MATN(x); i++) {
             MAT(x, 0, i) = MAT(b, 0, i) / m;
+        }
         return (TRUE);
     }
     
-    if (b != x) copy_matrix(b, x);
+    if (b != x) {
+        copy_matrix(b, x);
+    }
     
     uplo = 'U';
     n = MATM(a);
@@ -536,7 +575,9 @@ boolean solvesym_m(matrix a, matrix x, matrix b) {
     fb = MATA(x);
     ldb = MATSM(x);
     
-    if (VECN(inum_wrk) < n) return (FALSE); /* not enough workspace */
+    if (VECN(inum_wrk) < n) { /* not enough workspace */
+        return (FALSE);
+    }
     ipiv = VECA(inum_wrk);
     work = VECA(fnum_wrk);
     lwork = VECN(fnum_wrk);
@@ -546,7 +587,9 @@ boolean solvesym_m(matrix a, matrix x, matrix b) {
     (void) dsysv_(&uplo, &n, &nrhs, fa, &lda, ipiv, fb, &ldb,
                   work, &lwork, &info);
     
-    if (info != 0) return (FALSE);
+    if (info != 0) {
+        return (FALSE);
+    }
     
     return (TRUE);
 }
@@ -569,14 +612,18 @@ boolean cholesky(matrix a, matrix x, matrix b) {
 #endif
     
     if (MATM(a) == 1) {
-        if ((m = MAT(a, 0, 0)) == 0.0)
+        if ((m = MAT(a, 0, 0)) == 0.0) {
             return (FALSE);
-        for (i = 0; i < MATN(x); i++)
+        }
+        for (i = 0; i < MATN(x); i++) {
             MAT(x, 0, i) = MAT(b, 0, i) / m;
+        }
         return (TRUE);
     }
     
-    if (b != x) copy_matrix(b, x);
+    if (b != x) {
+        copy_matrix(b, x);
+    }
     
     uplo = 'U';
     n = MATM(a);
@@ -590,7 +637,9 @@ boolean cholesky(matrix a, matrix x, matrix b) {
     
     (void) dposv_(&uplo, &n, &nrhs, fa, &lda, fb, &ldb, &info);
     
-    if (info != 0) return (FALSE);
+    if (info != 0) {
+        return (FALSE);
+    }
     
     return (TRUE);
 }

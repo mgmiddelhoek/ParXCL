@@ -152,8 +152,9 @@ boolean modes(
     
     rank = VECN(pval);
     
-    if (maxiter == 0L)
+    if (maxiter == 0L) {
         maxiter = MAX_IT * roundi(sqrt((fnum) VECN(p)));
+    }
     
     eq_slack = (opt == BESTFIT) ? 1.0 : EQ_SLACK;
     
@@ -171,8 +172,9 @@ boolean modes(
     
     /* start the search for the optimum */
     
-    if (error_stream != trace_stream)
+    if (error_stream != trace_stream) {
         fprintf(error_stream, "\nextracting: (%ld) ", (long) npoints);
+    }
     
     if (trace >= 0) {
         fprintf(trace_stream, "\nMODES Parameter Extraction:\n\n");
@@ -215,14 +217,16 @@ boolean modes(
             fail = TRUE;
             errcode = OBJ_FAIL_CERR;
             error("ext");
-            if (trace >= 1)
+            if (trace >= 1) {
                 fputs("Objective function failed\n", trace_stream);
+            }
             break;
         }
         
         if (error_stream != trace_stream) {
-            if ((npoints != opoints) && (modify == TRUE))
+            if ((npoints != opoints) && (modify == TRUE)) {
                 fprintf(error_stream, "(%ld) ", (long) npoints);
+            }
         }
         
         res_norm = norm_vector(res);
@@ -239,11 +243,12 @@ boolean modes(
             fail = TRUE;
             errcode = NUMEQ_CERR;
             error("ext");
-            if (trace >= 1)
+            if (trace >= 1) {
                 fprintf(trace_stream,
                         "Insufficient data points remaining, "
                         "#pnt: %ld  #eq: %ld  #par: %ld\n",
                         (long) npoints, (long) MATM(jacp), (long) MATN(jacp));
+            }
             break;
         }
         
@@ -259,8 +264,9 @@ boolean modes(
             fail = TRUE;
             errcode = NO_DIREC_CERR;
             error("ext");
-            if (trace >= 1)
+            if (trace >= 1) {
                 fputs("No step direction found\n", trace_stream);
+            }
             break;
         }
         
@@ -317,15 +323,15 @@ boolean modes(
             p_norm = norm_vector(p);
             dp_norm = norm_vector(dp);
             
-            if (dp_norm > 0.0)
+            if (dp_norm > 0.0) {
                 min_alpha = machinep * (p_norm / dp_norm);
-            else
+            } else {
                 min_alpha = machinep * p_norm;
+            }
             
             check_bounds(p, dp, plow, pup, bound_alpha, trace - 2);
             
-            alpha = step_size(res_norm, rtol, min_alpha, bound_alpha,
-                              trace - 2);
+            alpha = step_size(res_norm, rtol, min_alpha, bound_alpha, trace - 2);
             
         } else { /* accept small step from modify as is */
             
@@ -360,8 +366,9 @@ boolean modes(
             fprintf(trace_stream, "Consistency = %.*e\n", FNUM_DIG, consist);
         }
         
-        for (i = 0; i < VECN(p); i++) /* go for it */
+        for (i = 0; i < VECN(p); i++) { /* go for it */
             VEC(p, i) += alpha * VEC(dp, i);
+        }
         
         /* rescale parameters, and jacp if needed by next iteration */
         
@@ -371,8 +378,9 @@ boolean modes(
     
     /* END GAME */
     
-    for (i = 0; i < VECN(pval); i++) /* copy solution */
+    for (i = 0; i < VECN(pval); i++) { /* copy solution */
         VEC(pval, i) = VEC(p, i);
+}
     
     if (trace >= 0) { /* output diagnostics */
         
@@ -394,10 +402,11 @@ boolean modes(
         fputs("\n\nExtraction Result Report\n", trace_stream);
         fputs("------------------------\n\n", trace_stream);
         
-        if (conv == FALSE)
+        if (conv == FALSE) {
             fputs("WARNING: No convergence was reached\n", trace_stream);
-        else if (prox == FALSE)
+        } else if (prox == FALSE) {
             fputs("WARNING: No proximity was reached\n", trace_stream);
+        }
         
         fputs("\nFinal parameter values:\n", trace_stream);
         pst = tm_setprint(trace_stream, 0, 80, 8, 0);
@@ -442,8 +451,9 @@ boolean modes(
                 (long) rank, FNUM_DIG, condn);
     }
     
-    if (error_stream != trace_stream)
+    if (error_stream != trace_stream) {
         fprintf(error_stream, " (%ld) ", (long) npoints);
+    }
     
     /* calculate the final distances */
     
@@ -469,10 +479,11 @@ boolean modes(
         fprintf(trace_stream,
                 "Model equation evaluations: f %ld, Jx %ld, Jp %ld\n",
                 (long) meval_f, (long) meval_jx, (long) meval_jp);
-        if (cpu_time > -1)
+        if (cpu_time > -1) {
             fprintf(trace_stream,
                     "CPU time: %.0f sec\n\n",
                     (double) (clock() - cpu_time) / CLOCKS_PER_SEC);
+        }
         
         fflush(trace_stream);
     }
@@ -532,14 +543,16 @@ boolean step_direction(
     
     for (pi = 0; pi < VECN(dp); pi++) {
         VEC(dp, pi) = 0.0;
-        for (i = 0; i < *rank; i++)
+        for (i = 0; i < *rank; i++) {
             VEC(dp, pi) -= (MAT(s_vec, i, pi) / VEC(s_val, i)) * VEC(qtr, i);
+        }
     }
     
     /* calculate: dc = rt.Q.Ir.Qt.r */
     
-    for (i = 0, *dc = 0.0; i < *rank; i++)
+    for (i = 0, *dc = 0.0; i < *rank; i++) {
         *dc += VEC(qtr, i) * VEC(qtr, i);
+    }
     
     if (trace >= 1) {
         
@@ -599,12 +612,15 @@ void check_bounds(
                 
                 VEC(step, i) = s;
                 
-                if (trace >= 1)
+                if (trace >= 1) {
                     fprintf(trace_stream,
                             "Hit upper bound par %ld, limit step = %.*e\n",
                             (long) (i + 1), FNUM_DIG, s);
+                }
                 
-            } else VEC(step, i) = 1.0;
+            } else {
+                VEC(step, i) = 1.0;
+            }
             
         } else if ((pnew < pl) && (pdif != 0.0)) {
             
@@ -614,12 +630,15 @@ void check_bounds(
                 
                 VEC(step, i) = s;
                 
-                if (trace >= 1)
+                if (trace >= 1) {
                     fprintf(trace_stream,
                             "Hit lower bound par %ld, limit step = %.*e\n",
                             (long) (i + 1), FNUM_DIG, s);
+                }
                 
-            } else VEC(step, i) = 1.0;
+            } else {
+                VEC(step, i) = 1.0;
+            }
             
         } else VEC(step, i) = 1.0;
     }
@@ -639,8 +658,9 @@ boolean eval_obj_line(
     inum i;
     TMPRINTSTATE *pst;
     
-    for (i = 0; i < VECN(p0); i++)
+    for (i = 0; i < VECN(p0); i++) {
         VEC(p0, i) = VEC(p, i) + alpha * VEC(dp, i);
+    }
     
     if (ls_trace >= 1) {
         fprintf(trace_stream, "\nTrying step size : %.*e\n", FNUM_DIG, alpha);
@@ -655,7 +675,9 @@ boolean eval_obj_line(
     if (df == TRUE) {
         rf = TRUE;
         jf = TRUE;
-    } else jf = FALSE;
+    } else {
+        jf = FALSE;
+    }
     
     funceval++;
     mineval++;
@@ -664,14 +686,15 @@ boolean eval_obj_line(
                    &meval_f, &meval_jx, &meval_jp, ls_trace - 1);
     
     if (lf == FALSE) {
-        if (ls_trace >= 1)
+        if (ls_trace >= 1) {
             fputs("Objective function failed in line search\n", trace_stream);
-        
+        }
         return (FALSE);
     }
     
-    if (ff == TRUE)
+    if (ff == TRUE) {
         *fval = norm_vector(res);
+    }
     
     if (df == TRUE) {
         mul_matt_vec(jacp, res, grad);
@@ -679,12 +702,12 @@ boolean eval_obj_line(
     }
     
     if (ls_trace >= 1) {
-        if (ff == TRUE)
-            fprintf(trace_stream, "resulting objective: %.*e\n",
-                    FNUM_DIG, *fval);
-        if (df == TRUE)
-            fprintf(trace_stream, "resulting slope: %.*e\n",
-                    FNUM_DIG, *slope);
+        if (ff == TRUE) {
+            fprintf(trace_stream, "resulting objective: %.*e\n", FNUM_DIG, *fval);
+        }
+        if (df == TRUE) {
+            fprintf(trace_stream, "resulting slope: %.*e\n", FNUM_DIG, *slope);
+        }
     }
     
     return (TRUE);
@@ -698,8 +721,9 @@ fnum obj_line(fnum alpha) {
     
     lf = eval_obj_line(alpha, TRUE, &norm, FALSE, (fnum *) NULL);
     
-    if (lf == FALSE)
+    if (lf == FALSE) {
         return (INF); /* maximum value */
+    }
     
     return (norm);
 }
@@ -746,14 +770,16 @@ fnum step_size(
         mins = 1.0;
         mini = -1;
         
-        for (i = 0; i < VECN(bound_alpha); i++)
+        for (i = 0; i < VECN(bound_alpha); i++) {
             if (VEC(bound_alpha, i) < mins) {
                 mins = VEC(bound_alpha, i);
                 mini = i;
             }
+        }
         
-        if (mini != -1)
+        if (mini != -1) {
             VEC(bound_alpha, mini) = 1.0;
+        }
         
         if (eval_obj_line(mins, TRUE, &fr, TRUE, &slope) == FALSE) {
             fr = INF;
@@ -765,11 +791,11 @@ fnum step_size(
             
             xr = mins;
             
-            if ((trace >= 1) && (xr != 1.0))
+            if ((trace >= 1) && (xr != 1.0)) {
                 fprintf(trace_stream,
                         "Step cut by bound on par %ld, step = %.*e\n",
                         (long) (mini + 1), FNUM_DIG, xr);
-            
+            }
         }
         
     } while (xr == 0.0);
@@ -813,10 +839,11 @@ fnum step_size(
             
             if (slope <= 0.0) { /* discontinuity or multi-modal */
                 
-                if (trace >= 1)
+                if (trace >= 1) {
                     fprintf(trace_stream,
                             "Overstepping discontinuity, step size : %.*e\n",
                             FNUM_DIG, xm);
+                }
                 
                 rf = jf = FALSE;
                 
@@ -827,7 +854,9 @@ fnum step_size(
                 fr = fm;
             }
             
-        } else break;
+        } else {
+            break;
+        }
     }
     
     xmin = xm;
@@ -846,10 +875,11 @@ fnum step_size(
         }
     }
     
-    if (trace >= 1)
+    if (trace >= 1) {
         fprintf(trace_stream,
                 "Directional search, step size : %.*e\n",
                 FNUM_DIG, xmin);
+    }
     
     rf = jf = TRUE; /* re-evaluate, may not be current */
     

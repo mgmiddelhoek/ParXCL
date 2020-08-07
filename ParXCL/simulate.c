@@ -81,8 +81,9 @@ boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace) {
         if (VEC(mod->xstat, i) == UNKN) {
             append_inum_list(xtrans, i);
             VEC(xf, i) = TRUE;
-        } else
+        } else {
             VEC(xf, i) = FALSE;
+        }
     }
     
     nxv = LSTS(xtrans);
@@ -132,12 +133,14 @@ boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace) {
         
         npoints = xg->n;
         
-        if (error_stream != trace_stream)
+        if (error_stream != trace_stream) {
             fprintf(error_stream, "\nsimulating: (%ld) ", (long) npoints);
+        }
         
-        if (trace >= 1)
+        if (trace >= 1) {
             fprintf(trace_stream, "\nSimulate: group %ld, points %ld\n",
                     (long) (xg->id), (long) (xg->n));
+        }
         
         xs = xg->g;
         xsv = new_xset_list();
@@ -145,8 +148,9 @@ boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace) {
         
         while (xs != xsetNIL) {
             
-            if (trace >= 1)
+            if (trace >= 1) {
                 fprintf(trace_stream, "\nsim: point %ld\n", (long) (xs->id));
+            }
             if (trace >= 3) {
                 pst = tm_setprint(trace_stream, 1, 80, 8, 0);
                 fputs("[val] =\n", trace_stream);
@@ -187,8 +191,9 @@ boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace) {
             
             /* transfer solution back to x set if valid */
             
-            if (nr >= 0)
+            if (nr >= 0) {
                 finish_x(xs, xv, relerr, abserr);
+            }
             
             if (trace >= 2) {
                 pst = tm_setprint(trace_stream, 1, 80, 8, 0);
@@ -205,7 +210,7 @@ boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace) {
                 print_vector(pst, xs->delta);
                 tm_endprint(pst);
             }
-            if (trace >= 1)
+            if (trace >= 1) {
                 switch (nr) {
                     case 0: /* all is well */
                         break;
@@ -236,6 +241,7 @@ boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace) {
                                 "Error: Unknown error in simulation\n");
                         break;
                 }
+            }
             
             xs_tmp = xs;
             xs = xs->next; /* goto next, before set is moved */
@@ -254,8 +260,9 @@ boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace) {
         xg->g = rev_xset_list(xsv);
         xg->n = nxgv;
         
-        if (error_stream != trace_stream)
+        if (error_stream != trace_stream) {
             fprintf(error_stream, " (%ld) ", (long) npoints);
+        }
     }
     
     fre_newton();
@@ -275,8 +282,9 @@ boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace) {
     rfre_vector(abserr);
     rfre_vector(relerr);
     
-    if (trace >= 1)
+    if (trace >= 1) {
         fflush(trace_stream);
+    }
     
     if (error_stream != trace_stream) fputc('>', error_stream);
     if (error_stream != trace_stream) fputc('\n', error_stream);
@@ -295,8 +303,9 @@ void init_x(xset xs, fnum tol, vector xv, vector relerr, vector abserr) {
     
     for (i = 0; i < nxv; i++) {
         
-        if (fabs(VEC(abserr, i)) < (tol * FNUM_EPS))
+        if (fabs(VEC(abserr, i)) < (tol * FNUM_EPS)) {
             VEC(abserr, i) = tol * FNUM_EPS;
+        }
         
         VEC(relerr, i) = fabs(tol);
     }
@@ -314,15 +323,17 @@ void finish_x(xset xs, vector xv, vector relerr, vector abserr) {
 void xs2xv(vector xs, vector xv) {
     inum i;
     
-    for (i = 0; i < LSTS(xtrans); i++)
+    for (i = 0; i < LSTS(xtrans); i++) {
         VEC(xv, i) = VEC(xs, LST(xtrans, i));
+    }
 }
 
 void xv2xs(vector xv, vector xs) {
     inum i;
     
-    for (i = 0; i < LSTS(xtrans); i++)
+    for (i = 0; i < LSTS(xtrans); i++) {
         VEC(xs, LST(xtrans, i)) = VEC(xv, i);
+    }
 }
 
 /* Transpose the columns of the Jacobian matrix */
@@ -330,9 +341,11 @@ void xv2xs(vector xv, vector xs) {
 void jx2jxv(matrix jx, matrix jxv) {
     inum c, r;
     
-    for (c = 0; c < LSTS(xtrans); c++)
-        for (r = 0; r < MATM(jxv); r++)
+    for (c = 0; c < LSTS(xtrans); c++) {
+        for (r = 0; r < MATM(jxv); r++) {
             MAT(jxv, r, c) = MAT(jx, r, LST(xtrans, c));
+        }
+    }
 }
 
 /* Model constraints to be zeroed */
@@ -362,8 +375,9 @@ boolean sim_constraints(
     
     xv2xs(x, model_interface->x);
     
-    for (i = 0; i < nav; i++)
+    for (i = 0; i < nav; i++) {
         VEC(model_interface->a, i) = VEC(x, nxv + i);
+    }
     
     model_interface->rf = *rf;
     model_interface->jxf = *jxf;
@@ -393,8 +407,9 @@ boolean sim_constraints(
     
     if (*jxf == TRUE) {
         jx2jxv(model_interface->jx, jx);
-        for (i = 0; i < nav; i++) for (j = 0; j < MATM(jx); j++)
+        for (i = 0; i < nav; i++) for (j = 0; j < MATM(jx); j++) {
             MAT(jx, j, nxv + i) = MAT(model_interface->ja, j, i);
+        }
     }
     
     if (trace > 0) {

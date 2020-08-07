@@ -32,12 +32,14 @@ int prx_name(char *ps) {
     
     pe = ps;
     /* 1. character = letter */
-    if (!isalpha(*pe) && *pe != '_')
+    if (!isalpha(*pe) && *pe != '_') {
         return 0;
+    }
     /* 2-nd - last character */
     while (b = *(++pe), isalnum(b) || *pe == '_');
-    if (pe - ps > MAXNAME)
+    if (pe - ps > MAXNAME) {
         return (int)(ps - pe);
+    }
     return (int)(pe - ps);
 }
 
@@ -48,11 +50,13 @@ int prx_values(char *ps, double *Vals, int *pNVals) {
     
     pe = ps;
     nVals = 0;
-    if (*(pe++) != '{')
+    if (*(pe++) != '{') {
         return 0;
+    }
     do {
-        if (nVals >= 5)
+        if (nVals >= 5) {
             return 0;
+        }
         if (memcmp(pe, "inf", 3) == 0 || memcmp(pe, "Inf", 3) == 0) {
             Vals[nVals++] = HUGE_VAL;
             pe += 3;
@@ -62,14 +66,16 @@ int prx_values(char *ps, double *Vals, int *pNVals) {
             pe += 4;
             continue;
         }
-        if (ci_ing_in(pe, Vals + nVals, &lae))
+        if (ci_ing_in(pe, Vals + nVals, &lae)) {
             return 0;
+        }
         nVals++;
         pe += lae;
     } while (*(pe++) == ',');
     *pNVals = nVals;
-    if (*(pe - 1) != '}')
+    if (*(pe - 1) != '}') {
         return 0;
+    }
     return (int)(pe - ps);
 }
 
@@ -88,27 +94,32 @@ int ci_ing_in(char *text, double *value, int *len)
     i = 0;
     bZ = 0;
     t = text[i++];
-    if (t == '+' || t == '-')
+    if (t == '+' || t == '-') {
         t = text[i++];
+    }
     while (t >= '0' && t <= '9') { /* digits before dot */
         t = text[i++];
         bZ++;
     }
-    if (t == '.')
+    if (t == '.') {
         t = text[i++];
+    }
     while (t >= '0' && t <= '9') { /* digits after dot */
         t = text[i++];
         bZ++;
     }
     if (t == 'e' || t == 'E') {
         t = text[i++];
-        if (t == '-' || t == '+')
+        if (t == '-' || t == '+') {
             t = text[i++];
-        while (t >= '0' && t <= '9')
+        }
+        while (t >= '0' && t <= '9') {
             t = text[i++]; /* digits exponent */
+        }
     }
-    if (!bZ)
+    if (!bZ) {
         return -100;
+    }
     switch (t) {
         case 'a':
             fak = 1e-18;
@@ -163,13 +174,16 @@ int ci_ing_in(char *text, double *value, int *len)
             i--;
     }
     *len = i;
-    if (i > 32)
+    if (i > 32) {
         return -100;
+    }
     i = sscanf(text, "%le", &zahl);
-    if (i == 0)
+    if (i == 0) {
         return -100; /* not a valid number */
-    if (fak != 1)
+    }
+    if (fak != 1) {
         zahl *= fak;
+    }
     *value = zahl;
     return 0;
 }
@@ -196,19 +210,23 @@ int ci_ing_out(double value, int n, char *ing)
     
     /* find the exponent */
     cptr = strchr(ing, 'e');
-    if (cptr == NULL)
+    if (cptr == NULL) {
         cptr = strchr(ing, 'E');
-    if (cptr == NULL)
+    }
+    if (cptr == NULL) {
         return (1);
+    }
     sscanf(cptr + 1, "%d", &iex);
-    if (iex < -18 || iex >= 15)
+    if (iex < -18 || iex >= 15) {
         return (1);
+    }
     *cptr = 0;
     
     /* set the decimal dot */
     cptr = strchr(ing, '.');
-    if (cptr == NULL)
+    if (cptr == NULL) {
         return (1);
+    }
     
     ibasis = ((iex + 18) / 3) * 3 - 18;
     itrans = iex - ibasis;

@@ -55,8 +55,9 @@ datatemplate subset_data(meastemplate_list meast, datatemplate datat) {
             mname = ml->name;
             
             for (h = datat->header, ix = 0; h != colheadNIL; h = h->next, ix++) {
-                if (strcmp(mname, h->name) == 0)
+                if (strcmp(mname, h->name) == 0) {
                     break;
+                }
             }
             
             if (h == colheadNIL) {
@@ -109,7 +110,7 @@ datatemplate subset_data(meastemplate_list meast, datatemplate datat) {
         
         for (i = 0; i < nr; i++) { /* for all data rows */
             
-            if (idx[i].del == TRUE) continue; /* already deleted */
+            if (idx[i].del == TRUE) { continue; } /* already deleted */
             
             if (mtype == 0) { /* group id */
                 idx[i].del = ((idx[i].dr)->grpid < mlvali) ? TRUE : idx[i].del;
@@ -144,17 +145,19 @@ datatemplate subset_data(meastemplate_list meast, datatemplate datat) {
         n_data = rdup_datarow(idx[i].dr);
         n_data->next = datarow_listNIL;
         
-        if (s_data == datarow_listNIL)
+        if (s_data == datarow_listNIL) {
             s_data = n_data;
-        else
+        } else {
             l_data->next = n_data;
+        }
         
         l_data = n_data;
     }
     
-    if ((nr - delnr) != nr)
+    if ((nr - delnr) != nr) {
         fprintf(error_stream, "\ndata points selected: %ld out of %ld\n",
                 (long) (nr - delnr), (long) nr);
+    }
     
     TM_FREE(idx); /* free the index table */
     

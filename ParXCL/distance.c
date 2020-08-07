@@ -149,11 +149,13 @@ boolean distance(
     inum i;
     TMPRINTSTATE *pst;
     
-    if (trace >= 1)
+    if (trace >= 1) {
         fputs("Distance determination:\n", trace_stream);
+    }
     
-    for (i = 0; i < VECN(lambda); i++) /* initial Lagrange estimate */
+    for (i = 0; i < VECN(lambda); i++) { /* initial Lagrange estimate */
         VEC(lambda, i) = VEC(lagrange, i);
+    }
     
     fullstep = 0;
     partstep = 0;
@@ -164,32 +166,36 @@ boolean distance(
     
     for (iter = 0; (conv == FALSE) && (iter <= maxiter); iter++) {
         
-        if (ext_constraints(dist, aux, cf, c_res, jf, jx, ja, trace - 2)
-            == FALSE) {
+        if (ext_constraints(dist, aux, cf, c_res, jf, jx, ja, trace - 2) == FALSE) {
             
-            if (trace >= 2)
+            if (trace >= 2) {
                 fputs("constraint equation failure\n", trace_stream);
+            }
             break;
         }
         
         sd = dist_step_direction(dist, aux, lagrange, lambda, d_lambda,
                                  c_res, jx, ja, trace - 1);
         
-        if (sd == FALSE) /* no search direction */
+        if (sd == FALSE) { /* no search direction */
             break;
+        }
         
         if (maxiter == 0) { /* fast one-step mode */
             
             /* update dist and Lagrangian, jx should not change */
             
-            for (i = 0; i < VECN(lagrange); i++)
+            for (i = 0; i < VECN(lagrange); i++) {
                 VEC(lagrange, i) += VEC(d_lambda, i);
+            }
             
-            for (i = 0; i < VECN(dist); i++)
+            for (i = 0; i < VECN(dist); i++) {
                 VEC(dist, i) += VEC(d_dist, i);
+            }
             
-            for (i = 0; i < VECN(aux); i++)
+            for (i = 0; i < VECN(aux); i++) {
                 VEC(aux, i) += VEC(d_aux, i);
+            }
             
             conv = TRUE;
             break;
@@ -207,10 +213,13 @@ boolean distance(
             conv = (fabs(VEC(d_aux, i)) < d_tol) ? conv : FALSE;
         }
         
-        if (conv == TRUE) break; /* do not step, jx would change */
+        if (conv == TRUE) { /* do not step, jx would change */
+            break;
+        }
         
-        for (i = 0; i < VECN(lambda); i++) /* update lambda */
+        for (i = 0; i < VECN(lambda); i++) { /* update lambda */
             VEC(lambda, i) += VEC(d_lambda, i);
+        }
         
         d_norm = norm_vector(dist);
         dd_norm = norm_vector(d_dist);
@@ -234,8 +243,9 @@ boolean distance(
         alpha = dist_step_size(dist, aux, lambda, c_res, jx, ja, min_alpha,
                                trace - 1);
         
-        if (alpha == 0.0)
-            break; /* no step size */
+        if (alpha == 0.0) { /* no step size */
+            break;
+        }
         if (alpha == 1.0) {
             cf = FALSE;
             jf = FALSE;
@@ -246,18 +256,22 @@ boolean distance(
             partstep++;
         }
         
-        for (i = 0; i < VECN(dist); i++) /* update distance */
+        for (i = 0; i < VECN(dist); i++) { /* update distance */
             VEC(dist, i) += alpha * VEC(d_dist, i);
+        }
         
-        for (i = 0; i < VECN(aux); i++) /* update aux */
+        for (i = 0; i < VECN(aux); i++) { /* update aux */
             VEC(aux, i) += alpha * VEC(d_aux, i);
+        }
     }
     
     if (trace >= 1) {
         
-        if (conv == TRUE)
+        if (conv == TRUE) {
             fputs("\ndistance found.\n", trace_stream);
-        else fputs("\ndistance not found.\n", trace_stream);
+        } else {
+            fputs("\ndistance not found.\n", trace_stream);
+        }
         
         fputs("final distance:\n", trace_stream);
         pst = tm_setprint(trace_stream, 0, 80, 8, 0);
@@ -268,11 +282,13 @@ boolean distance(
         print_vector(pst, lagrange);
         tm_endprint(pst);
         
-        if (maxiter != 0)
+        if (maxiter != 0) {
             fprintf(trace_stream,
                     "no. of iterations: %ld, full step: %ld, partial step: %ld\n",
                     (long) iter, (long) fullstep, (long) partstep);
-        else fputs("one step mode\n", trace_stream);
+        } else {
+            fputs("one step mode\n", trace_stream);
+        }
     }
     
     return (conv);
@@ -296,8 +312,9 @@ boolean dist_step_direction(
     fnum f;
     TMPRINTSTATE *pst;
     
-    if (trace >= 1)
+    if (trace >= 1) {
         fputs("step direction:\n", trace_stream);
+    }
     
     nequ = MATM(jx); /* number of equations */
     nvar = MATN(jx); /* number of variables */
@@ -305,34 +322,39 @@ boolean dist_step_direction(
     
     /* compute design matrix: Jx . Jxt */
     
-    for (r = 0; r < nequ; r++)
+    for (r = 0; r < nequ; r++) {
         for (c = r; c < nequ; c++) {
-            for (f = 0.0, i = 0; i < nvar; i++)
+            for (f = 0.0, i = 0; i < nvar; i++) {
                 f += MAT(jx, r, i) * MAT(jx, c, i);
+            }
             MAT(jjt, r, c) = f;
             MAT(jjt, c, r) = f;
         }
+    }
     
     /* add Ja part */
     
-    for (r = 0; r < naux; r++)
+    for (r = 0; r < naux; r++) {
         for (c = 0; c < nequ; c++) {
             MAT(jjt, (nequ + r), c) = MAT(ja, c, r);
             MAT(jjt, c, (nequ + r)) = MAT(ja, c, r);
         }
+    }
     
     /* zero rest */
     
-    for (r = 0; r < naux; r++)
+    for (r = 0; r < naux; r++) {
         for (c = 0; c < naux; c++) {
             MAT(jjt, (nequ + r), (nequ + c)) = 0.0;
         }
+    }
     
     /* compute right hand side: Jx . dist - c_res; - c_res; Jx . dist */
     
     for (r = 0; r < nequ; r++) {
-        for (f = 0.0, i = 0; i < nvar; i++)
+        for (f = 0.0, i = 0; i < nvar; i++) {
             f += MAT(jx, r, i) * VEC(dist, i);
+        }
         MAT(jdf, r, 0) = f - VEC(c_res, r);
         MAT(jdf, r, 1) = -VEC(c_res, r);
         MAT(jdf, r, 2) = f;
@@ -350,9 +372,10 @@ boolean dist_step_direction(
     
     if (solvesym_m(jjt, jdf, jdf) == FALSE) {
         
-        if (trace >= 1)
+        if (trace >= 1) {
             fputs("Jacobian decomposition failed: indefinite model constraints\n",
                   trace_stream);
+        }
         return (FALSE);
     }
     
@@ -450,28 +473,33 @@ static fnum constr_linef(fnum alpha) {
     boolean b;
     inum i;
     
-    for (i = 0; i < VECN(g_dist); i++) /* partial step */
+    for (i = 0; i < VECN(g_dist); i++) { /* partial step */
         VEC(n_dist, i) = VEC(g_dist, i) + alpha * VEC(d_dist, i);
+    }
     
-    for (i = 0; i < VECN(g_aux); i++) /* partial step */
+    for (i = 0; i < VECN(g_aux); i++) { /* partial step */
         VEC(n_aux, i) = VEC(g_aux, i) + alpha * VEC(d_aux, i);
+    }
     
     b = ext_constraints(n_dist, n_aux, TRUE, c_res,
                         FALSE, matrixNIL, matrixNIL, g_trace - 1);
     
-    if (b == TRUE)
+    if (b == TRUE) {
         pow = powell(n_dist, g_lambda, c_res);
-    else pow = INF;
+    } else {
+        pow = INF;
+    }
     
     if (g_trace >= 1) {
-        if (b == TRUE)
+        if (b == TRUE) {
             fprintf(trace_stream,
                     "directional search\nstep: %.*e, Powell residual: %.*e\n",
                     FNUM_DIG, alpha, FNUM_DIG, pow);
-        else
+        } else {
             fprintf(trace_stream,
                     "directional search\nstep: %.*e, Powell residual: inf\n",
                     FNUM_DIG, alpha);
+        }
     }
     
     return (pow);
@@ -497,16 +525,19 @@ fnum dist_step_size(
     boolean b;
     inum i;
     
-    if (trace >= 1)
+    if (trace >= 1) {
         fputs("\nstep size:\n", trace_stream);
+    }
     
     fl = powell(dist, lambda, c_res);
     
-    for (i = 0; i < VECN(dist); i++) /* try full step first */
+    for (i = 0; i < VECN(dist); i++) { /* try full step first */
         VEC(n_dist, i) = VEC(dist, i) + VEC(d_dist, i);
+    }
     
-    for (i = 0; i < VECN(aux); i++)
+    for (i = 0; i < VECN(aux); i++) {
         VEC(n_aux, i) = VEC(aux, i) + VEC(d_aux, i);
+    }
     
     b = ext_constraints(n_dist, n_aux, TRUE, c_res, TRUE, jx, ja, trace - 1);
     
@@ -515,16 +546,17 @@ fnum dist_step_size(
         fr = powell(n_dist, lambda, c_res);
         
         if ((fr - fl) < (r_tol * fl + f_tol)) { /* no significant increase */
-            if (trace >= 1)
+            if (trace >= 1) {
                 fprintf(trace_stream, "full step accepted: %.*e <= %.*e\n\n",
                         FNUM_DIG, fr, FNUM_DIG, fl);
+            }
             return (1.0);
         }
     } else {
         
-        if (trace >= 1)
+        if (trace >= 1) {
             fputs("full step failed\n", trace_stream);
-        
+        }
         fr = INF;
     }
     
@@ -532,12 +564,13 @@ fnum dist_step_size(
     
     if (trace >= 1) {
         fprintf(trace_stream, "starting directional search:\n");
-        if (b == TRUE)
+        if (b == TRUE) {
             fprintf(trace_stream, "Powell residuals: %.*e, %.*e\n",
                     FNUM_DIG, fl, FNUM_DIG, fr);
-        else
+        } else {
             fprintf(trace_stream, "Powell residuals: %.*e, inf\n",
                     FNUM_DIG, fl);
+        }
     }
     
     g_lambda = lambda;
@@ -553,14 +586,17 @@ fnum dist_step_size(
     for (;;) {
         xm = 1.0e-1 * xr;
         if (xm < min_alpha) {
-            if (trace >= 1)
+            if (trace >= 1) {
                 fprintf(trace_stream, "step size too small: %e\n", xm);
+            }
             return (0.0);
         }
         fm = constr_linef(xm);
         if (fm > fl) {
             xr = xm;
-        } else break;
+        } else {
+            break;
+        }
     }
     
     xmin = xm;
@@ -579,14 +615,16 @@ fnum dist_step_size(
             fmin = fm;
         }
         
-        if (trace >= 1)
+        if (trace >= 1) {
             fprintf(trace_stream, "local opt. count reached : %ld\n", (long) itmax);
+        }
     }
     
-    if (trace >= 1)
+    if (trace >= 1) {
         fprintf(trace_stream,
                 "end directional search\nstep: %.*e, Powell residual: %.*e\n",
                 FNUM_DIG, xmin, FNUM_DIG, fmin);
+    }
     
     return (xmin);
 }

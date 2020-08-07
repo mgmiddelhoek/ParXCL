@@ -118,8 +118,9 @@ inum newton_raphson(
     
     trace = tr;
     
-    if (trace >= 1)
+    if (trace >= 1) {
         fprintf(trace_stream, "Newton-Raphson:\n");
+    }
     
     /* setup global variables */
     
@@ -162,8 +163,9 @@ inum newton_raphson(
         
         if ((rf == FALSE) || (ffo != ffi)) {
             
-            if (trace >= 1)
+            if (trace >= 1) {
                 fprintf(trace_stream, "evaluation error in model\n");
+            }
             
             done = -1;
             break;
@@ -177,13 +179,15 @@ inum newton_raphson(
             }
         } else jaceval++;
         
-        if (ffi == TRUE)
+        if (ffi == TRUE) {
             fnorm = norm_vector(f);
+        }
         
         /* calculate dx from jac * dx = - f */
         
-        for (i = 0; i < dim; i++)
+        for (i = 0; i < dim; i++) {
             VEC(b, i) = -VEC(f, i);
+        }
         
         if (crout(jac, dx, b) == FALSE) {
             done = -3;
@@ -222,8 +226,9 @@ inum newton_raphson(
                 done = (xconv == TRUE) ? 1 : -1;
                 break;
             }
-            for (i = 0; i < dim; i++)
+            for (i = 0; i < dim; i++) {
                 VEC(xn, i) = VEC(x, i) + alpha * VEC(dx, i);
+            }
             
             ffi = TRUE;
             
@@ -233,16 +238,18 @@ inum newton_raphson(
             
             ffi = FALSE; /* no need to calculate f */
             
-            for (i = 0; i < dim; i++)
+            for (i = 0; i < dim; i++) {
                 VEC(f, i) = VEC(fn, i);
+            }
             
             fnorm = fnnorm;
         }
         
         /* better point has been located, so step to it */
         
-        for (i = 0; i < dim; i++)
+        for (i = 0; i < dim; i++) {
             VEC(x, i) = VEC(xn, i);
+        }
         
         if (trace >= 2) {
             fputs("step to x:\n", trace_stream);
@@ -296,8 +303,9 @@ fnum optstep(fnum releps, fnum abseps, fnum fcurr, fnum ffull,
     
     found = FALSE; /* no solution yet */
     
-    if (trace >= 3)
+    if (trace >= 3) {
         fprintf(trace_stream, "starting directional search:\n");
+    }
     
     /* first absorb overshoot in large steps */
     
@@ -320,25 +328,29 @@ fnum optstep(fnum releps, fnum abseps, fnum fcurr, fnum ffull,
         fmin = fc;
         xmin = xc;
         
-        found = brent(xl, xc, xr, fvec_norm, releps, abseps,
-                      &itmax, &xmin, &fmin);
+        found = brent(xl, xc, xr, fvec_norm, releps, abseps, &itmax, &xmin, &fmin);
         
         mineval += itmax;
         
-        if ((found == FALSE) && (trace >= 3))
+        if ((found == FALSE) && (trace >= 3)) {
             fprintf(trace_stream, "local opt. count reached : %ld\n", (long) itmax);
+        }
         
-        if (fmin > fl)
+        if (fmin > fl) {
             xmin = xc; /* better then nothing */
+        }
         
         found = TRUE;
     }
     
-    if (found == FALSE) xmin = 0.0;
+    if (found == FALSE) {
+        xmin = 0.0;
+    }
     
-    if (trace >= 3)
+    if (trace >= 3) {
         fprintf(trace_stream,
                 "end directional search, step size : %14.6e\n", xmin);
+    }
     
     return (xmin);
 }
@@ -350,11 +362,13 @@ fnum fvec_norm(fnum a) {
     boolean ff, jf, rf;
     fnum norm;
     
-    if (trace >= 4)
+    if (trace >= 4) {
         fprintf(trace_stream, "trying step size : %14.6e\n", a);
+    }
     
-    for (i = 0; i < dim; i++)
+    for (i = 0; i < dim; i++) {
         VEC(xn, i) = VEC(x, i) + a * VEC(dx, i);
+    }
     
     ff = TRUE; /* calculate residual */
     jf = FALSE; /* don't calculate Jacobian */
@@ -362,12 +376,15 @@ fnum fvec_norm(fnum a) {
     
     rf = sim_constraints(xn, &ff, fn, &jf, jac, trace - 4);
     
-    if ((rf == FALSE) || (ff == FALSE)) return (INF);
+    if ((rf == FALSE) || (ff == FALSE)) {
+        return (INF);
+    }
     
     norm = norm_vector(fn);
     
-    if (trace >= 4)
+    if (trace >= 4) {
         fprintf(trace_stream, "resulting |f| : %14.6e\n", norm);
+    }
     
     return (norm);
 }
@@ -379,11 +396,13 @@ boolean calcjac(vector reltol, vector abstol, matrix jac) {
     boolean rf, ff, jf;
     inum c, r;
     
-    if (trace >= 5)
+    if (trace >= 5) {
         fprintf(trace_stream, "calc Jac:\n");
+    }
     
-    for (r = 0; r < dim; r++) /* copy x to xn */
+    for (r = 0; r < dim; r++) { /* copy x to xn */
         VEC(xn, r) = VEC(x, r);
+    }
     
     for (c = 0; c < dim; c++) {
         
@@ -401,8 +420,9 @@ boolean calcjac(vector reltol, vector abstol, matrix jac) {
         
         rf = sim_constraints(xn, &ff, f1, &jf, jac, trace - 5);
         
-        if ((rf == FALSE) || (ff == FALSE))
+        if ((rf == FALSE) || (ff == FALSE)) {
             return (FALSE);
+        }
         
         /* left function value */
         
@@ -414,12 +434,15 @@ boolean calcjac(vector reltol, vector abstol, matrix jac) {
         
         rf = sim_constraints(xn, &ff, f2, &jf, jac, trace - 5);
         
-        if ((rf == FALSE) || (ff == FALSE)) return (FALSE);
+        if ((rf == FALSE) || (ff == FALSE)) {
+            return (FALSE);
+        }
         
         /* central differences */
         
-        for (r = 0; r < dim; r++)
+        for (r = 0; r < dim; r++) {
             MAT(jac, r, c) = (VEC(f1, r) - VEC(f2, r)) / (2.0 * delta);
+        }
         
         VEC(xn, c) = VEC(x, c); /* reset xn */
     }

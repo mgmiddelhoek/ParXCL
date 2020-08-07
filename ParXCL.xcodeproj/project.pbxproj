@@ -172,13 +172,13 @@
 		5B99C5271E32421900F157D9 /* stim2dat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stim2dat.c; sourceTree = "<group>"; };
 		5B99C5281E32421900F157D9 /* subset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = subset.c; sourceTree = "<group>"; };
 		5B99C5291E32421900F157D9 /* vecmat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vecmat.c; sourceTree = "<group>"; };
-		5B99C52D1E32421900F157D9 /* datastruct.ct */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = datastruct.ct; sourceTree = "<group>"; };
+		5B99C52D1E32421900F157D9 /* datastruct.ct */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; path = datastruct.ct; sourceTree = "<group>"; };
 		5B99C52E1E32421900F157D9 /* datastruct.ds */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = datastruct.ds; sourceTree = "<group>"; };
-		5B99C52F1E32421900F157D9 /* datastruct.ht */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = datastruct.ht; sourceTree = "<group>"; };
+		5B99C52F1E32421900F157D9 /* datastruct.ht */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = datastruct.ht; sourceTree = "<group>"; };
 		5B99C5301E32421900F157D9 /* datastruct.t */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = datastruct.t; sourceTree = "<group>"; };
-		5B99C5311E32421900F157D9 /* primtype.ct */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = primtype.ct; sourceTree = "<group>"; };
+		5B99C5311E32421900F157D9 /* primtype.ct */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; path = primtype.ct; sourceTree = "<group>"; };
 		5B99C5321E32421900F157D9 /* primtype.ds */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = primtype.ds; sourceTree = "<group>"; };
-		5B99C5331E32421900F157D9 /* primtype.ht */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = primtype.ht; sourceTree = "<group>"; };
+		5B99C5331E32421900F157D9 /* primtype.ht */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; path = primtype.ht; sourceTree = "<group>"; };
 		5B99C5341E32421900F157D9 /* primtype.t */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = primtype.t; sourceTree = "<group>"; };
 		5B99C5351E32421900F157D9 /* parxlex.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; path = parxlex.l; sourceTree = "<group>"; };
 		5B99C5361E32421900F157D9 /* parxyacc.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; path = parxyacc.y; sourceTree = "<group>"; };

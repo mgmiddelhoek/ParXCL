@@ -25,12 +25,13 @@
 /* print values: -inf <= v <= inf */
 
 static void printv(fnum v) {
-    if ((1.01 * v) >= INF)
+    if ((1.01 * v) >= INF) {
         fprintf(output_stream, "%-15s", "inf");
-    else if ((1.01 * v) <= MININF)
+    } else if ((1.01 * v) <= MININF) {
         fprintf(output_stream, "%-15s", "-inf");
-    else
+    } else {
         fprintf(output_stream, "%-15.6g", v);
+    }
 }
 
 /* give the type of a parxsymbol */
@@ -101,8 +102,9 @@ static void show_mod(dbnode n) {
     
     mt = to_Model(n)->moddata;
     
-    if (strlen(mt->info))
+    if (strlen(mt->info)) {
         fprintf(output_stream, "info: %s\n", mt->info);
+    }
     
     fprintf(output_stream, "model type: %s\n", mt->id);
     
@@ -136,8 +138,9 @@ static void show_sys(dbnode n) {
     
     st = to_System(n)->sysdata;
     
-    if (strlen(st->info))
+    if (strlen(st->info)) {
         fprintf(output_stream, "info: %s\n", st->info);
+    }
     
     fprintf(output_stream, "model: %s\n", st->model);
     
@@ -202,8 +205,9 @@ static void show_data(dbnode n) {
     
     dt = to_Datatable(n)->datdata;
     
-    if (strlen(dt->info))
+    if (strlen(dt->info)) {
         fprintf(output_stream, "info: %s\n", dt->info);
+    }
     
     /* count number of points */
     nump = numf = numu = nums = numo = 0L;
@@ -283,18 +287,22 @@ static void show_meas(dbnode n) {
     mt = to_Measurement(n)->measdata;
     
     for (; mt != meastemplateNIL; mt = mt->next) {
-        if (mt->mtype < 0)
+        if (mt->mtype < 0) {
             fprintf(output_stream, "%-15.14s: ", mt->name);
-        if (mt->mtype == 0)
+        }
+        if (mt->mtype == 0) {
             fprintf(output_stream, "group          :");
-        if (mt->mtype > 0)
+        }
+        if (mt->mtype > 0) {
             fprintf(output_stream, "curve%-10ld:", (long) (mt->mtype));
+        }
         fputs(" > ", output_stream);
         printv(mt->lval);
         fputs(" < ", output_stream);
         printv(mt->uval);
-        if (mt->mtype > 0)
+        if (mt->mtype > 0) {
             fprintf(output_stream, " # %ld", (long) (mt->subs));
+        }
         fputc('\n', output_stream);
     }
 }
@@ -303,8 +311,9 @@ void show_parxsymbol(parxsymbol_list sl) {
     dbnode n;
     
     for (; sl != parxsymbolNIL; sl = sl->next) {
-        if ((n = find_dbnode(sl->name, TAGName)) == dbnodeNIL)
+        if ((n = find_dbnode(sl->name, TAGName)) == dbnodeNIL) {
             continue;
+        }
         switch (tag_dbnode(n)) {
             case TAGModel: show_mod(n);
                 break;
@@ -316,7 +325,8 @@ void show_parxsymbol(parxsymbol_list sl) {
                 break;
             case TAGMeasurement: show_meas(n);
                 break;
-            default: return;
+            default:
+                return;
         }
     }
 }

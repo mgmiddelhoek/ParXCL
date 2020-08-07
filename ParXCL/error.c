@@ -91,12 +91,14 @@ static ERROR *lookup(inum no) {
     inum i;
     ERROR *e;
     
-    for (i = 0, e = errorlist.l; i < errorlist.n; i++, e++)
-        if (e->px_errno == no)
+    for (i = 0, e = errorlist.l; i < errorlist.n; i++, e++) {
+        if (e->px_errno == no) {
             break;
-    if (i == errorlist.n)
+        }
+    }
+    if (i == errorlist.n) {
         return ((ERROR *) NULL);
-    
+    }
     return (e);
 }
 
@@ -105,20 +107,24 @@ static ERROR *lookup(inum no) {
 void error(tmstring s) {
     ERROR *ep;
     
-    if (!errcode)
+    if (!errcode) {
         return;
+    }
     
-    if (!isatty(fileno(input_stream))) /* are we in a file */
+    if (!isatty(fileno(input_stream))) { /* are we in a file */
         fprintf(error_stream, "\nParX: %s (%d): ", yyfilename, yylineno);
+    }
     
-    if (trace_stream != error_stream) /* is there a trace file */
+    if (trace_stream != error_stream) { /* is there a trace file */
         fprintf(trace_stream, "\n\nERROR  (File: %s  Line: %d) : ",
                 yyfilename, yylineno);
+    }
     
     if (errcode > 0) {
         errno = (int) errcode;
-        if (trace_stream != error_stream)
+        if (trace_stream != error_stream) {
             fprintf(trace_stream, "SYSTEM ERROR %d\n\n", errno);
+        }
         fflush(output_stream);
         fflush(trace_stream);
         perror((char *) s);
@@ -130,10 +136,12 @@ void error(tmstring s) {
             errcode = UNKNOWN_ERROR;
             error(error_mesg);
             exit((int) errcode);
-        } else
+        } else {
             fprintf(error_stream, "\n%s : %s\n", s, ep->std_mesg);
-        if (trace_stream != error_stream)
+        }
+        if (trace_stream != error_stream) {
             fprintf(trace_stream, "\n%s : %s\n\n", s, ep->std_mesg);
+        }
         fflush(error_stream);
         fflush(trace_stream);
         fflush(output_stream);

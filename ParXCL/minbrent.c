@@ -58,18 +58,21 @@ boolean brent(
             q = (x - v) * (fx - fw);
             p = (x - v) * q - (x - w) * r;
             q = 2.0 * (q - r);
-            if (q > 0.0) p = -p;
+            if (q > 0.0) {
+                p = -p;
+            }
             q = fabs(q);
             etemp = e;
             e = d;
             if ((fabs(p) >= fabs(0.5 * q * etemp)) ||
-                (p <= q * (a - x)) || (p >= q * (b - x)))
+                (p <= q * (a - x)) || (p >= q * (b - x))) {
                 d = CGOLD * (e = (x >= xm ? a - x : b - x));
-            else {
+            } else {
                 d = p / q;
                 u = x + d;
-                if ((u - a < tol2) || (b - u < tol2))
+                if ((u - a < tol2) || (b - u < tol2)) {
                     d = (xm - 1) > 0.0 ? fabs(tol1) : -fabs(tol1);
+                }
             }
         } else {
             d = CGOLD * (e = (x >= xm ? a - x : b - x));
@@ -78,8 +81,11 @@ boolean brent(
              x + (d > 0.0 ? fabs(tol1) : -fabs(tol1)));
         fu = (*obj)(u);
         if (fu <= fx) {
-            if (u >= x) a = x;
-            else b = x;
+            if (u >= x) {
+                a = x;
+            } else {
+                b = x;
+            }
             v = w;
             w = x;
             x = u;
@@ -87,8 +93,11 @@ boolean brent(
             fw = fx;
             fx = fu;
         } else {
-            if (u < x) a = u;
-            else b = u;
+            if (u < x) {
+                a = u;
+            } else {
+                b = u;
+            }
             if ((fu <= fw) || (w == x)) {
                 v = w;
                 w = u;

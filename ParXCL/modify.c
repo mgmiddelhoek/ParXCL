@@ -58,8 +58,9 @@ boolean proximity(
     fr = no - rank;
     
     if (fr <= 0) {
-        if (trace >= 1)
+        if (trace >= 1) {
             fprintf(trace_stream, "\nInsufficient data points remaining\n");
+        }
         
         return (TRUE);
     }
@@ -68,23 +69,30 @@ boolean proximity(
     ssq = rssq * rssq;
     chi_2 = ssq;
     
-    if (no != 0) var = ssq / no;
-    else var = 0.0;
+    if (no != 0) {
+        var = ssq / no;
+    } else {
+        var = 0.0;
+    }
     spread = sqrt(var);
     prob = chi2(chi_2, fr);
     
     cond = VEC(s_val, 0) / VEC(s_val, rank - 1);
     
-    for (consist = 1.0, i = 0; i < rank; i++)
+    for (consist = 1.0, i = 0; i < rank; i++) {
         consist *= fabs(rssq / VEC(s_val, i));
+    }
     consist = pow(consist, 1.0 / ((double) rank));
     
-    if (rank >= 1)
+    if (rank >= 1) {
         maxcons = fabs(rssq / VEC(s_val, 0));
-    else
+    } else {
         maxcons = 0.0;
+    }
     
-    if (opt != CONSIST) *pmc = maxcons;
+    if (opt != CONSIST) {
+        *pmc = maxcons;
+    }
     
     if (trace >= 1) {
         fprintf(trace_stream, "\nNumber of selected data points = %ld\n\n", (long) no);
@@ -101,24 +109,27 @@ boolean proximity(
     switch (opt) {
             
         case MODES:
-            if (spread > 1.0)
+            if (spread > 1.0) {
                 return (FALSE);
+            }
             return (TRUE);
             
         case STRICT:
             for (i = 0; i < VECN(res); i += ng) {
-                for (j = 0, eps = 0.0; j < ng; j++)
+                for (j = 0, eps = 0.0; j < ng; j++) {
                     eps += VEC(res, (i + j)) * VEC(res, (i + j));
+                }
                 eps = sqrt(eps);
-                if (eps > 1.0)
+                if (eps > 1.0) {
                     return (FALSE);
+                }
             }
             return (TRUE);
             
         case CHISQ:
-            if (prob < CHICRIT)
+            if (prob < CHICRIT) {
                 return (FALSE);
-            
+            }
             return (TRUE);
             
         case CONSIST:
@@ -172,10 +183,13 @@ boolean modify_point_set(
     
     fr = VECN(res) - rank;
     
-    if (fr <= 0) return (FALSE);
+    if (fr <= 0) {
+        return (FALSE);
+    }
     
-    if (trace >= 2)
+    if (trace >= 2) {
         fputs("Data point set modification\n", trace_stream);
+    }
     
     /* calculate I - (Q x Qt) in blocks of ng x ng */
     
@@ -187,15 +201,17 @@ boolean modify_point_set(
                 /* row_i x row_j, upto rank */
                 
                 inp = 0;
-                for (v = 0; v < rank; v++)
+                for (v = 0; v < rank; v++) {
                     inp += MAT(q, g + i, v) * MAT(q, g + j, v);
+                }
                 
                 MAT(wrkm, g + i, j) = -inp;
                 
-                if (j != i) /* symmetric */
+                if (j != i) { /* symmetric */
                     MAT(wrkm, g + j, i) = -inp;
-                else MAT(wrkm, g + j, i) += 1.0;
-                
+                } else {
+                    MAT(wrkm, g + j, i) += 1.0;
+                }
             }
         }
     }
@@ -228,17 +244,20 @@ boolean modify_point_set(
         
         b = solvesym_v(sub_wrkm, sub_wrkv, sub_res);
         
-        if (b == FALSE) break;
+        if (b == FALSE) {
+            break;
+        }
         
         dsig = inp_vector(sub_res, sub_wrkv);
         own = norm_vector(sub_res);
         own *= own;
         
-        if (trace >= 5)
+        if (trace >= 5) {
             fprintf(trace_stream,
                     "%c index %5ld, d_sumsq= %.*e, own = %.*e\n",
                     (dsig > dsig_max) ? '*' : ' ', (long) index,
                     FNUM_DIG, dsig, FNUM_DIG, own);
+        }
         
         if (dsig > dsig_max) {
             dsig_max = dsig;
@@ -267,15 +286,17 @@ boolean modify_point_set(
             /* row_i x row_j, upto rank */
             
             inp = 0;
-            for (v = 0; v < rank; v++)
+            for (v = 0; v < rank; v++) {
                 inp += MAT(q, g + i, v) * MAT(q, g + j, v);
+            }
             
             MAT(wrkm, g + i, j) = -inp;
             
-            if (j != i) /* symmetric */
+            if (j != i) { /* symmetric */
                 MAT(wrkm, g + j, i) = -inp;
-            else MAT(wrkm, g + j, i) += 1.0;
-            
+            } else {
+                MAT(wrkm, g + j, i) += 1.0;
+            }
         }
     }
     
@@ -289,13 +310,16 @@ boolean modify_point_set(
     
     for (i = 0; i < rank; i++) {
         inp = 0.0;
-        for (j = 0; j < VECN(dp); j++)
+        for (j = 0; j < VECN(dp); j++) {
             inp += MAT(pt, i, j) * VEC(dp, j);
+        }
         VEC(wrkp, i) = inp * VEC(sv, i);
     }
-    for (i = 0; i < ng; i++)
-        for (j = 0; j < rank; j++)
+    for (i = 0; i < ng; i++) {
+        for (j = 0; j < rank; j++) {
             VEC(sub_res, i) += MAT(q, g + i, j) * VEC(wrkp, j);
+        }
+    }
     
     b0 = solvesym_v(sub_wrkm, sub_wrkv, sub_res);
     

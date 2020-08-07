@@ -65,7 +65,7 @@ boolean prx_inCode(moddat dat, FILE * inFile) {
     CODE * IfPos[MAXLEVEL + 1] = { NULL };
     CODE * ElsePos[MAXLEVEL + 1] = { NULL };
     int level;
-    int nItems;
+    size_t nItems;
     int i;
     char Buf[MAXLINE + 2];
     short sh;
@@ -87,7 +87,7 @@ boolean prx_inCode(moddat dat, FILE * inFile) {
         errcode = NPX_IERR;
         return FALSE;
     }
-    fread(Buf, i, 1, file);
+    nItems = fread(Buf, i, 1, file);
     if (strcmp(Buf, FILEID) != 0) {
         errcode = NPX_IERR;
         return FALSE;
@@ -119,8 +119,9 @@ boolean prx_inCode(moddat dat, FILE * inFile) {
     READITEM;
     while (nItems) {
         opr = (OPR) sh;
-        if (opr >= STOP)
+        if (opr >= STOP) {
             break;
+        }
         if (nFree <= 0) { /* add new code buffer */
             (*code++).o = JMP;
             (*code).c = (CODE *) mem_slot(Tree, BUFSIZE * sizeof (CODE));
@@ -138,8 +139,9 @@ boolean prx_inCode(moddat dat, FILE * inFile) {
                 READITEM;
                 ind = sh;
                 (*code++).o = (typ != DRES) ? OPD : DOPD;
-                if (typ == FLG)
+                if (typ == FLG) {
                     (*(code - 1)).o = LDF;
+                }
                 (*code++).f = prx_getAddress(typ, ind, dat);
                 nFree -= 2;
                 break;
@@ -183,9 +185,9 @@ boolean prx_inCode(moddat dat, FILE * inFile) {
                 nFree -= 2;
                 break;
             case FI:
-                if (ElsePos[level])
+                if (ElsePos[level]) {
                     (*ElsePos[level]).c = code;
-                else {
+                } else {
                     assert(IfPos[level] != NULL);
                     (*IfPos[level]).c = code;
                 }
@@ -390,8 +392,9 @@ boolean prx_compute(moddat dat) {
                 *pSt -= 1;
                 break;
             case ABS:
-                if (*pSt < 0)
+                if (*pSt < 0) {
                     *pSt = -*pSt;
+                }
                 break;
             case RET:
                 prx_errcode = *pSt;
@@ -399,14 +402,16 @@ boolean prx_compute(moddat dat) {
                 break;
             case CHKL:
                 pSt--;
-                if (*pSt < *(pSt + 1))
+                if (*pSt < *(pSt + 1)) {
                     return FALSE;
+                }
                 pSt--;
                 break;
             case CHKG:
                 pSt--;
-                if (*pSt > *(pSt + 1))
+                if (*pSt > *(pSt + 1)) {
                     return FALSE;
+                }
                 pSt--;
                 break;
             case DOPD:
@@ -432,17 +437,24 @@ boolean prx_compute(moddat dat) {
                 *((*code++).f) = 0.0;
                 break;
             case IF:
-                if (*(pSt--) == 0)
+                if (*(pSt--) == 0) {
                     code = (*code).c;
-                else
+                } else {
                     code++;
+                }
                 break;
             case EOD:
                 iDvt++;
-                if ((kod == 1) && (iDvt < VECN(dat->xf)) && (VEC(dat->xf, iDvt) == FALSE))
-                    for (code++; (*code).o != EOD; code++);
-                if ((kod == 3) && (iDvt < VECN(dat->pf)) && (VEC(dat->pf, iDvt) == FALSE))
-                    for (code++; (*code).o != EOD; code++);
+                if ((kod == 1) && (iDvt < VECN(dat->xf)) && (VEC(dat->xf, iDvt) == FALSE)) {
+                    for (code++; (*code).o != EOD; code++) {
+                        /* empty */
+                    }
+                }
+                if ((kod == 3) && (iDvt < VECN(dat->pf)) && (VEC(dat->pf, iDvt) == FALSE)) {
+                    for (code++; (*code).o != EOD; code++) {
+                        /* empty */
+                    }
+                }
                 break;
             case SOK:
                 kod++;
@@ -451,13 +463,20 @@ boolean prx_compute(moddat dat) {
                     if (!dat->jxf) {
                         code = kindStart[3];
                         kod++;
-                    } else if (VEC(dat->xf, iDvt) == FALSE)
-                        for (code++; (*code).o != EOD; code++);
+                    } else if (VEC(dat->xf, iDvt) == FALSE) {
+                        for (code++; (*code).o != EOD; code++) {
+                            /* empty */
+                        }
+                    }
                 } else if (kod == 3) {
-                    if (!dat->jpf)
+                    if (!dat->jpf) {
                         return TRUE;
-                    if (VEC(dat->pf, iDvt) == FALSE)
-                        for (code++; (*code).o != EOD; code++);
+                    }
+                    if (VEC(dat->pf, iDvt) == FALSE) {
+                        for (code++; (*code).o != EOD; code++) {
+                            /* empty */
+                        }
+                    }
                 }
                 break;
             case JMP:

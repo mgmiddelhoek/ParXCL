@@ -61,8 +61,11 @@ void set_path(tmstring fname) {
             while ((sep = strpbrk(sep, "/\\:")) != NULL) {
                 lsep = ++sep;
             }
-            if (lsep != NULL) *lsep = '\0';
-            else buf[0] = '\0';
+            if (lsep != NULL) {
+                *lsep = '\0';
+            } else {
+                buf[0] = '\0';
+            }
         }
         strcat(buf, fname);
     }
@@ -71,8 +74,11 @@ void set_path(tmstring fname) {
     while ((sep = strpbrk(sep, "/\\:")) != NULL) {
         lsep = ++sep;
     }
-    if (lsep != NULL) *lsep = '\0';
-    else buf[0] = '\0';
+    if (lsep != NULL) {
+        *lsep = '\0';
+    } else {
+        buf[0] = '\0';
+    }
 }
 
 /* find the first character of the base name */
@@ -170,8 +176,9 @@ modeltemplate get_model(tmstring fname) {
         error(fname);
         return (modeltemplateNIL);
     }
-    if (error_stream != trace_stream)
+    if (error_stream != trace_stream) {
         fprintf(error_stream, "\nloading model: %s\n", fname);
+    }
     
     tm_lineno = 1;
     if (fscan_modeltemplate(fp, &mt)) {
@@ -241,8 +248,9 @@ systemtemplate get_system(tmstring fname) {
         return (systemtemplateNIL);
     }
     
-    if (error_stream != trace_stream)
+    if (error_stream != trace_stream) {
         fprintf(error_stream, "\nloading system: %s\n", fname);
+    }
     
     tm_lineno = 1;
     if (fscan_systemtemplate(fp, &st)) {
@@ -294,8 +302,9 @@ datatemplate get_datatable(tmstring fname) {
         return (datatemplateNIL);
     }
     
-    if (error_stream != trace_stream)
+    if (error_stream != trace_stream) {
         fprintf(error_stream, "\nloading database: %s\n", fname);
+    }
     
     if (pxd) { /* read .pxd file */
         tm_lineno = 1;
@@ -362,8 +371,9 @@ void put_system(systemtemplate st, tmstring fname) {
         return;
     }
     
-    if (error_stream != trace_stream)
+    if (error_stream != trace_stream) {
         fprintf(error_stream, "\nstoring system: %s\n", fname);
+    }
     
     if (pxs) { /* write .pxs file */
         pst = tm_setprint(fp, 1, 80, 8, 0);
@@ -412,8 +422,9 @@ void put_datatable(datatemplate dt, tmstring fname) {
         return;
     }
     
-    if (error_stream != trace_stream)
+    if (error_stream != trace_stream) {
         fprintf(error_stream, "\nstoring database: %s\n", fname);
+    }
     
     if (pxd == TRUE) { /* write .pxd file */
         pst = tm_setprint(fp, 1, 80, 8, 0);
@@ -425,7 +436,6 @@ void put_datatable(datatemplate dt, tmstring fname) {
     }
     
     if (csv == TRUE) { /* do nothing, not implemented yet */
-        
     }
     
     fclose(fp);

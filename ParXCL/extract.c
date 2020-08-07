@@ -43,8 +43,9 @@ boolean extract(
     
     /* setup a new objective function */
     
-    if (new_objective(numb, prec, tol, &neq, &ng) == FALSE)
+    if (new_objective(numb, prec, tol, &neq, &ng) == FALSE) {
         return (FALSE);
+    }
     
     /* get initial values and precision of variable parameters */
     

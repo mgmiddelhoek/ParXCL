@@ -51,21 +51,24 @@ inum readcsv(FILE *fp, datatemplate dt) {
     while ((c = fgetc(fp)) != EOF) {
         cc++;
         switch (c) {
-            case '"': nest = !nest;
+            case '"':
+                nest = !nest;
                 continue;
             case ' ':
             case '\t':
-            case '\r': continue; /* always remove white space */
+            case '\r':
+                continue; /* always remove white space */
                 
-            case '\n': if (cc == 1) { /* empty line separates curves */
-                crvid++;
-                if (data && dr) {
-                    dr->crvid = crvid;
+            case '\n':
+                if (cc == 1) { /* empty line separates curves */
+                    crvid++;
+                    if (data && dr) {
+                        dr->crvid = crvid;
+                    }
+                    tm_lineno++;
+                    cc = 0;
+                    continue;
                 }
-                tm_lineno++;
-                cc = 0;
-                continue;
-            }
                 if (nest) { /* eol in string */
                     (void) strcpy(tm_errmsg, "open string at eol");
                     goto error;
@@ -78,12 +81,12 @@ inum readcsv(FILE *fp, datatemplate dt) {
                 }
                 col = cc = 0;
                 
-            case ',': if (nest && data) { /* nested number with ',' decimal sep */
-                *(tp++) = '.';
-                *tp = 0;
-                continue;
-            }
-                
+            case ',':
+                if (nest && data) { /* nested number with ',' decimal sep */
+                    *(tp++) = '.';
+                    *tp = 0;
+                    continue;
+                }
                 if (data == 0) { /* parsing header */
                     if (tp == token) { /* empty header */
                         head = new_colhead(new_tmstring(""), FACT);
@@ -107,12 +110,15 @@ inum readcsv(FILE *fp, datatemplate dt) {
                         if (strstr(token, ":f")) state = FACT;
                         if (strstr(token, ":e")) state = ERR;
                         tp = strchr(token, ':');
-                        if (tp) *tp = '\0';
+                        if (tp) {
+                            *tp = '\0';
+                        }
                         head = new_colhead(new_tmstring(token), state);
                         dti->header = append_colhead_list(dti->header, head);
                     }
                 } else { /* parsing data */
                     if (tp == token) { /* column is empty */
+                        assert(dr != datarowNIL);
                         dr->row = append_fnum_list(dr->row, (fnum) 0.0);
                     } else { /* a number */
                         if (sscanf(token, "%le", &f) != 1) {
@@ -122,30 +128,29 @@ inum readcsv(FILE *fp, datatemplate dt) {
                         dr->row = append_fnum_list(dr->row, f);
                     }
                 }
-                
                 if (c == '\n') { /* column terminator is eol */
                     dr = new_datarow(1, crvid, data + 1, new_fnum_list(), new_fnum_list());
                     dti->data = append_datarow_list(dti->data, dr);
                     data++;
                     tm_lineno++;
                 }
-                
                 tp = token;
                 col++;
                 continue;
                 
-            default: if (!data && (isalnum(c) || c == '_' || c == ':')) { /* variable name & type */
-                *(tp++) = c;
-                *tp = 0;
-                continue;
-            } else if (data && (isdigit(c) || strchr("eE+-.", c))) {/* a valid number */
-                *(tp++) = c;
-                *tp = 0;
-                continue;
-            } else {
-                sprintf(tm_errmsg, "illegal character '%c' in c%d", c, col + 1);
-                goto error;
-            }
+            default:
+                if (!data && (isalnum(c) || c == '_' || c == ':')) { /* variable name & type */
+                    *(tp++) = c;
+                    *tp = 0;
+                    continue;
+                } else if (data && (isdigit(c) || strchr("eE+-.", c))) { /* a valid number */
+                    *(tp++) = c;
+                    *tp = 0;
+                    continue;
+                } else {
+                    sprintf(tm_errmsg, "illegal character '%c' in c%d", c, col + 1);
+                    goto error;
+                }
         }
     }
     
@@ -163,7 +168,9 @@ inum readcsv(FILE *fp, datatemplate dt) {
     
     sweep = colheadNIL;
     for (head = dti->header, col = 0; head != colheadNIL; head = head->next) {
-        if (head->type != ERR) col++;
+        if (head->type != ERR) {
+            col++;
+        }
         if (head->type == SWEEP) {
             if (sweep != colheadNIL) {
                 tm_lineno = 1;
@@ -178,16 +185,19 @@ inum readcsv(FILE *fp, datatemplate dt) {
         dt->header = append_colhead_list(dt->header, rdup_colhead(sweep));
     }
     for (head = dti->header; head != colheadNIL; head = head->next) {
-        if (head->type == STIM)
+        if (head->type == STIM) {
             dt->header = append_colhead_list(dt->header, rdup_colhead(head));
+        }
     }
     for (head = dti->header; head != colheadNIL; head = head->next) {
-        if (head->type == MEAS || head->type == CALC)
+        if (head->type == MEAS || head->type == CALC) {
             dt->header = append_colhead_list(dt->header, rdup_colhead(head));
+        }
     }
     for (head = dti->header; head != colheadNIL; head = head->next) {
-        if (head->type == FACT)
+        if (head->type == FACT) {
             dt->header = append_colhead_list(dt->header, rdup_colhead(head));
+        }
     }
     
     /* create receiving datarows */
@@ -200,10 +210,16 @@ inum readcsv(FILE *fp, datatemplate dt) {
     /* transpose the data */
     
     for (head = dt->header, idx = 0; head != colheadNIL; head = head->next, idx++) {
-        for (hv = dti->header, iv = 0; hv != colheadNIL; hv = hv->next, iv++)
-            if (hv->type != ERR && strcmp(head->name, hv->name) == 0) break;
-        for (he = dti->header, ie = 0; he != colheadNIL; he = he->next, ie++)
-            if (he->type == ERR && strcmp(head->name, he->name) == 0) break;
+        for (hv = dti->header, iv = 0; hv != colheadNIL; hv = hv->next, iv++) {
+            if (hv->type != ERR && strcmp(head->name, hv->name) == 0) {
+                break;
+            }
+        }
+        for (he = dti->header, ie = 0; he != colheadNIL; he = he->next, ie++) {
+            if (he->type == ERR && strcmp(head->name, he->name) == 0) {
+                break;
+            }
+        }
         for (dri = dti->data, dro = dt->data; dri != datarowNIL; dri = dri->next, dro = dro->next) {
             dro->row = append_fnum_list(dro->row, hv == colheadNIL ? (fnum) 0.0 : LST(dri->row, iv));
             dro->err = append_fnum_list(dro->err, he == colheadNIL ? (fnum) 0.0 : LST(dri->row, ie));
@@ -220,31 +236,41 @@ inum readcsv(FILE *fp, datatemplate dt) {
     if (sweep != colheadNIL && dt->data != datarowNIL) {
         for (dr = dt->data; dr->next != datarowNIL; dr = dr->next) {
             
-            if (LST(dr->row, 0) == LST(dr->next->row, 0)) ssign0 = 0;
-            else if (LST(dr->row, 0) < LST(dr->next->row, 0)) ssign0 = 1;
-            else ssign0 = -1;
+            if (LST(dr->row, 0) == LST(dr->next->row, 0)) {
+                ssign0 = 0;
+            } else if (LST(dr->row, 0) < LST(dr->next->row, 0)) {
+                ssign0 = 1;
+            } else {
+                ssign0 = -1;
+            }
             
-            if (dr->crvid != dr->next->crvid) /* curve switch */
+            if (dr->crvid != dr->next->crvid) { /* curve switch */
                 ncurve++;
+            }
             
             if (ssign0 == -ssign1) { /* flyback */
                 nflyb++;
-                if (dr->crvid != dr->next->crvid) /* curve switch in sync */
+                if (dr->crvid != dr->next->crvid) { /* curve switch in sync */
                     ncurves++;
+                }
             }
             ssign1 = ssign0;
         }
         nflyb /= 2;
         
-        if (nflyb == (ncurves - 1) && ncurve == ncurves); /* nothing to do */
-        else if (ncurve != ncurves); /* is split in curves, but not on sweep */
-        else { /* split in curves */
+        if (nflyb == (ncurves - 1) && ncurve == ncurves) { /* nothing to do */
+        } else if (ncurve != ncurves) { /* is split in curves, but not on sweep */
+        } else { /* split in curves */
             ssign1 = 0;
             ncurve = 2;
             for (dr = dt->data; dr->next != datarowNIL; dr = dr->next) {
-                if (LST(dr->row, 0) == LST(dr->next->row, 0)) ssign0 = 0;
-                else if (LST(dr->row, 0) < LST(dr->next->row, 0)) ssign0 = 1;
-                else ssign0 = -1;
+                if (LST(dr->row, 0) == LST(dr->next->row, 0)) {
+                    ssign0 = 0;
+                } else if (LST(dr->row, 0) < LST(dr->next->row, 0)) {
+                    ssign0 = 1;
+                } else {
+                    ssign0 = -1;
+                }
                 if (ssign0 == -ssign1) { /* flyback */
                     ncurve++;
                 }

@@ -103,8 +103,9 @@ void output_dbase(tmstring fname) {
     FILE *f;
     TMPRINTSTATE *st;
     
-    if (fname == tmstringNIL)
+    if (fname == tmstringNIL) {
         fname = DEF_DBASE_FILE;
+    }
     
     f = fopen(fname, "w");
     if (!f) {
@@ -126,8 +127,9 @@ void input_dbase(tmstring fname) {
     FILE *f;
     dbnode_list newdbase;
     
-    if (fname == tmstringNIL)
+    if (fname == tmstringNIL) {
         fname = DEF_DBASE_FILE;
+    }
     
     f = fopen(fname, "r");
     if (!f) {
@@ -174,8 +176,9 @@ tmstring name_dbnode(dbnode n) {
 void del_dbnode(dbnode n) {
     dbnode *p;
     
-    if (tag_dbnode(n) == TAGModel)
+    if (tag_dbnode(n) == TAGModel) {
         return;
+    }
     
     /* get pointer to pointer to node */
     for (p = &dbase; (*p != dbnodeNIL) && (*p != n); p = &((*p)->next)) {
@@ -228,9 +231,11 @@ void copy_dbnode(dbnode dn, dbnode sn) {
 dbnode check_name(tmstring name) {
     dbnode n;
     
-    for (n = dbase; n != dbnodeNIL; n = n->next)
-        if (strcmp(name, name_dbnode(n)) == 0)
+    for (n = dbase; n != dbnodeNIL; n = n->next) {
+        if (strcmp(name, name_dbnode(n)) == 0) {
             return (n);
+        }
+    }
     return (dbnodeNIL);
 }
 
@@ -239,16 +244,17 @@ dbnode check_name(tmstring name) {
 dbnode find_dbnode(tmstring name, tags_dbnode tag) {
     dbnode n;
     
-    for (n = dbase; n != dbnodeNIL; n = n->next)
+    for (n = dbase; n != dbnodeNIL; n = n->next) {
         if (strcmp(name, name_dbnode(n)) == 0) {
-            if ((tag == TAGName) || (tag == tag_dbnode(n)))
+            if ((tag == TAGName) || (tag == tag_dbnode(n))) {
                 return (n);
-            else {
+            } else {
                 errcode = ILL_TYPE_PERR;
                 error(name);
                 return (dbnodeNIL);
             }
         }
+    }
     
     errcode = UNK_IDENT_PERR;
     error(name);
@@ -264,8 +270,9 @@ void dec_dbnode(parxsymbol_list sl, tags_dbnode tag) {
         if (check_name(sl->name) != dbnodeNIL) {
             errcode = ILL_REDEC_PERR;
             error(sl->name);
-            if (tag == TAGSystem)
+            if (tag == TAGSystem) {
                 sl = sl->next; /* skip model name */
+            }
             continue;
         }
         
@@ -283,7 +290,8 @@ void dec_dbnode(parxsymbol_list sl, tags_dbnode tag) {
             case TAGMeasurement:
                 dec_meas(sl->name);
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 }
@@ -341,9 +349,9 @@ dbnode find_model_dbnode(tmstring mname) {
     
     mnode = check_name(mname);
     if (mnode != dbnodeNIL) {
-        if (tag_dbnode(mnode) == TAGModel)
+        if (tag_dbnode(mnode) == TAGModel) {
             return (mnode);
-        else {
+        } else {
             errcode = ILL_MNAME_PERR;
             error(mname);
             return (dbnodeNIL);
@@ -352,8 +360,9 @@ dbnode find_model_dbnode(tmstring mname) {
     
     /* model not in dbase, try to load it */
     
-    if ((mt = get_model(mname)) == modeltemplateNIL)
+    if ((mt = get_model(mname)) == modeltemplateNIL) {
         return (dbnodeNIL);
+    }
     
     mnode = new_Model(new_tmstring(mname), mt);
     dbase = append_dbnode_list(dbase, mnode);
@@ -364,8 +373,9 @@ dbnode find_model_dbnode(tmstring mname) {
 void dec_sys(tmstring sname, tmstring mname) {
     dbnode mnode, snode;
     
-    if ((mnode = find_model_dbnode(mname)) == dbnodeNIL)
+    if ((mnode = find_model_dbnode(mname)) == dbnodeNIL) {
         return;
+    }
     
     snode = new_System(new_tmstring(sname), mod_sys(mnode));
     
@@ -398,15 +408,15 @@ void input_dbnode(tmstring s, tmstring f) {
     systemtemplate st;
     datatemplate dt;
     
-    if ((n = find_dbnode(s, TAGName)) == dbnodeNIL)
+    if ((n = find_dbnode(s, TAGName)) == dbnodeNIL) {
         return;
+    }
     
     switch (tag_dbnode(n)) {
         case TAGSystem:
             if ((st = get_system(f)) == systemtemplateNIL)
                 return;
-            if (strcmp(st->model,
-                       to_System(n)->sysdata->model) == 0) {
+            if (strcmp(st->model, to_System(n)->sysdata->model) == 0) {
                 rfre_systemtemplate(to_System(n)->sysdata);
                 to_System(n)->sysdata = st;
             } else {
@@ -416,8 +426,9 @@ void input_dbnode(tmstring s, tmstring f) {
             }
             break;
         case TAGDatatable:
-            if ((dt = get_datatable(f)) == datatemplateNIL)
+            if ((dt = get_datatable(f)) == datatemplateNIL) {
                 return;
+            }
             rfre_datatemplate(to_Datatable(n)->datdata);
             to_Datatable(n)->datdata = dt;
             break;
@@ -433,20 +444,23 @@ void output_dbnode(tmstring s, tmstring f) {
     systemtemplate st;
     datatemplate dt;
     
-    if ((n = find_dbnode(s, TAGName)) == dbnodeNIL)
+    if ((n = find_dbnode(s, TAGName)) == dbnodeNIL) {
         return;
+    }
     
     switch (tag_dbnode(n)) {
         case TAGSystem:
             st = to_System(n)->sysdata;
-            if (st == systemtemplateNIL)
+            if (st == systemtemplateNIL) {
                 return;
+            }
             put_system(st, f);
             break;
         case TAGDatatable:
             dt = to_Datatable(n)->datdata;
-            if (dt == datatemplateNIL)
+            if (dt == datatemplateNIL) {
                 return;
+            }
             put_datatable(dt, f);
             break;
         default:
@@ -460,24 +474,27 @@ void output_dbnode(tmstring s, tmstring f) {
 
 syspar find_syspar(syspar_list l, tmstring name) {
     for (; l != sysparNIL; l = l->next) {
-        if (strcmp(name, l->name) == 0)
+        if (strcmp(name, l->name) == 0) {
             return (l);
+        }
     }
     return (l);
 }
 
 stimtemplate find_stim(stimtemplate_list l, tmstring name) {
     for (; l != stimtemplateNIL; l = l->next) {
-        if (strcmp(name, l->name) == 0)
+        if (strcmp(name, l->name) == 0) {
             return (l);
+        }
     }
     return (l);
 }
 
 meastemplate find_meas(meastemplate_list l, tmstring name) {
     for (; l != meastemplateNIL; l = l->next) {
-        if (strcmp(name, l->name) == 0)
+        if (strcmp(name, l->name) == 0) {
             return (l);
+        }
     }
     return (l);
 }
@@ -508,15 +525,15 @@ stimtemplate stim_set(dbnode n, tmstring name) {
     
     l = find_stim(l, name);
     
-    if (l != stimtemplateNIL)
+    if (l != stimtemplateNIL) {
         return (l);
+    }
     
     /* not in list so make a new one */
     
     l = new_stimtemplate(new_tmstring(name), 0.0, 0.0, 0, SLIN);
     
-    to_Stimulus(n)->stimdata = append_stimtemplate_list(
-                                                        to_Stimulus(n)->stimdata, l);
+    to_Stimulus(n)->stimdata = append_stimtemplate_list(to_Stimulus(n)->stimdata, l);
     
     return (l);
 }
@@ -528,20 +545,21 @@ meastemplate meas_set(dbnode n, tmstring name) {
     
     l = find_meas(l, name);
     
-    if (l != meastemplateNIL)
+    if (l != meastemplateNIL) {
         return (l);
+    }
     
     /* not in list so make a new one */
     
-    if (name[0] == '0') /* group spec. */
+    if (name[0] == '0') { /* group spec. */
         l = new_meastemplate(new_tmstring(name), 0L, -1.0, 1.0, 1);
-    else if (isdigit(name[0])) /* curve nr. */
+    } else if(isdigit(name[0])) { /* curve nr. */
         l = new_meastemplate(new_tmstring(name), atoi(name), -INF, INF, 1);
-    else /* external quant. */
+    } else { /* external quant. */
         l = new_meastemplate(new_tmstring(name), -1L, -INF, INF, 1);
+    }
     
-    to_Measurement(n)->measdata = append_meastemplate_list(
-                                                           to_Measurement(n)->measdata, l);
+    to_Measurement(n)->measdata = append_meastemplate_list(to_Measurement(n)->measdata, l);
     
     return (l);
 }
@@ -563,8 +581,9 @@ void init_sys_set(dbnode n, syspar p) {
     mp = mt->parm;
     
     for (; mp != pspecNIL; mp = mp->next) {
-        if (strcmp(p->name, mp->name) == 0)
+        if (strcmp(p->name, mp->name) == 0) {
             break;
+        }
     }
     
     if (mp != pspecNIL) {
@@ -578,8 +597,9 @@ void init_sys_set(dbnode n, syspar p) {
     mc = mt->cons;
     
     for (; mc != cspecNIL; mc = mc->next) {
-        if (strcmp(p->name, mc->name) == 0)
+        if (strcmp(p->name, mc->name) == 0) {
             break;
+        }
     }
     
     if (mc != cspecNIL) {
@@ -590,8 +610,9 @@ void init_sys_set(dbnode n, syspar p) {
     mf = mt->flags;
     
     for (; mf != fspecNIL; mf = mf->next) {
-        if (strcmp(p->name, mf->name) == 0)
+        if (strcmp(p->name, mf->name) == 0) {
             break;
+        }
     }
     
     if (mf != fspecNIL) {
@@ -673,22 +694,23 @@ void cast_syspar(syspar p, stateflag f) {
     
     switch (f) {
         case UNKN:
-            if (p->val->tag == TAGPunkn) return;
+            if (p->val->tag == TAGPunkn) { return; }
             np = new_Punkn(val, lval, uval);
             break;
         case MEAS:
-            if (p->val->tag == TAGPmeas) return;
+            if (p->val->tag == TAGPmeas) { return; }
             np = new_Pmeas(val, intv);
             break;
         case CALC:
-            if (p->val->tag == TAGPcalc) return;
+            if (p->val->tag == TAGPcalc) { return; }
             np = new_Pcalc(val, intv);
             break;
         case FACT:
-            if (p->val->tag == TAGPfact) return;
+            if (p->val->tag == TAGPfact) { return; }
             np = new_Pfact(val);
             break;
-        default: return;
+        default:
+            return;
     }
     
     fre_parmval(p->val);
