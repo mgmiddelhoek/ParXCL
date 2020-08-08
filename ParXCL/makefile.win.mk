@@ -52,10 +52,10 @@ OBJS= main.o banner.o \
 MODOBJS= parxmods.o
 
 # .h files generated from tm modules
-TMHDRS=	primtype.h datastruct.h
+TMHDRS= primtype.h datastruct.h
 
 # .c files generated from tm modules
-TMSRCS=	primtype.c datastruct.c
+TMSRCS= primtype.c datastruct.c
 
 JUNK = lex.yy.c y.tab.h y.output y.tab.c \
 	parxlex.c parxyacc.c parxyacc.h parxyacc.out tm.sts parx.st \
@@ -63,10 +63,10 @@ JUNK = lex.yy.c y.tab.h y.output y.tab.c \
 
 help :
 	@echo " Possible make targets:"
-	@echo "all          Create local running programs."
-	@echo "parx         Create ParXCL program."
-	@echo "clean        Free disk space."
-	@echo "install      Install relevant files."
+	@echo "all			Create local running programs."
+	@echo "parx			Create ParXCL program."
+	@echo "clean		Free disk space."
+	@echo "install		Install relevant files."
 
 all: $(PROGRAM)
 
