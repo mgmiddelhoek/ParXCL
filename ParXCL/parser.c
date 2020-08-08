@@ -18,29 +18,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
-#include "error.h"
 #include "dbase.h"
+#include "error.h"
 #include "parser.h"
+#include "parx.h"
 
 static char mainprompt[] = "parx> "; /* statement prompt */
-static char subprompt[] = "+> "; /* sub-statement prompt */
-static char *prompt; /* current prompt */
+static char subprompt[] = "+> ";     /* sub-statement prompt */
+static char *prompt;                 /* current prompt */
 
 tmstring yyfilename = ""; /* current input stream */
-/* int yylineno = 1L; */ /* current line counter */
+/* int yylineno = 1L; */  /* current line counter */
 
 /* set the default input stream for batch mode */
 
 boolean set_input_stream(tmstring fname) {
     FILE *istream;
-    
+
     if (fname == tmstringNIL) {
         return (FALSE);
     }
-    
+
     istream = fopen(fname, "r");
-    
+
     if (istream) {
         input_stream = istream;
         yylineno = 1L;
@@ -53,13 +53,9 @@ boolean set_input_stream(tmstring fname) {
 
 /* YACC and LEX Support functions */
 
-void yymainprompt(void) {
-    prompt = mainprompt;
-}
+void yymainprompt(void) { prompt = mainprompt; }
 
-void yysubprompt(void) {
-    prompt = subprompt;
-}
+void yysubprompt(void) { prompt = subprompt; }
 
 void yyprompt(void) {
     if (isatty(fileno(input_stream))) {
@@ -75,6 +71,4 @@ void yyerror(char *s) {
     }
 }
 
-int yywrap(void) {
-    return (1);
-}
+int yywrap(void) { return (1); }

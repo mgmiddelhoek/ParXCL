@@ -23,24 +23,24 @@
 
 /* include used datastructure specifications */
 
-#include "primtype.h"
 #include "datastruct.h"
 #include "datatpl.h"
+#include "primtype.h"
 
 /* macro's for unpacking parser stack nodes */
 
 /* pn -> parxsymbol_list */
-#define SYMLIST(N)	((N) ? ((to_Symnode(N))->sym) : parxsymbolNIL)
+#define SYMLIST(N) ((N) ? ((to_Symnode(N))->sym) : parxsymbolNIL)
 /* pn -> tmstring */
-#define SYM(N)		((N) ? ((to_Symnode(N))->sym->name) : tmstringNIL)
+#define SYM(N) ((N) ? ((to_Symnode(N))->sym->name) : tmstringNIL)
 /* pn -> tmstring */
-#define STR(N)		((N) ? ((to_Strnode(N))->str) : tmstringNIL)
+#define STR(N) ((N) ? ((to_Strnode(N))->str) : tmstringNIL)
 
 /* global variables */
 
 extern dbnode_list dbase;
 
-#define DEF_DBASE_FILE	"parx.st"
+#define DEF_DBASE_FILE "parx.st"
 
 /* functions defined in dbase.ct */
 

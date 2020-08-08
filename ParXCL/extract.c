@@ -18,46 +18,45 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
 #include "error.h"
+#include "extract.h"
 #include "modes.h"
 #include "objectiv.h"
+#include "parx.h"
 #include "residual.h"
-#include "extract.h"
 
-boolean extract(
-                numblock numb, /* numerical data block */
-                fnum prec, /* relative precision */
-                fnum tol, /* modes tolerance factor */
-                opttype opt, /* type of optimization needed */
-                fnum sens, /* sensitivity threshold */
-                inum maxiter, /* maximum number of iterations */
-                inum trace /* trace flag */
+boolean extract(numblock numb, /* numerical data block */
+                fnum prec,     /* relative precision */
+                fnum tol,      /* modes tolerance factor */
+                opttype opt,   /* type of optimization needed */
+                fnum sens,     /* sensitivity threshold */
+                inum maxiter,  /* maximum number of iterations */
+                inum trace     /* trace flag */
 ) {
-    inum neq; /* maximum number of equations */
-    inum ng; /* number of equations per point */
+    inum neq;    /* maximum number of equations */
+    inum ng;     /* number of equations per point */
     vector pval; /* variable parameter set values */
     vector plow; /* lower bounds */
-    vector pup; /* upper bounds */
+    vector pup;  /* upper bounds */
     boolean b;
-    
+
     /* setup a new objective function */
-    
+
     if (new_objective(numb, prec, tol, &neq, &ng) == FALSE) {
         return (FALSE);
     }
-    
+
     /* get initial values and precision of variable parameters */
-    
+
     new_pvar(numb->p, &pval, &plow, &pup);
-    
+
     /* minimize the objective function using the ModeS method */
-    
+
     b = modes(neq, ng, pval, plow, pup, opt, tol, prec, sens, maxiter, trace);
-    
+
     fre_pvar(pval, plow, pup, numb->p); /* get the parameter values */
-    
+
     fre_objective(numb); /* trash the objective function */
-    
+
     return (b);
 }

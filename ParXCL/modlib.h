@@ -20,12 +20,12 @@
 #ifndef __MODLIB_H
 #define __MODLIB_H
 
-#include "primtype.h"
 #include "datastruct.h"
+#include "primtype.h"
 
 /* model library index table */
 
-typedef boolean(*parxmodel)(modreq req, modres res);
+typedef boolean (*parxmodel)(modreq req, modres res);
 #define parxmodelNIL (parxmodel)0
 
 typedef struct {
@@ -34,10 +34,9 @@ typedef struct {
 } ModelLibrary[];
 
 extern ModelLibrary modlib; /* default model library */
-extern inum modlib_size; /* number of entries - 1 */
+extern inum modlib_size;    /* number of entries - 1 */
 
 extern parxmodel find_model_proc(tmstring name);
 extern xset_list rev_xset_list(xset_list l);
 
 #endif
-

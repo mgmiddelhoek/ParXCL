@@ -20,9 +20,9 @@
 #ifndef __PARXMODS_H
 #define __PARXMODS_H
 
-#include "parx.h"
-#include "primtype.h"
 #include "datastruct.h"
 #include "modlib.h"
+#include "parx.h"
+#include "primtype.h"
 
 #endif

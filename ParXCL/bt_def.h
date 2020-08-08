@@ -23,31 +23,31 @@
 
 #include "mem_def.h"
 
-#define BT_S_EXISTS     (-101)
-#define BT_S_NOTFND     (-102)
-#define BT_S_BALANCE    (-103)
-#define BT_S_REPLACE    (101)
+#define BT_S_EXISTS (-101)
+#define BT_S_NOTFND (-102)
+#define BT_S_BALANCE (-103)
+#define BT_S_REPLACE (101)
 
 struct BT_ITEM {
     struct BT_ITEM *li; /* left pointer */
     struct BT_ITEM *re; /* right pointer */
-    char *inh; /* pointer to contents */
-    char fl; /* balanced flag */
+    char *inh;          /* pointer to contents */
+    char fl;            /* balanced flag */
 };
 
 struct BT_HEAD {
-    struct MEM_TREE *tptr; /* pointer to memory tree */
-    struct BT_ITEM *wu; /* pointer to root node */
-    struct BT_ITEM *fp; /* pointer to first free node */
-    int (*cmp) (void *, void *); /* pointer to compare function */
+    struct MEM_TREE *tptr;      /* pointer to memory tree */
+    struct BT_ITEM *wu;         /* pointer to root node */
+    struct BT_ITEM *fp;         /* pointer to first free node */
+    int (*cmp)(void *, void *); /* pointer to compare function */
 };
 
 extern struct BT_HEAD *bt_define_tree(struct MEM_TREE *, int (*)());
 extern int bt_traverse(struct BT_HEAD *, int (*)(char *));
 
-extern int bt_insert(struct BT_HEAD * head, char *rec);
+extern int bt_insert(struct BT_HEAD *head, char *rec);
 
-extern char *bt_search(struct BT_HEAD * head, char *rec);
-extern char *bt_search_replace(struct BT_HEAD * head, char *rec);
+extern char *bt_search(struct BT_HEAD *head, char *rec);
+extern char *bt_search_replace(struct BT_HEAD *head, char *rec);
 
 #endif

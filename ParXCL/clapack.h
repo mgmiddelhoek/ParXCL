@@ -19,26 +19,29 @@
  */
 
 #ifndef LAPACK_H
-#define	LAPACK_H
+#define LAPACK_H
 
 #include "primtype.h"
 
-#ifdef	__cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
-    
-    inum dgesvd_(char *jobu, char *jobvt, inum *m, inum *n, fnum *a, inum *lda, fnum *s,
-                 fnum *u, inum *ldu, fnum *vt, inum *ldvt, fnum *work, inum *lwork, inum *info);
-    
-    inum dgesv_(inum *n, inum *nrhs, fnum *a, inum *lda, inum *ipiv, fnum *b, inum *ldb, inum *info);
-    
-    inum dsysv_(char *uplo, inum *n, inum *nrhs, fnum *a, inum *lda, inum *ipiv, fnum *b, inum *ldb,
-                fnum *work, inum *lwork, inum *info);
-    
-    inum dposv_(char *uplo, inum *n, inum *nrhs, fnum *a, inum *lda, fnum *b, inum *ldb, inum *info);
-    
-#ifdef	__cplusplus
+
+inum dgesvd_(char *jobu, char *jobvt, inum *m, inum *n, fnum *a, inum *lda,
+             fnum *s, fnum *u, inum *ldu, fnum *vt, inum *ldvt, fnum *work,
+             inum *lwork, inum *info);
+
+inum dgesv_(inum *n, inum *nrhs, fnum *a, inum *lda, inum *ipiv, fnum *b,
+            inum *ldb, inum *info);
+
+inum dsysv_(char *uplo, inum *n, inum *nrhs, fnum *a, inum *lda, inum *ipiv,
+            fnum *b, inum *ldb, fnum *work, inum *lwork, inum *info);
+
+inum dposv_(char *uplo, inum *n, inum *nrhs, fnum *a, inum *lda, fnum *b,
+            inum *ldb, inum *info);
+
+#ifdef __cplusplus
 }
 #endif
 
-#endif	/* LAPACK_H */
+#endif /* LAPACK_H */

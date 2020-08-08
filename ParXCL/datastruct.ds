@@ -19,265 +19,265 @@
 || dbase:[dbnode] is the root of the datastructure
 dbnode ::=
 || external types
-	Model
-		modname:tmstring
-		moddata:modeltemplate
-	|
-	System
-		sysname:tmstring
-		sysdata:systemtemplate
-	|
-	Datatable
-		dataname:tmstring
-		datdata:datatemplate
-	|
+    Model
+        modname:tmstring
+        moddata:modeltemplate
+    |
+    System
+        sysname:tmstring
+        sysdata:systemtemplate
+    |
+    Datatable
+        dataname:tmstring
+        datdata:datatemplate
+    |
 || internal types
-	Stimulus
-		stimname:tmstring
-		stimdata:[stimtemplate]
-	|
-	Measurement
-		measname:tmstring
-		measdata:[meastemplate]
-	|
-	Name				|| name only
-	;
+    Stimulus
+        stimname:tmstring
+        stimdata:[stimtemplate]
+    |
+    Measurement
+        measname:tmstring
+        measdata:[meastemplate]
+    |
+    Name                || name only
+    ;
 
 stimtemplate == (
-		name:tmstring,  || name of an external quantity
-		lval:fnum,		|| lower bound
-		uval:fnum,		|| upper bound
-		nint:inum,		|| number of intervals
-		scale:scaleflag || lin or log scale for intervals
-	);
+        name:tmstring,  || name of an external quantity
+        lval:fnum,      || lower bound
+        uval:fnum,      || upper bound
+        nint:inum,      || number of intervals
+        scale:scaleflag || lin or log scale for intervals
+    );
 
 meastemplate == (
-		name:tmstring,  || name of external quantity, or 'group' or 'curve#'
-		mtype:inum,		|| <0 external, 0 group, >0 curve #
-		lval:fnum,		|| lower bound
-		uval:fnum,		|| upper bound
-		subs:inum		|| subsample factor for curves
-	);
+        name:tmstring,  || name of external quantity, or 'group' or 'curve#'
+        mtype:inum,     || <0 external, 0 group, >0 curve #
+        lval:fnum,      || lower bound
+        uval:fnum,      || upper bound
+        subs:inum       || subsample factor for curves
+    );
 
 || Parser datastructure
 parsenode ::=
-	Symnode
-		sym:[parxsymbol]
-	|
-	Strnode
-		str:tmstring
-	;
+    Symnode
+        sym:[parxsymbol]
+    |
+    Strnode
+        str:tmstring
+    ;
 
 parxsymbol == ( name:tmstring ) ;
 
 || format for system model interface
 modeltemplate == (
-		id:tmstring,		|| internal model identifier
-		version:tmstring,	|| model version
-		author:tmstring,	|| model author
-		date:tmstring,		|| model creation date
-		info:tmstring,		|| model description
-		ress:[rspec],		|| names of the model residuals
-		xext:[xspec],		|| specs of external measurable quantities
-		auxs:[aspec],		|| specs of auxiliary variables
-		parm:[pspec],		|| specs of model parameters
-		cons:[cspec],		|| specs of model constants
-		flags:[fspec]		|| specs of model flags
-	);
+        id:tmstring,        || internal model identifier
+        version:tmstring,   || model version
+        author:tmstring,    || model author
+        date:tmstring,      || model creation date
+        info:tmstring,      || model description
+        ress:[rspec],       || names of the model residuals
+        xext:[xspec],       || specs of external measurable quantities
+        auxs:[aspec],       || specs of auxiliary variables
+        parm:[pspec],       || specs of model parameters
+        cons:[cspec],       || specs of model constants
+        flags:[fspec]       || specs of model flags
+    );
 
 || parameter specification
 pspec == (
-		name:tmstring,  || parameter name
-		dval:fnum,		|| default value
-		lval:fnum,		|| lower bound for value
-		uval:fnum		|| upper bound for value
-	);
+        name:tmstring,  || parameter name
+        dval:fnum,      || default value
+        lval:fnum,      || lower bound for value
+        uval:fnum       || upper bound for value
+    );
 
 || constant specification
 cspec == (
-		name:tmstring,  || constant name
-		dval:fnum		|| default value
-	);
+        name:tmstring,  || constant name
+        dval:fnum       || default value
+    );
 
 || flag specification
 fspec == (
-		name:tmstring,  || flag name
-		dval:fnum		|| default value
-	);
+        name:tmstring,  || flag name
+        dval:fnum       || default value
+    );
 
 || residual specification
 rspec == (
-		name:tmstring   || residual name
-	);
+        name:tmstring   || residual name
+    );
 
 || external quantity specification
 xspec == (
-		name:tmstring,  || quantity name
-		dval:fnum		|| default value
-	);
+        name:tmstring,  || quantity name
+        dval:fnum       || default value
+    );
 
 || internal quantity specification
 aspec == (
-		name:tmstring,  || quantity name
-		dval:fnum		|| default value
-	);
+        name:tmstring,  || quantity name
+        dval:fnum       || default value
+    );
 
 || format for device information
 systemtemplate == (
-		info:tmstring,  || general information
-		model:tmstring, || name of system model
-		parm:[syspar]   || list of system parameters
-	);
+        info:tmstring,  || general information
+        model:tmstring, || name of system model
+        parm:[syspar]   || list of system parameters
+    );
 
 || system parameter
 syspar == (
-	name:tmstring,      || parameter name
-	val:parmval			|| parameter value
-	);
+    name:tmstring,      || parameter name
+    val:parmval         || parameter value
+    );
 
 || system parameter value
 parmval ::=
-	Punkn				|| unknown parameter value
-		unknval:fnum    || guessed or initial value
-		unknlval:fnum   || lower bound for value
-		unknuval:fnum   || upper bound for value
-	|
-	Pmeas				|| measured parameter value 
-		measval:fnum    || measured value
-		measint:fnum    || accuracy interval
-	|
-	Pcalc				|| calculated parameter value
-		calcval:fnum    || calculated value
-		calcint:fnum    || accuracy interval
-	|
-	Pfact				|| factual parameter value
-		factval:fnum    || factual value
-	|
-	Pconst				|| model constant
-		constval:fnum   || constant value
-	|
-	Pflag				|| model flag
-		flagval:fnum    || flag value
-	;
+    Punkn               || unknown parameter value
+        unknval:fnum    || guessed or initial value
+        unknlval:fnum   || lower bound for value
+        unknuval:fnum   || upper bound for value
+    |
+    Pmeas               || measured parameter value 
+        measval:fnum    || measured value
+        measint:fnum    || accuracy interval
+    |
+    Pcalc               || calculated parameter value
+        calcval:fnum    || calculated value
+        calcint:fnum    || accuracy interval
+    |
+    Pfact               || factual parameter value
+        factval:fnum    || factual value
+    |
+    Pconst              || model constant
+        constval:fnum   || constant value
+    |
+    Pflag               || model flag
+        flagval:fnum    || flag value
+    ;
 
 || format for data table information
 || the table has M rows of N columns
 datatemplate == (
-		info:tmstring,   || general information
-		header:[colhead],|| column headers
-		data:[datarow]   || list of data rows
-	);
+        info:tmstring,   || general information
+        header:[colhead],|| column headers
+        data:[datarow]   || list of data rows
+    );
 
 || column header node
 colhead == (
-		name:tmstring,   || column header
-		type:stateflag   || data type
-	);
+        name:tmstring,   || column header
+        type:stateflag   || data type
+    );
 
 || row of data table
 datarow == (
-		grpid:inum,		|| group identification number
-		crvid:inum,		|| curve identification number
-		rowid:inum,		|| row identification number
-		row:[fnum],		|| vector of entries
-		err:[fnum]		|| vector of errors
-	);
+        grpid:inum,     || group identification number
+        crvid:inum,     || curve identification number
+        rowid:inum,     || row identification number
+        row:[fnum],     || vector of entries
+        err:[fnum]      || vector of errors
+    );
 
 
 || representation of data for numerical routines
 numblock == (
-	mod:modres,			|| model info
-	modi:moddat,        || model interface
-	p:[pset],			|| sets of parameters
-	c:[cset],			|| sets of constants
-	f:[fset],			|| sets of flags
-	a:[aset],			|| sets of internals
-	x:[xgroup]			|| groups of externals
-	);
+    mod:modres,         || model info
+    modi:moddat,        || model interface
+    p:[pset],           || sets of parameters
+    c:[cset],           || sets of constants
+    f:[fset],           || sets of flags
+    a:[aset],           || sets of internals
+    x:[xgroup]          || groups of externals
+    );
 
 xgroup == (
-	id:inum,			|| externals group identification
-	n:inum,				|| number of sets
-	g:[xset]			|| sets of externals
-	);
+    id:inum,            || externals group identification
+    n:inum,             || number of sets
+    g:[xset]            || sets of externals
+    );
 
 || representation of data for model library procedures
 
 || model information request data 
 modreq == (
-	nx:inum,			|| number of externals
-	np:inum,			|| number of parameters
-	xstat:statevector,  || status of externals
-	pstat:statevector   || status of parameters
-	);
+    nx:inum,            || number of externals
+    np:inum,            || number of parameters
+    xstat:statevector,  || status of externals
+    pstat:statevector   || status of parameters
+    );
 
 || model information result data
 modres == (
-	nr:inum,			|| number of residuals
-	nx:inum,			|| number of externals
-	na:inum,			|| number of internals
-	np:inum,			|| number of parameters
-	nc:inum,			|| number of constants
-	nf:inum,			|| number of flags
-	xstat:statevector,  || status of externals
-	pstat:statevector,  || status of parameters
-	model:procedure,    || model procedure, model(moddat)
-	Tx:procedure,       || transformation xe -> xi, Tx(xset, xset)
-	Txi:procedure,      || inverse trans. xi -> xe, Txi(xset, xset)
-	Tp:procedure,       || transformation pe -> pi, Tp(pset, pset)
-	Tpi:procedure       || inverse trans. pi -> pe, Tpi(pset, pset)
-	);
+    nr:inum,            || number of residuals
+    nx:inum,            || number of externals
+    na:inum,            || number of internals
+    np:inum,            || number of parameters
+    nc:inum,            || number of constants
+    nf:inum,            || number of flags
+    xstat:statevector,  || status of externals
+    pstat:statevector,  || status of parameters
+    model:procedure,    || model procedure, model(moddat)
+    Tx:procedure,       || transformation xe -> xi, Tx(xset, xset)
+    Txi:procedure,      || inverse trans. xi -> xe, Txi(xset, xset)
+    Tp:procedure,       || transformation pe -> pi, Tp(pset, pset)
+    Tpi:procedure       || inverse trans. pi -> pe, Tpi(pset, pset)
+    );
 
 || model interface data, argument of model procedure
 moddat == (
-	x:vector,			|| externals vector
-	a:vector,			|| auxiliary vector
-	p:vector,			|| parameter vector
-	c:vector,			|| constant vector
-	f:vector,			|| flag vector
-	rf:boolean,			|| calculate residual vector?
-	r:vector,			|| residual vector
-	jxf:boolean,        || calculate Jx & Ja?
-	xf:boolvector,      || calculate x_i column
-	jx:matrix,			|| Jx matrix
-	ja:matrix,			|| Ja matrix
-	jpf:boolean,        || calculate Jp?
-	pf:boolvector,      || calculate p_i column
-	jp:matrix			|| Jp matrix
-	);
+    x:vector,           || externals vector
+    a:vector,           || auxiliary vector
+    p:vector,           || parameter vector
+    c:vector,           || constant vector
+    f:vector,           || flag vector
+    rf:boolean,         || calculate residual vector?
+    r:vector,           || residual vector
+    jxf:boolean,        || calculate Jx & Ja?
+    xf:boolvector,      || calculate x_i column
+    jx:matrix,          || Jx matrix
+    ja:matrix,          || Ja matrix
+    jpf:boolean,        || calculate Jp?
+    pf:boolvector,      || calculate p_i column
+    jp:matrix           || Jp matrix
+    );
 
 || set of parameters, argument of parameter transformation procedures
 pset == (
-	id:inum,			|| parameter set identification
-	val:vector,			|| value of parameters
-	lb:vector,			|| lower bound of parameters
-	ub:vector			|| upper bound of parameters
-	);
+    id:inum,            || parameter set identification
+    val:vector,         || value of parameters
+    lb:vector,          || lower bound of parameters
+    ub:vector           || upper bound of parameters
+    );
 
 || set of constants
 cset == (
-	id:inum,			|| constant set identification
-	val:vector			|| value of constants
-	);
+    id:inum,            || constant set identification
+    val:vector          || value of constants
+    );
 
 || set of flags
 fset == (
-	id:inum,			|| flag set identification
-	val:vector			|| value of flags
-	);
+    id:inum,            || flag set identification
+    val:vector          || value of flags
+    );
 
 
 || set of externals, argument of externals transformation procedures
 xset == (
-	id:inum,			|| externals set identification
-	val:vector,			|| value of externals
-	err:vector,			|| measurement error
-	abserr:vector,      || absolute error
-	delta:vector,       || residual vector
-	res:fnum			|| residual
-	);
+    id:inum,            || externals set identification
+    val:vector,         || value of externals
+    err:vector,         || measurement error
+    abserr:vector,      || absolute error
+    delta:vector,       || residual vector
+    res:fnum            || residual
+    );
 
 aset == (
-	id:inum,			|| internals set identification
-	val:vector			|| value of internals
-	);
+    id:inum,            || internals set identification
+    val:vector          || value of internals
+    );

@@ -21,8 +21,8 @@
 #ifndef __ACTIONS_H
 #define __ACTIONS_H
 
-#include "primtype.h"
 #include "datastruct.h"
+#include "primtype.h"
 
 extern void start_parx(void);
 extern void end_parx(void);

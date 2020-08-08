@@ -21,6 +21,8 @@
 #ifndef __MEM_DEF_H
 #define __MEM_DEF_H
 
+#include <stddef.h>
+
 struct MEM_LEAF {
     struct MEM_LEAF *next;
     void *mem;
@@ -33,9 +35,8 @@ struct MEM_TREE {
     size_t size;
 };
 
-
 extern struct MEM_TREE *mem_tree(void);
-extern void *mem_slot(struct MEM_TREE * tptr, size_t size);
-extern size_t mem_free(struct MEM_TREE * tptr);
+extern void *mem_slot(struct MEM_TREE *tptr, size_t size);
+extern size_t mem_free(struct MEM_TREE *tptr);
 
 #endif

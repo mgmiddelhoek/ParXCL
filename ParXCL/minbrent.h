@@ -1,6 +1,7 @@
 /*
  * ParX - minbrent.c
- * Line Minimization of a function using Brent's method of Parabolic Interpolation
+ * Line Minimization of a function using Brent's method of Parabolic
+ * Interpolation
  *
  * Copyright (c) 1990 M.G.Middelhoek <martin@middelhoek.com>
  *
@@ -23,16 +24,15 @@
 
 #include "primtype.h"
 
-extern boolean brent(
-                     fnum ax, /* left point */
-                     fnum bx, /* mid point */
-                     fnum cx, /* right point */
-                     fnum(*obj)(fnum x), /* objective function */
-                     fnum r_tol, /* relative tolerance */
-                     fnum a_tol, /* absolute tolerance */
-                     inum *itmax, /* maximum number of iterations */
-                     fnum *xmin, /* mimimum point */
-                     fnum *fmin /* minimum value */
+extern boolean brent(fnum ax,             /* left point */
+                     fnum bx,             /* mid point */
+                     fnum cx,             /* right point */
+                     fnum (*obj)(fnum x), /* objective function */
+                     fnum r_tol,          /* relative tolerance */
+                     fnum a_tol,          /* absolute tolerance */
+                     inum *itmax,         /* maximum number of iterations */
+                     fnum *xmin,          /* mimimum point */
+                     fnum *fmin           /* minimum value */
 );
 
 #endif

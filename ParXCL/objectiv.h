@@ -21,39 +21,36 @@
 #ifndef __OBJECTIV_H
 #define __OBJECTIV_H
 
-#include "primtype.h"
 #include "numdat.h"
+#include "primtype.h"
 
-extern boolean objective(
-                         vector p, /* parameter values */
-                         boolean rf, /* residual flag */
-                         vector *rp, /* pointer to residual vector */
-                         boolean jf, /* Jacobian flag */
-                         matrix *jpp, /* pointer to Jacobian matrix */
-                         boolean modify, /* allow modify point set */
-                         boolean all, /* evaluate objective for all points */
-                         inum *npoints, /* remaining number of data points */
-                         inum *mc_r, /* total number of model residual evaluations */
-                         inum *mc_jx, /* total number of model Jx evaluations */
-                         inum *mc_jp, /* total number of model Jp evaluations */
-                         inum trace /* trace level */
+extern boolean
+objective(vector p,       /* parameter values */
+          boolean rf,     /* residual flag */
+          vector *rp,     /* pointer to residual vector */
+          boolean jf,     /* Jacobian flag */
+          matrix *jpp,    /* pointer to Jacobian matrix */
+          boolean modify, /* allow modify point set */
+          boolean all,    /* evaluate objective for all points */
+          inum *npoints,  /* remaining number of data points */
+          inum *mc_r,     /* total number of model residual evaluations */
+          inum *mc_jx,    /* total number of model Jx evaluations */
+          inum *mc_jp,    /* total number of model Jp evaluations */
+          inum trace      /* trace level */
 );
 
-extern boolean new_objective(
-                             numblock numb, /* numerical data block */
-                             fnum prec, /* relative precision */
-                             fnum tol, /* modes tolerance factor */
-                             inum *maxeq, /* maximum number of equations */
-                             inum *ngroup /* number of equations per point */
+extern boolean new_objective(numblock numb, /* numerical data block */
+                             fnum prec,     /* relative precision */
+                             fnum tol,      /* modes tolerance factor */
+                             inum *maxeq,   /* maximum number of equations */
+                             inum *ngroup   /* number of equations per point */
 );
 
 extern void fre_objective(numblock numb);
 
-extern inum remove_data_point(
-                              inum n, /* index of point to be moved */
-                              inum g, /* target group */
+extern inum remove_data_point(inum n,    /* index of point to be moved */
+                              inum g,    /* target group */
                               inum trace /* trace level */
 );
-
 
 #endif

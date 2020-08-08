@@ -18,7 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef  __PRX_DEF_H
+#ifndef __PRX_DEF_H
 #define __PRX_DEF_H
 
 #include "primtype.h"
@@ -28,15 +28,15 @@
  */
 
 /* File identifier */
-#define FILEID  "PARX interpreter code"
+#define FILEID "PARX interpreter code"
 /* Version */
-#define CODE_VERSION   3
+#define CODE_VERSION 3
 /* maximum line length in model description file (without newline) */
-#define MAXLINE   132
+#define MAXLINE 132
 /* maximum nesting level of conditional statements */
-#define MAXLEVEL  10
+#define MAXLEVEL 10
 /* maximum name length */
-#define MAXNAME   16
+#define MAXNAME 16
 /* maximum number of statements (assignments, if, else, fi) */
 #define MAXEQU    4096
 
@@ -57,13 +57,13 @@ typedef enum {
 struct PRX_NODE_S {
     OPR opr;
     struct PRX_NODE_S *o1;
-    
+
     union {
         struct PRX_NODE_S *o2;
         struct PRX_OPD_S *optr;
         struct PRX_NUM_S *nptr;
     } c;
-    
+
     struct PRX_NODE_S *abl;
 };
 typedef struct PRX_NODE_S PRX_NODE;

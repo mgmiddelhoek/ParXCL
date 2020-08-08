@@ -42,12 +42,12 @@ extern boolean mod_linear(modreq req, modres res);
 
 /************************************************************************
         Global Model Library Configuration Table, the entries are:
-        1) full modelname (string),	
-        2) pointer to function returning the model specification 
+        1) full modelname (string),
+        2) pointer to function returning the model specification
  ************************************************************************/
 
 ModelLibrary modlib = {{"default", NULL}};
-/* 
+/*
  {{"BiM_Linear", mod_linear}}
  */
 

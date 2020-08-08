@@ -1,6 +1,7 @@
 /*
  * ParX - newton.h
- * Locate the solution of a set of nonlinear equations by modified Newton-Raphson
+ * Locate the solution of a set of nonlinear equations by modified
+ * Newton-Raphson
  *
  * Copyright (c) 1990 M.G.Middelhoek <martin@middelhoek.com>
  *
@@ -21,18 +22,17 @@
 #ifndef __NEWTON_H
 #define __NEWTON_H
 
-#include "primtype.h"
 #include "datastruct.h"
+#include "primtype.h"
 
 extern void new_newton(inum nx);
 extern void fre_newton(void);
 
-extern inum newton_raphson(
-                           vector xl, /* variable vector */
+extern inum newton_raphson(vector xl,     /* variable vector */
                            vector reltol, /* relative tolerances */
                            vector abstol, /* absolute tolerance */
-                           inum maxiter, /* maximum number of iterations */
-                           inum tr /* trace level */
+                           inum maxiter,  /* maximum number of iterations */
+                           inum tr        /* trace level */
 );
 
 #endif

@@ -26,34 +26,34 @@
 
 || vector of state flags
 statevector == (
-	|| linear array storage
-	sz:inum,		|| maximum number of elements
-	n:inum, 		|| actual number of elements
-	arr:statearray	|| linear array of state flags
+    || linear array storage
+    sz:inum,        || maximum number of elements
+    n:inum,         || actual number of elements
+    arr:statearray  || linear array of state flags
 );
 
 || vector of booleans
 boolvector == (
-	|| linear array storage
-	sz:inum,		|| maximum number of elements
-	n:inum, 		|| actual number of elements
-	arr:boolarray	|| linear array of booleans
+    || linear array storage
+    sz:inum,        || maximum number of elements
+    n:inum,         || actual number of elements
+    arr:boolarray   || linear array of booleans
 );
 
 || vector of integers
 inumvector == (
-	|| linear array storage
-	sz:inum,		|| maximum number of elements
-	n:inum, 		|| actual number of elements
-	arr:inumarray	|| linear array of integers
+    || linear array storage
+    sz:inum,        || maximum number of elements
+    n:inum,         || actual number of elements
+    arr:inumarray   || linear array of integers
 );
 
 || vector of floating point numbers
 vector == (
-	|| linear array storage
-	sz:inum,		|| maximum number of elements
-	n:inum, 		|| actual number of elements
-	arr:fnumarray	|| linear array of floats
+    || linear array storage
+    sz:inum,        || maximum number of elements
+    n:inum,         || actual number of elements
+    arr:fnumarray   || linear array of floats
 );
 
 || two dimensional matrix (m x n) of floating point numbers
@@ -61,12 +61,12 @@ vector == (
 || an index table is used to find the first element of a column
 matrix == (
     || linear storage array
-	sz:inum,		|| total number of elements
-	arr:fnumarray,	|| linear array of fnums, its size is (szm x szn)
+    sz:inum,        || total number of elements
+    arr:fnumarray,  || linear array of fnums, its size is (szm x szn)
     || matrix organization:
-	szm:inum,		|| total number of rows
-	szn:inum,		|| total number of columns
-	idx:fnumindex,	|| column index table
-	m:inum,			|| actual number of rows
-	n:inum			|| actual number of columns
+    szm:inum,       || total number of rows
+    szn:inum,       || total number of columns
+    idx:fnumindex,  || column index table
+    m:inum,         || actual number of rows
+    n:inum          || actual number of columns
 );

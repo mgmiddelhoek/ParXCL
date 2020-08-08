@@ -21,8 +21,8 @@
 #ifndef __DBIO_H
 #define __DBIO_H
 
-#include "primtype.h"
 #include "dbase.h"
+#include "primtype.h"
 
 extern modeltemplate get_model(tmstring name);
 extern codefile get_modelcode(tmstring name);

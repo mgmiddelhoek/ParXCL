@@ -1,7 +1,5 @@
-# Makefile for ParX on CygWin
-# Copyright (c) 1989-2017 M.G.Middelhoek
-
-VERSION = "\"6.6 rev. `date +"%Y-%m-%d"`\""
+# Makefile for ParXCL on CygWin
+# Copyright (c) 1989-2020 M.G.Middelhoek
 
 SYSTEM = WINDOWS
 
@@ -12,15 +10,15 @@ PROGRAM = parx.exe
 PARXDIR = /cygdrive/c/Programs/ParX
 BDIR = $(PARXDIR)/bin
 DLLS = /cygdrive/c/cygwin/bin/cygwin1.dll \
-	/cygdrive/c/cygwin/bin/cyggcc_s-1.dll \
-	/cygdrive/c/cygwin/lib/lapack/cyglapack-0.dll \
-	/cygdrive/c/cygwin/lib/lapack/cygblas-0.dll \
-	/cygdrive/c/cygwin/bin/cyggfortran-3.dll \
-	/cygdrive/c/cygwin/bin/cygquadmath-0.dll
+	   /cygdrive/c/cygwin/bin/cyggcc_s-1.dll \
+	   /cygdrive/c/cygwin/lib/lapack/cyglapack-0.dll \
+	   /cygdrive/c/cygwin/lib/lapack/cygblas-0.dll \
+	   /cygdrive/c/cygwin/bin/cyggfortran-3.dll \
+	   /cygdrive/c/cygwin/bin/cygquadmath-0.dll
 
 # Compiler
 CC = gcc
-CFLAGS = -D$(SYSTEM) -DVERSION=$(VERSION) -Wall -pedantic -O3
+CFLAGS = -D$(SYSTEM) -O3
 
 # Linker
 LINKER = $(CC)
@@ -34,16 +32,15 @@ LEX = flex
 LFLAGS = -I
 
 YACC = bison
-YFLAGS = -d -v
+YFLAGS = -d
 
 # Libraries
 
 LIBS = -L/usr/local/lib -ltmc -llapack -lcblas -lblas -lgfortran -lm
-TOOLLIBS = -L/usr/local/lib -ltmc -lm
 
 .SUFFIXES: .y .l .t .ds .ht .ct .h .c .o
 
-OBJS= parx.o banner.o \
+OBJS= main.o banner.o \
 	actions.o datastruct.o datatpl.o dbase.o dbio.o distance.o \
 	error.o extract.o golden.o minbrent.o \
 	modes.o modify.o modlib.o newton.o numdat.o \
@@ -67,16 +64,16 @@ JUNK = lex.yy.c y.tab.h y.output y.tab.c \
 help :
 	@echo " Possible make targets:"
 	@echo "all          Create local running programs."
-	@echo "parx         Create ParX program."
+	@echo "parx         Create ParXCL program."
 	@echo "clean        Free disk space."
 	@echo "install      Install relevant files."
 
-all	: $(PROGRAM)
+all: $(PROGRAM)
 
 $(PROGRAM): $(OBJS) $(MODOBJS)
 	$(LINKER) $(LDFLAGS) $(OBJS) $(MODOBJS) $(LIBS) -o $(PROGRAM)
 
-install	: all
+install: all
 	cp $(PROGRAM) $(BDIR)
 	cp $(DLLS) $(BDIR)
 
@@ -130,7 +127,7 @@ primtype.o: parx.h error.h primtype.h
 datastruct.o: parx.h error.h primtype.h datastruct.h
 
 # ParX
-parx.o: parx.h error.h $(TMHDRS)
+main.o: parx.h error.h $(TMHDRS)
 banner.o: parx.h
 actions.o: parx.h error.h parser.h subset.h simulate.h \
 	stim2dat.h extract.h actions.h $(TMHDRS)

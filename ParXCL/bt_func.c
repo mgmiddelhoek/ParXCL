@@ -18,26 +18,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <assert.h>
 #include "bt_def.h"
+#include <assert.h>
+#include <stdlib.h>
 
-#define E_BALANCE	1
-#define SYS_S_MEM	(-3)
+#define E_BALANCE 1
+#define SYS_S_MEM (-3)
 
 /* local functions */
-static int traverse(struct BT_ITEM *, int (*act) (char *));
+static int traverse(struct BT_ITEM *, int (*act)(char *));
 static struct BT_ITEM *insert(struct BT_ITEM *);
 
 /*----------------------------------------------------------------------------*
  * initialize a binary tree                                                   *
  *----------------------------------------------------------------------------*/
-struct BT_HEAD *bt_define_tree(struct MEM_TREE * tptr, int (*cmp)()) {
+struct BT_HEAD *bt_define_tree(struct MEM_TREE *tptr, int (*cmp)()) {
     struct BT_HEAD *h;
-    int (*compare) (void *, void *);
-    
+    int (*compare)(void *, void *);
+
     compare = cmp;
-    h = (struct BT_HEAD *) mem_slot(tptr, sizeof (*h));
+    h = (struct BT_HEAD *)mem_slot(tptr, sizeof(*h));
     if (h == NULL) {
         return NULL;
     }
@@ -51,9 +51,9 @@ struct BT_HEAD *bt_define_tree(struct MEM_TREE * tptr, int (*cmp)()) {
 /*----------------------------------------------------------------------------*
  * traverse a binary tree and apply a function to each node                   *
  *----------------------------------------------------------------------------*/
-static int traverse(struct BT_ITEM * p, int (*act) (char *)) {
+static int traverse(struct BT_ITEM *p, int (*act)(char *)) {
     int stat;
-    
+
     if (p == NULL) {
         return 0;
     }
@@ -61,7 +61,7 @@ static int traverse(struct BT_ITEM * p, int (*act) (char *)) {
     if (stat) {
         return stat;
     }
-    stat = (*act) (p->inh);
+    stat = (*act)(p->inh);
     if (stat) {
         return stat;
     }
@@ -72,18 +72,17 @@ static int traverse(struct BT_ITEM * p, int (*act) (char *)) {
     return 0;
 }
 
-int bt_traverse(struct BT_HEAD * head, int (*action)(char *)) {
-    int (*act) (char *);
-    
+int bt_traverse(struct BT_HEAD *head, int (*action)(char *)) {
+    int (*act)(char *);
+
     act = action;
     return (traverse(head->wu, act));
 }
 
-
 /* local data */
 static char *crec;
 static int vflag;
-static int (*cmp) (void *, void *);
+static int (*cmp)(void *, void *);
 static struct BT_HEAD *hh;
 static int mem_ovfl;
 static int f;
@@ -91,9 +90,10 @@ static int f;
 /*----------------------------------------------------------------------------*
  * insert a node in a binary tree                                             *
  *----------------------------------------------------------------------------*/
-static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function */
+static struct BT_ITEM *
+insert(struct BT_ITEM *p) { /* recursive helper function */
     struct BT_ITEM *p1, *p2;
-    
+
     vflag = 0; /* same level */
     if (p == NULL) {
         /* create new element */
@@ -101,7 +101,7 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
             p1 = hh->fp;
             hh->fp = (hh->fp)->li;
         } else {
-            p1 = (struct BT_ITEM *) mem_slot(hh->tptr, sizeof (struct BT_ITEM));
+            p1 = (struct BT_ITEM *)mem_slot(hh->tptr, sizeof(struct BT_ITEM));
             if (p1 == NULL) {
                 mem_ovfl = 1;
                 return NULL;
@@ -114,10 +114,10 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
         vflag = 1;
         return p1;
     }
-    if ((*cmp) (crec, p->inh) == 0) {
+    if ((*cmp)(crec, p->inh) == 0) {
         return NULL;
     }
-    if ((*cmp) (crec, p->inh) < 0) {
+    if ((*cmp)(crec, p->inh) < 0) {
         p1 = insert(p->li);
         f = -1;
     } else {
@@ -205,9 +205,9 @@ static struct BT_ITEM *insert(struct BT_ITEM * p) { /* recursive helper function
 }
 
 /* external insert function */
-int bt_insert(struct BT_HEAD * head, char *rec) {
+int bt_insert(struct BT_HEAD *head, char *rec) {
     struct BT_ITEM *p;
-    
+
     hh = head;
     cmp = hh->cmp;
     crec = rec;
@@ -227,13 +227,13 @@ int bt_insert(struct BT_HEAD * head, char *rec) {
 /*----------------------------------------------------------------------------*
  * search the binary tree                                                     *
  *----------------------------------------------------------------------------*/
-char *bt_search(struct BT_HEAD * head, char *rec) {
+char *bt_search(struct BT_HEAD *head, char *rec) {
     struct BT_ITEM *p;
     int stat;
-    
+
     p = head->wu;
     while (p != NULL) {
-        stat = (*(head->cmp)) (rec, p->inh);
+        stat = (*(head->cmp))(rec, p->inh);
         if (stat == 0) {
             return (p->inh);
         }
@@ -249,14 +249,13 @@ char *bt_search(struct BT_HEAD * head, char *rec) {
 /*----------------------------------------------------------------------------*
  * search the binary tree and replace node                                    *
  *----------------------------------------------------------------------------*/
-char *
-bt_search_replace(struct BT_HEAD * head, char *rec) {
+char *bt_search_replace(struct BT_HEAD *head, char *rec) {
     struct BT_ITEM *p;
     int stat;
-    
+
     p = head->wu;
     while (p != NULL) {
-        stat = (*(head->cmp)) (rec, p->inh);
+        stat = (*(head->cmp))(rec, p->inh);
         if (stat == 0) {
             p->inh = rec;
             return (p->inh);

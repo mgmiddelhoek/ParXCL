@@ -1,6 +1,7 @@
 /*
  * ParX - minbrent.c
- * Line Minimization of a function using Brent's method of Parabolic Interpolation
+ * Line Minimization of a function using Brent's method of Parabolic
+ * Interpolation
  *
  * Copyright (c) 1990 M.G.Middelhoek <martin@middelhoek.com>
  *
@@ -18,27 +19,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
 #include "minbrent.h"
+#include "parx.h"
 
 #define CGOLD 0.3819660
 
-boolean brent(
-              fnum ax, /* left point */
-              fnum bx, /* mid point */
-              fnum cx, /* right point */
-              fnum(*obj)(fnum x), /* objective function */
-              fnum r_tol, /* relative tolerance */
-              fnum a_tol, /* absolute tolerance */
-              inum *itmax, /* maximum number of iterations */
-              fnum *xmin, /* minimum point */
-              fnum *fmin /* minimum value */
+boolean brent(fnum ax,             /* left point */
+              fnum bx,             /* mid point */
+              fnum cx,             /* right point */
+              fnum (*obj)(fnum x), /* objective function */
+              fnum r_tol,          /* relative tolerance */
+              fnum a_tol,          /* absolute tolerance */
+              inum *itmax,         /* maximum number of iterations */
+              fnum *xmin,          /* minimum point */
+              fnum *fmin           /* minimum value */
 ) {
     inum iter;
     fnum a, b, d, etemp, fu, fv, fw, fx, p, q, r;
     fnum tol1, tol2, u, v, w, x, xm;
     fnum e = 0.0;
-    
+
     a = ((ax < cx) ? ax : cx);
     b = ((ax > cx) ? ax : cx);
     d = 0.0;
@@ -64,8 +64,8 @@ boolean brent(
             q = fabs(q);
             etemp = e;
             e = d;
-            if ((fabs(p) >= fabs(0.5 * q * etemp)) ||
-                (p <= q * (a - x)) || (p >= q * (b - x))) {
+            if ((fabs(p) >= fabs(0.5 * q * etemp)) || (p <= q * (a - x)) ||
+                (p >= q * (b - x))) {
                 d = CGOLD * (e = (x >= xm ? a - x : b - x));
             } else {
                 d = p / q;
@@ -77,8 +77,8 @@ boolean brent(
         } else {
             d = CGOLD * (e = (x >= xm ? a - x : b - x));
         }
-        u = (fabs(d) >= tol1 ? x + d :
-             x + (d > 0.0 ? fabs(tol1) : -fabs(tol1)));
+        u = (fabs(d) >= tol1 ? x + d
+                             : x + (d > 0.0 ? fabs(tol1) : -fabs(tol1)));
         fu = (*obj)(u);
         if (fu <= fx) {
             if (u >= x) {
@@ -109,10 +109,10 @@ boolean brent(
             }
         }
     }
-    
+
     *xmin = x;
     *fmin = fx;
     *itmax = iter;
-    
+
     return (FALSE); /* to many iterations */
 }

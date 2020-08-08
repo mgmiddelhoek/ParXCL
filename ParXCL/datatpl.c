@@ -17,13 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
 #include "datatpl.h"
+#include "parx.h"
 
 /* find a named variable in de header list */
 
 colhead find_header(colhead_list l, tmstring name) {
-    
+
     for (; l != colheadNIL; l = l->next) {
         if (strcmp(name, l->name) == 0) {
             return (l);
@@ -36,7 +36,7 @@ colhead find_header(colhead_list l, tmstring name) {
 
 datarow find_datarow(datarow_list l, datarow_list last, inum id) {
     datarow r;
-    
+
     /* start by searching the remainder of the list */
     for (r = last; r != datarowNIL; r = r->next) {
         if (id == r->rowid) {

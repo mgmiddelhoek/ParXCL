@@ -21,8 +21,8 @@
 #ifndef __PRXINTER_H
 #define __PRXINTER_H
 
-#include "primtype.h"
 #include "modlib.h"
+#include "primtype.h"
 #include <assert.h>
 
 /* Input and adaptation of interpreter code (once per ParX execution) */

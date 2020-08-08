@@ -21,17 +21,16 @@
 #ifndef __EXTRACT_H
 #define __EXTRACT_H
 
-#include "primtype.h"
 #include "numdat.h"
+#include "primtype.h"
 
-extern boolean extract(
-                       numblock numb, /* numerical data block */
-                       fnum prec, /* relative precision */
-                       fnum tol, /* modes tolerance factor */
-                       opttype opt, /* type of optimization needed */
-                       fnum sens, /* sensitivity threshold */
-                       inum maxiter, /* maximum number of iterations */
-                       inum trace /* trace flag */
+extern boolean extract(numblock numb, /* numerical data block */
+                       fnum prec,     /* relative precision */
+                       fnum tol,      /* modes tolerance factor */
+                       opttype opt,   /* type of optimization needed */
+                       fnum sens,     /* sensitivity threshold */
+                       inum maxiter,  /* maximum number of iterations */
+                       inum trace     /* trace flag */
 );
 
 #endif

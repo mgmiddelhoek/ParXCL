@@ -20,8 +20,8 @@
 #ifndef __DATATPL_H
 #define __DATATPL_H
 
-#include "primtype.h"
 #include "datastruct.h"
+#include "primtype.h"
 
 extern colhead find_header(colhead_list l, tmstring name);
 extern datarow find_datarow(datarow_list l, datarow_list last, inum id);

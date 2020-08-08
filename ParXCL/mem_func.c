@@ -18,9 +18,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "mem_def.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void mem_noroom(void) {
     fprintf(stderr, "ParX model compiler: out of memory\n");
@@ -29,8 +29,8 @@ void mem_noroom(void) {
 
 struct MEM_TREE *mem_tree(void) {
     struct MEM_TREE *tptr;
-    
-    tptr = (struct MEM_TREE *) malloc(sizeof (struct MEM_TREE));
+
+    tptr = (struct MEM_TREE *)malloc(sizeof(struct MEM_TREE));
     if (tptr == NULL) {
         mem_noroom();
     }
@@ -38,22 +38,22 @@ struct MEM_TREE *mem_tree(void) {
     tptr->last = NULL;
     tptr->cnt = 0;
     tptr->size = 0;
-    
+
     return tptr;
 }
 
-void *mem_slot(struct MEM_TREE * tptr, size_t size) {
+void *mem_slot(struct MEM_TREE *tptr, size_t size) {
     struct MEM_LEAF *lptr;
     void *mem;
-    
-    lptr = (struct MEM_LEAF *) malloc(sizeof (struct MEM_LEAF));
+
+    lptr = (struct MEM_LEAF *)malloc(sizeof(struct MEM_LEAF));
     mem = malloc(size);
     if (tptr == NULL || mem == NULL) {
         mem_noroom();
     }
     lptr->next = NULL;
     lptr->mem = mem;
-    
+
     if (tptr->first == NULL) {
         tptr->first = lptr;
         tptr->last = lptr;
@@ -66,18 +66,18 @@ void *mem_slot(struct MEM_TREE * tptr, size_t size) {
     return (mem);
 }
 
-size_t mem_free(struct MEM_TREE * tptr) {
+size_t mem_free(struct MEM_TREE *tptr) {
     struct MEM_LEAF *lptr, *next;
     size_t size;
-    
+
     size = tptr->size;
-    
+
     if (tptr == NULL) {
         return 0;
     }
-    
+
     lptr = tptr->first;
-    
+
     while (lptr != NULL) {
         next = lptr->next;
         free(lptr->mem);
@@ -85,6 +85,6 @@ size_t mem_free(struct MEM_TREE * tptr) {
         lptr = next;
     }
     free(tptr);
-    
+
     return size;
 }

@@ -26,26 +26,24 @@
 fnum gammaln(fnum x) {
     fnum z, series, denom;
     inum i;
-    static fnum c[6] = {
-        76.18009172947146, -86.50532032941677,
-        24.01409824083091, -1.231739572450155,
-        0.120865097386617e-2, -0.5395239384953e-5
-    };
-    
+    static fnum c[6] = {76.18009172947146,    -86.50532032941677,
+                        24.01409824083091,    -1.231739572450155,
+                        0.120865097386617e-2, -0.5395239384953e-5};
+
     if (x <= 0.0) {
         return (INF);
     }
-    
+
     z = x + 5.5;
     z -= (x + 0.5) * log(z);
-    
+
     series = 1.000000000190015;
     denom = x;
     for (i = 0; i <= 5; i++) {
         series += c[i] / ++denom;
     }
-    
-    return ( -z + log(2.5066282746310005 * series / x));
+
+    return (-z + log(2.5066282746310005 * series / x));
 }
 
 /* Incomplete Gamma function P, by series representation */
@@ -53,9 +51,9 @@ fnum gammaln(fnum x) {
 static fnum gamma_sr(fnum x, fnum a) {
     fnum series, delta, denom, gln;
     inum i;
-    
+
     gln = gammaln(a);
-    
+
     delta = series = 1.0 / a;
     denom = a;
     for (i = 1; i <= 100; i++) {
@@ -73,15 +71,15 @@ static fnum gamma_sr(fnum x, fnum a) {
 static fnum gamma_cf(fnum x, fnum a) {
     fnum num, denom, c, d, delta, frac, gln;
     inum i;
-    
+
     gln = gammaln(a);
-    
+
     denom = x + 1.0 - a;
     c = 1.0 / DBL_MIN;
     d = 1.0 / denom;
     frac = d;
     for (i = 1; i <= 100; i++) {
-        num = -(double) i * ((double) i - a);
+        num = -(double)i * ((double)i - a);
         denom += 2.0;
         d = num * d + denom;
         if (fabs(d) < DBL_MIN) {
@@ -135,8 +133,8 @@ fnum gammaq(fnum x, fnum a) {
 
 fnum chi2(fnum chi2, inum fr) {
     fnum a, x;
-    
-    a = 0.5 * (fnum) fr;
+
+    a = 0.5 * (fnum)fr;
     x = 0.5 * chi2;
     return (gammaq(x, a));
 }

@@ -34,7 +34,7 @@ LIBS = -L/usr/local/lib -ltmc -llapacke -llapack -lopenblas -lgfortran -lpthread
 
 .SUFFIXES: .y .l .t .ds .ht .ct .h .c .o
 
-OBJS= main.o banner.o \
+OBJS = main.o banner.o \
     actions.o datastruct.o datatpl.o dbase.o dbio.o distance.o \
     error.o extract.o golden.o minbrent.o \
     modes.o modify.o modlib.o newton.o numdat.o \
@@ -43,31 +43,31 @@ OBJS= main.o banner.o \
     subset.o vecmat.o readcsv.o cJSON.o jsonio.o \
     mem_func.o bt_func.o prx_func.o prx.o prxinter.o prxcompile.o
 
-MODOBJS= parxmods.o
+MODOBJS = parxmods.o
 
 # .h files generated from tm modules
-TMHDRS=    primtype.h datastruct.h
+TMHDRS = primtype.h datastruct.h
 
 # .c files generated from tm modules
-TMSRCS=    primtype.c datastruct.c
+TMSRCS = primtype.c datastruct.c
 
 JUNK = lex.yy.c y.tab.h y.output y.tab.c \
     parxlex.c parxyacc.c parxyacc.h parxyacc.out tm.sts parx.st \
     exin.nb exout.nb simin.nb simout.nb
 
-help :
+help:
     @echo " Possible make targets:"
     @echo "all          Create local running programs."
-    @echo "parx         Create ParX program."
+    @echo "parx         Create ParXCL program."
     @echo "clean        Free disk space."
     @echo "install      Install relevant files."
 
-all    : $(PROGRAM)
+all: $(PROGRAM)
 
 $(PROGRAM): $(OBJS) $(MODOBJS)
     $(LINKER) $(LDFLAGS) $(OBJS) $(MODOBJS) $(LIBS) -o $(PROGRAM)
 
-install    : all
+install: all
     cp $(PROGRAM) $(BDIR)
 
 clean:

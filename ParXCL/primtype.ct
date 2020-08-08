@@ -57,14 +57,13 @@ static long frecnt_fnumindex = 0;
 
 /* abort if range error */
 
-void range_violation(char *f, int l, inum r, inum i)
-{
-	fflush(output_stream);
-	fflush(error_stream);
-	fflush(trace_stream);
-	fprintf(stderr, "RANGE ERROR: %s, %d: r=%d i=%d\n", f, l, r, i);
-	getchar();
-	abort();
+void range_violation(char *f, int l, inum r, inum i) {
+    fflush(output_stream);
+    fflush(error_stream);
+    fflush(trace_stream);
+    fprintf(stderr, "RANGE ERROR: %s, %d: r=%d i=%d\n", f, l, r, i);
+    getchar();
+    abort();
 }
 
 #endif
@@ -73,911 +72,846 @@ void range_violation(char *f, int l, inum r, inum i)
 
 /* round an fnum to the nearest inum */
 
-inum roundi(fnum f)
-{
-	inum i;
+inum roundi(fnum f) {
+    inum i;
 
-    if (f >= ((fnum)INUM_MAX)) { return(INUM_MAX); }
-    if (f <= ((fnum)INUM_MIN)) { return(INUM_MIN); }
+    if (f >= ((fnum)INUM_MAX)) {
+        return (INUM_MAX);
+    }
+    if (f <= ((fnum)INUM_MIN)) {
+        return (INUM_MIN);
+    }
 
-	i = (inum)lrint(f);
+    i = (inum)lrint(f);
 
-	return(i);
+    return (i);
 }
 
 /************** new and free functions for array types *****************/
 
-statearray new_statearray(inum sz)
-{
-	statearray s;
-	inum i;
+statearray new_statearray(inum sz) {
+    statearray s;
+    inum i;
 
-	s = TM_MALLOC( statearray, sz * sizeof(stateflag) );
+    s = TM_MALLOC(statearray, sz * sizeof(stateflag));
 
 #ifdef STAT
-	newcnt_statearray++;
+    newcnt_statearray++;
 #endif
-    for (i = 0; i < sz; i++) {	/* initialize */
-		s[i] = stateflagNIL;
+    for (i = 0; i < sz; i++) { /* initialize */
+        s[i] = stateflagNIL;
     }
 
-	return(s);
+    return (s);
 }
 
-void fre_statearray(statearray s)
-{
+void fre_statearray(statearray s) {
     if (s == statearrayNIL) {
-		return;
+        return;
     }
-	TM_FREE( s);
+    TM_FREE(s);
 #ifdef STAT
-	frecnt_statearray++;
+    frecnt_statearray++;
 #endif
 }
 
-boolarray new_boolarray(inum sz)
-{
-	boolarray b;
-	inum i;
+boolarray new_boolarray(inum sz) {
+    boolarray b;
+    inum i;
 
-	b = TM_MALLOC( boolarray, sz * sizeof(inum) );
+    b = TM_MALLOC(boolarray, sz * sizeof(inum));
 
 #ifdef STAT
-	newcnt_boolarray++;
+    newcnt_boolarray++;
 #endif
 
     for (i = 0; i < sz; i++) {
-		b[i] = booleanNIL;
+        b[i] = booleanNIL;
     }
 
-	return(b);
+    return (b);
 }
 
-void fre_boolarray(boolarray b)
-{
+void fre_boolarray(boolarray b) {
     if (b == boolarrayNIL) {
-		return;
+        return;
     }
-	TM_FREE( b);
+    TM_FREE(b);
 #ifdef STAT
-	frecnt_boolarray++;
+    frecnt_boolarray++;
 #endif
 }
 
-inumarray new_inumarray(inum sz)
-{
-	inumarray ia;
-	inum i;
+inumarray new_inumarray(inum sz) {
+    inumarray ia;
+    inum i;
 
-	ia = TM_MALLOC( inumarray, sz * sizeof(inum) );
+    ia = TM_MALLOC(inumarray, sz * sizeof(inum));
 
 #ifdef STAT
-	newcnt_inumarray++;
+    newcnt_inumarray++;
 #endif
 
     for (i = 0; i < sz; i++) {
-		ia[i] = inumNIL;
+        ia[i] = inumNIL;
     }
 
-	return(ia);
+    return (ia);
 }
 
-void fre_inumarray(inumarray i)
-{
+void fre_inumarray(inumarray i) {
     if (i == inumarrayNIL) {
-		return;
+        return;
     }
-	TM_FREE( i);
+    TM_FREE(i);
 #ifdef STAT
-	frecnt_inumarray++;
+    frecnt_inumarray++;
 #endif
 }
 
-fnumarray new_fnumarray(inum sz)
-{
-	fnumarray f;
-	inum i;
+fnumarray new_fnumarray(inum sz) {
+    fnumarray f;
+    inum i;
 
-	f = TM_MALLOC( fnumarray, sz * sizeof(fnum) );
+    f = TM_MALLOC(fnumarray, sz * sizeof(fnum));
 
 #ifdef STAT
-	newcnt_fnumarray++;
+    newcnt_fnumarray++;
 #endif
 
     for (i = 0; i < sz; i++) {
-		f[i] = fnumNIL;
+        f[i] = fnumNIL;
     }
 
-	return(f);
+    return (f);
 }
 
-void fre_fnumarray(fnumarray f)
-{
+void fre_fnumarray(fnumarray f) {
     if (f == fnumarrayNIL) {
-		return;
+        return;
     }
-	TM_FREE( f);
+    TM_FREE(f);
 #ifdef STAT
-	frecnt_fnumarray++;
+    frecnt_fnumarray++;
 #endif
 }
 
 /******************** new and free functions for vector types **********/
 
-statevector new_statevector(inum sz, statearray arr)
-{
-	statevector s;
+statevector new_statevector(inum sz, statearray arr) {
+    statevector s;
 
-	s = TM_MALLOC( statevector, sizeof(struct str_statevector) );
+    s = TM_MALLOC(statevector, sizeof(struct str_statevector));
 #ifdef STAT
-	newcnt_statevector++;
+    newcnt_statevector++;
 #endif
-	s->sz = sz;
-	s->n = sz;
-	s->arr = sz > 0 ? arr : statearrayNIL;
-	return(s);
+    s->sz = sz;
+    s->n = sz;
+    s->arr = sz > 0 ? arr : statearrayNIL;
+    return (s);
 }
 
-statevector rnew_statevector(inum sz)
-{
-	statearray s;
+statevector rnew_statevector(inum sz) {
+    statearray s;
 
-	s = sz > 0 ? new_statearray(sz) : statearrayNIL;
-	return(new_statevector(sz, s));
+    s = sz > 0 ? new_statearray(sz) : statearrayNIL;
+    return (new_statevector(sz, s));
 }
 
-statevector rdup_statevector(statevector s)
-{
-	statevector sc;
-	inum i;
+statevector rdup_statevector(statevector s) {
+    statevector sc;
+    inum i;
 
-	sc = rnew_statevector(s->sz);
-	sc->n = s->n;
+    sc = rnew_statevector(s->sz);
+    sc->n = s->n;
 
     for (i = 0; i < s->sz; i++) {
-		VEC(sc, i) = VEC(s, i);
+        VEC(sc, i) = VEC(s, i);
     }
 
-	return(sc);
+    return (sc);
 }
 
-void fre_statevector(statevector s)
-{
+void fre_statevector(statevector s) {
     if (s == statevectorNIL) {
-		return;
+        return;
     }
-	TM_FREE( s);
+    TM_FREE(s);
 #ifdef STAT
-	frecnt_statevector++;
+    frecnt_statevector++;
 #endif
 }
 
-void rfre_statevector(statevector s)
-{
+void rfre_statevector(statevector s) {
     if (s == statevectorNIL) {
-		return;
+        return;
     }
-	fre_statearray(s->arr);
-	fre_statevector(s);
+    fre_statearray(s->arr);
+    fre_statevector(s);
 }
 
-boolvector new_boolvector(inum sz, boolarray arr)
-{
-	boolvector b;
+boolvector new_boolvector(inum sz, boolarray arr) {
+    boolvector b;
 
-	b = TM_MALLOC( boolvector, sizeof(struct str_boolvector) );
+    b = TM_MALLOC(boolvector, sizeof(struct str_boolvector));
 #ifdef STAT
-	newcnt_boolvector++;
+    newcnt_boolvector++;
 #endif
-	b->sz = sz;
-	b->n = sz;
-	b->arr = sz > 0 ? arr : boolarrayNIL;
-	return(b);
+    b->sz = sz;
+    b->n = sz;
+    b->arr = sz > 0 ? arr : boolarrayNIL;
+    return (b);
 }
 
-boolvector rnew_boolvector(inum sz)
-{
-	boolarray b;
+boolvector rnew_boolvector(inum sz) {
+    boolarray b;
 
-	b = sz > 0 ? new_boolarray(sz) : boolarrayNIL;
-	return(new_boolvector(sz, b));
+    b = sz > 0 ? new_boolarray(sz) : boolarrayNIL;
+    return (new_boolvector(sz, b));
 }
 
-void fre_boolvector(boolvector b)
-{
+void fre_boolvector(boolvector b) {
     if (b == boolvectorNIL) {
-		return;
+        return;
     }
-	TM_FREE( b);
+    TM_FREE(b);
 #ifdef STAT
-	frecnt_boolvector++;
+    frecnt_boolvector++;
 #endif
 }
 
-void rfre_boolvector(boolvector b)
-{
+void rfre_boolvector(boolvector b) {
     if (b == boolvectorNIL) {
-		return;
+        return;
     }
-	fre_boolarray(b->arr);
-	fre_boolvector(b);
+    fre_boolarray(b->arr);
+    fre_boolvector(b);
 }
 
-inumvector new_inumvector(inum sz, inumarray arr)
-{
-	inumvector i;
+inumvector new_inumvector(inum sz, inumarray arr) {
+    inumvector i;
 
-	i = TM_MALLOC( inumvector, sizeof(struct str_inumvector) );
+    i = TM_MALLOC(inumvector, sizeof(struct str_inumvector));
 #ifdef STAT
-	newcnt_inumvector++;
+    newcnt_inumvector++;
 #endif
-	i->sz = sz;
-	i->n = sz;
-	i->arr = sz > 0 ? arr : inumarrayNIL;
-	return(i);
+    i->sz = sz;
+    i->n = sz;
+    i->arr = sz > 0 ? arr : inumarrayNIL;
+    return (i);
 }
 
-inumvector rnew_inumvector(inum sz)
-{
-	inumarray i;
+inumvector rnew_inumvector(inum sz) {
+    inumarray i;
 
-	i = sz > 0 ? new_inumarray(sz) : inumarrayNIL;
-	return(new_inumvector(sz, i));
+    i = sz > 0 ? new_inumarray(sz) : inumarrayNIL;
+    return (new_inumvector(sz, i));
 }
 
-void fre_inumvector(inumvector i)
-{
+void fre_inumvector(inumvector i) {
     if (i == inumvectorNIL) {
-		return;
+        return;
     }
-	TM_FREE( i);
+    TM_FREE(i);
 #ifdef STAT
-	frecnt_inumvector++;
+    frecnt_inumvector++;
 #endif
 }
 
-void rfre_inumvector(inumvector i)
-{
+void rfre_inumvector(inumvector i) {
     if (i == inumvectorNIL) {
-		return;
+        return;
     }
-	fre_inumarray(i->arr);
-	fre_inumvector(i);
+    fre_inumarray(i->arr);
+    fre_inumvector(i);
 }
 
-vector new_vector(inum sz, fnumarray arr)
-{
-	vector v;
+vector new_vector(inum sz, fnumarray arr) {
+    vector v;
 
-	v = TM_MALLOC( vector, sizeof(struct str_vector) );
+    v = TM_MALLOC(vector, sizeof(struct str_vector));
 #ifdef STAT
-	newcnt_vector++;
+    newcnt_vector++;
 #endif
-	v->sz = sz;
-	v->n = sz;
-	v->arr = arr;
-	return(v);
+    v->sz = sz;
+    v->n = sz;
+    v->arr = arr;
+    return (v);
 }
 
-vector rnew_vector(inum sz)
-{
-	fnumarray f;
+vector rnew_vector(inum sz) {
+    fnumarray f;
 
-	f = sz > 0 ? new_fnumarray(sz) : fnumarrayNIL;
-	return(new_vector(sz, f));
+    f = sz > 0 ? new_fnumarray(sz) : fnumarrayNIL;
+    return (new_vector(sz, f));
 }
 
-void fre_vector(vector v)
-{
+void fre_vector(vector v) {
     if (v == vectorNIL) {
-		return;
+        return;
     }
-	TM_FREE( v);
+    TM_FREE(v);
 #ifdef STAT
-	frecnt_vector++;
+    frecnt_vector++;
 #endif
 }
 
-void rfre_vector(vector v)
-{
+void rfre_vector(vector v) {
     if (v == vectorNIL) {
-		return;
+        return;
     }
-	fre_fnumarray(v->arr);
-	fre_vector(v);
+    fre_fnumarray(v->arr);
+    fre_vector(v);
 }
 
 /******************** new and free functions for matrix types **********/
 
-fnumindex new_fnumindex(inum sz)
-{
-	fnumindex idx;
-	inum i;
+fnumindex new_fnumindex(inum sz) {
+    fnumindex idx;
+    inum i;
 
-	idx = TM_MALLOC( fnumindex, sz * sizeof(fnum*) );
+    idx = TM_MALLOC(fnumindex, sz * sizeof(fnum *));
 
 #ifdef STAT
-	newcnt_fnumindex++;
+    newcnt_fnumindex++;
 #endif
 
     for (i = 0; i < sz; i++) {
-		idx[i] = (fnum*)0;
+        idx[i] = (fnum *)0;
     }
 
-	return(idx);
+    return (idx);
 }
 
-void fre_fnumindex(fnumindex idx)
-{
+void fre_fnumindex(fnumindex idx) {
     if (idx == fnumindexNIL) {
-		return;
+        return;
     }
-	TM_FREE( idx);
+    TM_FREE(idx);
 #ifdef STAT
-	frecnt_fnumindex++;
+    frecnt_fnumindex++;
 #endif
 }
 
-matrix new_matrix(inum sz, fnumarray arr, inum szm, inum szn, fnumindex idx)
-{
-	matrix mat;
+matrix new_matrix(inum sz, fnumarray arr, inum szm, inum szn, fnumindex idx) {
+    matrix mat;
 
-	mat = TM_MALLOC( matrix, sizeof(struct str_matrix) );
+    mat = TM_MALLOC(matrix, sizeof(struct str_matrix));
 #ifdef STAT
-	newcnt_matrix++;
+    newcnt_matrix++;
 #endif
-	mat->sz = sz;
-	mat->arr = arr;
-	mat->szm = szm;
-	mat->szn = szn;
-	mat->m = szm;
-	mat->n = szn;
-	mat->idx = idx;
-	return(mat);
+    mat->sz = sz;
+    mat->arr = arr;
+    mat->szm = szm;
+    mat->szn = szn;
+    mat->m = szm;
+    mat->n = szn;
+    mat->idx = idx;
+    return (mat);
 }
 
-matrix rnew_matrix(inum szm, inum szn)
-{
-	inum en;
-	fnumarray arr;
-	fnumindex idx;
-	matrix mat;
-	int i, j;
+matrix rnew_matrix(inum szm, inum szn) {
+    inum en;
+    fnumarray arr;
+    fnumindex idx;
+    matrix mat;
+    int i, j;
 
-	en = szm * szn;
-	arr = en > 0 ? new_fnumarray(en) : fnumarrayNIL;
-	idx = szn > 0 ? new_fnumindex(szn) : fnumindexNIL;
+    en = szm * szn;
+    arr = en > 0 ? new_fnumarray(en) : fnumarrayNIL;
+    idx = szn > 0 ? new_fnumindex(szn) : fnumindexNIL;
 
     for (i = 0, j = 0; i < szn; i++, j += szm) {
-		idx[i] = arr + j;
+        idx[i] = arr + j;
     }
 
-	mat = new_matrix(en, arr, szm, szn, idx);
+    mat = new_matrix(en, arr, szm, szn, idx);
 
-	return(mat);
+    return (mat);
 }
 
-void fre_matrix(matrix mat)
-{
+void fre_matrix(matrix mat) {
     if (mat == matrixNIL) {
-		return;
+        return;
     }
-	TM_FREE( mat);
+    TM_FREE(mat);
 #ifdef STAT
-	frecnt_matrix++;
+    frecnt_matrix++;
 #endif
 }
 
-void rfre_matrix(matrix mat)
-{
+void rfre_matrix(matrix mat) {
     if (mat == matrixNIL) {
-		return;
+        return;
     }
-	fre_fnumarray(mat->arr);
-	fre_fnumindex(mat->idx);
-	fre_matrix(mat);
+    fre_fnumarray(mat->arr);
+    fre_fnumindex(mat->idx);
+    fre_matrix(mat);
 }
 
 /*********** miscellaneous functions on vector and matrix types *********/
 
-void copy_inumvector(inumvector va, inumvector vb)
-{
-	inum i;
+void copy_inumvector(inumvector va, inumvector vb) {
+    inum i;
 
 #ifdef RANGECHECK
-	assert(va->n <= vb->n);
+    assert(va->n <= vb->n);
 #endif
 
     for (i = 0; i < vb->n; i++) {
-		vb->arr[i] = va->arr[i];
+        vb->arr[i] = va->arr[i];
     }
 
-	vb->n = va->n;
+    vb->n = va->n;
 
-	return;
+    return;
 }
 
-inumvector rdup_inumvector(inumvector v)
-{
-	inumvector c;
-	inum i;
+inumvector rdup_inumvector(inumvector v) {
+    inumvector c;
+    inum i;
 
-	c = rnew_inumvector(v->sz);
+    c = rnew_inumvector(v->sz);
 
     for (i = 0; i < v->sz; i++) {
-		c->arr[i] = v->arr[i];
+        c->arr[i] = v->arr[i];
     }
 
-	c->n = v->n;
+    c->n = v->n;
 
-	return(c);
+    return (c);
 }
 
-vector rdup_vector(vector v)
-{
-	vector c;
-	inum i;
+vector rdup_vector(vector v) {
+    vector c;
+    inum i;
 
-	c = rnew_vector(v->sz);
+    c = rnew_vector(v->sz);
 
     for (i = 0; i < v->sz; i++) {
-		c->arr[i] = v->arr[i];
+        c->arr[i] = v->arr[i];
     }
 
-	c->n = v->n;
+    c->n = v->n;
 
-	return(c);
+    return (c);
 }
 
 /* allocate a new sub vector access structure */
 
-vector new_sub_vector(vector v)
-{
-	vector sv;
+vector new_sub_vector(vector v) {
+    vector sv;
 
-	sv = new_vector(v->sz, v->arr);
-	return(sv);
+    sv = new_vector(v->sz, v->arr);
+    return (sv);
 }
 
-void fre_sub_vector(vector v)
-{
-	fre_vector(v);
-}
+void fre_sub_vector(vector v) { fre_vector(v); }
 
-void sub_vector(vector v, inum i, inum n, vector sv)
-{
+void sub_vector(vector v, inum i, inum n, vector sv) {
 
 #ifdef RANGECHECK
-	assert((i + n) <= v->n);
+    assert((i + n) <= v->n);
 #endif
 
-	sv->n = n;
-	sv->arr = v->arr + i;
+    sv->n = n;
+    sv->arr = v->arr + i;
 }
 
 /* allocate a new sub matrix access structure */
 
-matrix new_sub_matrix(matrix a)
-{
-	matrix sa;
-	fnumindex sidx;
+matrix new_sub_matrix(matrix a) {
+    matrix sa;
+    fnumindex sidx;
 
-	sidx = new_fnumindex(a->szn);
-	sa = new_matrix(a->sz, a->arr, a->szm, a->szn, sidx);
+    sidx = new_fnumindex(a->szn);
+    sa = new_matrix(a->sz, a->arr, a->szm, a->szn, sidx);
 
-	return(sa);
+    return (sa);
 }
 
-void fre_sub_matrix(matrix a)
-{
-	fre_fnumindex(a->idx);
-	fre_matrix(a);
+void fre_sub_matrix(matrix a) {
+    fre_fnumindex(a->idx);
+    fre_matrix(a);
 }
 
-void sub_matrix(matrix a, inum im, inum in, inum m, inum n, matrix sa)
-{
-	inum i;
+void sub_matrix(matrix a, inum im, inum in, inum m, inum n, matrix sa) {
+    inum i;
 
 #ifdef RANGECHECK
-	assert(a->szm == sa->szm);
-	assert(a->szn == sa->szn);
-	assert((m + im) <= a->m);
-	assert((n + in) <= a->n);
+    assert(a->szm == sa->szm);
+    assert(a->szn == sa->szn);
+    assert((m + im) <= a->m);
+    assert((n + in) <= a->n);
 #endif
 
-	sa->m = m;
-	sa->n = n;
-	sa->arr = (a->idx)[in] + im;
-    for(i = 0; i < n; i++) {
-		(sa->idx)[i] = (a->idx)[in + i] + im;
+    sa->m = m;
+    sa->n = n;
+    sa->arr = (a->idx)[in] + im;
+    for (i = 0; i < n; i++) {
+        (sa->idx)[i] = (a->idx)[in + i] + im;
     }
 }
 
 /* package a vector in a column matrix */
 
-matrix mat_vector(vector v)
-{
-	matrix a;
+matrix mat_vector(vector v) {
+    matrix a;
 
-	a = new_matrix(v->sz, v->arr, v->sz, 1, &(v->arr));
-	a->m = v->n;
+    a = new_matrix(v->sz, v->arr, v->sz, 1, &(v->arr));
+    a->m = v->n;
 
-	return(a);
+    return (a);
 }
 
 /*********** print and scan functions for simple types *****************/
 
-void print_inum(TMPRINTSTATE *st, inum i)
-{
-	static char buf[20];
+void print_inum(TMPRINTSTATE *st, inum i) {
+    static char buf[20];
 
-	(void)sprintf(buf, "%ld", (long) i);
-	tm_printword(st, buf);
+    (void)sprintf(buf, "%ld", (long)i);
+    tm_printword(st, buf);
 }
 
-int fscan_inum(FILE *f, inum *p)
-{
+int fscan_inum(FILE *f, inum *p) {
     long int li;
 
-	*p = (inum) 0;
+    *p = (inum)0;
 
-        if (fscanf(f, "%ld", &li) != 1) {
-              (void)strcpy(tm_errmsg, "integer number expected");
-              return(1);
-        }
-        *p = (inum) li;
-	return(0);
+    if (fscanf(f, "%ld", &li) != 1) {
+        (void)strcpy(tm_errmsg, "integer number expected");
+        return (1);
+    }
+    *p = (inum)li;
+    return (0);
 }
 
-void print_fnum(TMPRINTSTATE *st, fnum f)
-{
-	static char buf[FNUM_DIG + 20];
+void print_fnum(TMPRINTSTATE *st, fnum f) {
+    static char buf[FNUM_DIG + 20];
 
-    if(f < 0) {
-		(void)sprintf(buf, "(%.*e)", FNUM_DIG, f);
+    if (f < 0) {
+        (void)sprintf(buf, "(%.*e)", FNUM_DIG, f);
     } else {
-		(void)sprintf(buf, "(%+.*e)", FNUM_DIG, f);
+        (void)sprintf(buf, "(%+.*e)", FNUM_DIG, f);
     }
 
-	tm_printword(st, buf);
+    tm_printword(st, buf);
 }
 
-int fscan_fnum(FILE *f, fnum *p)
-{
-	int brac;
-	double ld;
-	fnum d;
+int fscan_fnum(FILE *f, fnum *p) {
+    int brac;
+    double ld;
+    fnum d;
 
-	*p = (fnum) 0;
+    *p = (fnum)0;
 
-	brac = tm_fscanopenbrac(f);
+    brac = tm_fscanopenbrac(f);
 
-	if (fscanf(f, "%le", &ld) != 1) {
-		(void)strcpy(tm_errmsg, "real number expected");
-		return(1);
-	}
+    if (fscanf(f, "%le", &ld) != 1) {
+        (void)strcpy(tm_errmsg, "real number expected");
+        return (1);
+    }
 
-	d = (fnum) ld;
+    d = (fnum)ld;
 
-	*p = d;
+    *p = d;
 
-	return(tm_fscanclosebrac(f, brac));
+    return (tm_fscanclosebrac(f, brac));
 }
 
-void print_boolean(TMPRINTSTATE *st, boolean b)
-{
-    tm_printword(st, (b == TRUE) ? "true" : "false" );
+void print_boolean(TMPRINTSTATE *st, boolean b) {
+    tm_printword(st, (b == TRUE) ? "true" : "false");
 }
 
-int fscan_boolean(FILE *f, boolean *b)
-{
-	char buf[7];
+int fscan_boolean(FILE *f, boolean *b) {
+    char buf[7];
 
-	tm_fscanspace(f);
-	if (fscanf(f, "%6[^][()|, \t\n]", buf) != 1) {
-		sprintf(tm_errmsg, "%s", "boolean expected");
-		return(1);
-	}
+    tm_fscanspace(f);
+    if (fscanf(f, "%6[^][()|, \t\n]", buf) != 1) {
+        sprintf(tm_errmsg, "%s", "boolean expected");
+        return (1);
+    }
 
-	if (strcmp(buf, "false") == 0) {
-		*b = FALSE;
-		return(0);
-	}
-	if (strcmp(buf, "true") == 0) {
-		*b = TRUE;
-		return(0);
-	}
-	sprintf(tm_errmsg, "%s", "boolean expected");
-	return(1);
+    if (strcmp(buf, "false") == 0) {
+        *b = FALSE;
+        return (0);
+    }
+    if (strcmp(buf, "true") == 0) {
+        *b = TRUE;
+        return (0);
+    }
+    sprintf(tm_errmsg, "%s", "boolean expected");
+    return (1);
 }
 
-void print_scaleflag(TMPRINTSTATE *st, scaleflag s)
-{
-	switch (s) {
-	case SLIN:
-            tm_printword(st, "lin");
-			break;
-	case SLN:
-            tm_printword(st, "ln");
-			break;
-	case SLOG:
-            tm_printword(st, "log");
-			break;
-	case ALIN:
-            tm_printword(st, "alin");
-			break;
-	case ALN:
-            tm_printword(st, "aln");
-			break;
-	case ALOG:
-            tm_printword(st, "alog");
-			break;
-	}
+void print_scaleflag(TMPRINTSTATE *st, scaleflag s) {
+    switch (s) {
+    case SLIN:
+        tm_printword(st, "lin");
+        break;
+    case SLN:
+        tm_printword(st, "ln");
+        break;
+    case SLOG:
+        tm_printword(st, "log");
+        break;
+    case ALIN:
+        tm_printword(st, "alin");
+        break;
+    case ALN:
+        tm_printword(st, "aln");
+        break;
+    case ALOG:
+        tm_printword(st, "alog");
+        break;
+    }
 }
 
-int fscan_scaleflag(FILE *f, scaleflag *s)
-{
-	char buf[6];
+int fscan_scaleflag(FILE *f, scaleflag *s) {
+    char buf[6];
 
-	tm_fscanspace(f);
-	if (fscanf(f, "%5[^][()|, \t\n]", buf) != 1) {
-		sprintf(tm_errmsg, "%s", "scaleflag expected");
-		return(1);
-	}
+    tm_fscanspace(f);
+    if (fscanf(f, "%5[^][()|, \t\n]", buf) != 1) {
+        sprintf(tm_errmsg, "%s", "scaleflag expected");
+        return (1);
+    }
 
-	if (strcmp(buf, "lin") == 0) {
-		*s = SLIN;
-		return(0);
-	}
-	if (strcmp(buf, "ln") == 0) {
-		*s = SLN;
-		return(0);
-	}
-	if (strcmp(buf, "log") == 0) {
-		*s = SLOG;
-		return(0);
-	}
-	if (strcmp(buf, "alin") == 0) {
-		*s = ALIN;
-		return(0);
-	}
-	if (strcmp(buf, "aln") == 0) {
-		*s = ALN;
-		return(0);
-	}
-	if (strcmp(buf, "alog") == 0) {
-		*s = ALOG;
-		return(0);
-	}
-	sprintf(tm_errmsg, "%s", "scaleflag expected");
-	return(1);
+    if (strcmp(buf, "lin") == 0) {
+        *s = SLIN;
+        return (0);
+    }
+    if (strcmp(buf, "ln") == 0) {
+        *s = SLN;
+        return (0);
+    }
+    if (strcmp(buf, "log") == 0) {
+        *s = SLOG;
+        return (0);
+    }
+    if (strcmp(buf, "alin") == 0) {
+        *s = ALIN;
+        return (0);
+    }
+    if (strcmp(buf, "aln") == 0) {
+        *s = ALN;
+        return (0);
+    }
+    if (strcmp(buf, "alog") == 0) {
+        *s = ALOG;
+        return (0);
+    }
+    sprintf(tm_errmsg, "%s", "scaleflag expected");
+    return (1);
 }
 
-void print_stateflag(TMPRINTSTATE *st, stateflag s)
-{
-	switch (s) {
-	case UNKN:
-            tm_printword(st, "unkn");
-			break;
-	case MEAS:
-            tm_printword(st, "meas");
-			break;
-	case CALC:
-            tm_printword(st, "calc");
-			break;
-	case FACT:
-            tm_printword(st, "fact");
-			break;
-	case STIM:
-            tm_printword(st, "stim");
-			break;
-	case SWEEP:
-            tm_printword(st, "sweep");
-			break;
-	case ERR:
-            tm_printword(st, "err");
-			break;
-	}
+void print_stateflag(TMPRINTSTATE *st, stateflag s) {
+    switch (s) {
+    case UNKN:
+        tm_printword(st, "unkn");
+        break;
+    case MEAS:
+        tm_printword(st, "meas");
+        break;
+    case CALC:
+        tm_printword(st, "calc");
+        break;
+    case FACT:
+        tm_printword(st, "fact");
+        break;
+    case STIM:
+        tm_printword(st, "stim");
+        break;
+    case SWEEP:
+        tm_printword(st, "sweep");
+        break;
+    case ERR:
+        tm_printword(st, "err");
+        break;
+    }
 }
 
-int fscan_stateflag(FILE *f, stateflag *s)
-{
-	char buf[7];
+int fscan_stateflag(FILE *f, stateflag *s) {
+    char buf[7];
 
-	tm_fscanspace(f);
-	if (fscanf(f, "%6[^][()|, \t\n]", buf) != 1) {
-		sprintf(tm_errmsg, "%s", "stateflag expected");
-		return(1);
-	}
+    tm_fscanspace(f);
+    if (fscanf(f, "%6[^][()|, \t\n]", buf) != 1) {
+        sprintf(tm_errmsg, "%s", "stateflag expected");
+        return (1);
+    }
 
-	if (strcmp(buf, "unkn") == 0) {
-		*s = UNKN;
-		return(0);
-	}
-	if (strcmp(buf, "meas") == 0) {
-		*s = MEAS;
-		return(0);
-	}
-	if (strcmp(buf, "calc") == 0) {
-		*s = CALC;
-		return(0);
-	}
-	if (strcmp(buf, "fact") == 0) {
-		*s = FACT;
-		return(0);
-	}
-	if (strcmp(buf, "stim") == 0) {
-		*s = STIM;
-		return(0);
-	}
-	if (strcmp(buf, "sweep") == 0) {
-		*s = SWEEP;
-		return(0);
-	}
-	if (strcmp(buf, "err") == 0) {
-		*s = ERR;
-		return(0);
-	}
-	sprintf(tm_errmsg, "%s", "stateflag expected");
-	return(1);
+    if (strcmp(buf, "unkn") == 0) {
+        *s = UNKN;
+        return (0);
+    }
+    if (strcmp(buf, "meas") == 0) {
+        *s = MEAS;
+        return (0);
+    }
+    if (strcmp(buf, "calc") == 0) {
+        *s = CALC;
+        return (0);
+    }
+    if (strcmp(buf, "fact") == 0) {
+        *s = FACT;
+        return (0);
+    }
+    if (strcmp(buf, "stim") == 0) {
+        *s = STIM;
+        return (0);
+    }
+    if (strcmp(buf, "sweep") == 0) {
+        *s = SWEEP;
+        return (0);
+    }
+    if (strcmp(buf, "err") == 0) {
+        *s = ERR;
+        return (0);
+    }
+    sprintf(tm_errmsg, "%s", "stateflag expected");
+    return (1);
 }
 
-void print_opttype(TMPRINTSTATE *st, opttype o)
-{
-	switch (o) {
-	case MODES:
-            tm_printword(st, "modes");
-			break;
-	case BESTFIT:
-            tm_printword(st, "bestfit");
-			break;
-	case CHISQ:
-            tm_printword(st, "chisq");
-			break;
-	case STRICT:
-            tm_printword(st, "strict");
-			break;
-	case CONSIST:
-            tm_printword(st, "consist");
-			break;
-	}
+void print_opttype(TMPRINTSTATE *st, opttype o) {
+    switch (o) {
+    case MODES:
+        tm_printword(st, "modes");
+        break;
+    case BESTFIT:
+        tm_printword(st, "bestfit");
+        break;
+    case CHISQ:
+        tm_printword(st, "chisq");
+        break;
+    case STRICT:
+        tm_printword(st, "strict");
+        break;
+    case CONSIST:
+        tm_printword(st, "consist");
+        break;
+    }
 }
 
-void print_procedure(TMPRINTSTATE *st, procedure p)
-{
-	char buf[50];
+void print_procedure(TMPRINTSTATE *st, procedure p) {
+    char buf[50];
 
-	sprintf(buf, "Proc:%lu", (unsigned long)p);
-	tm_printword(st, buf);
+    sprintf(buf, "Proc:%lu", (unsigned long)p);
+    tm_printword(st, buf);
 }
 
-void print_codefile(TMPRINTSTATE *st, codefile f)
-{
-	char buf[50];
+void print_codefile(TMPRINTSTATE *st, codefile f) {
+    char buf[50];
 
-	sprintf(buf, "Codefile:%lu", (unsigned long)f);
-	tm_printword(st, buf);
+    sprintf(buf, "Codefile:%lu", (unsigned long)f);
+    tm_printword(st, buf);
 }
 
 /************ print functions for vector and matrix types ***************/
 
-void print_statevector(TMPRINTSTATE *st, statevector s)
-{
-	inum i;
+void print_statevector(TMPRINTSTATE *st, statevector s) {
+    inum i;
 
-	if (s == statevectorNIL) {
-		tm_printword(st, "@" );
-		return;
-	}
-	tm_openlist(st);
+    if (s == statevectorNIL) {
+        tm_printword(st, "@");
+        return;
+    }
+    tm_openlist(st);
     for (i = 0; i < s->n; i++) {
-		print_stateflag(st, s->arr[i]);
+        print_stateflag(st, s->arr[i]);
     }
-	tm_closelist(st);
+    tm_closelist(st);
 }
 
-void print_boolvector(TMPRINTSTATE *st, boolvector b)
-{
-	inum i;
+void print_boolvector(TMPRINTSTATE *st, boolvector b) {
+    inum i;
 
-	if (b == boolvectorNIL) {
-		tm_printword(st, "@" );
-		return;
-	}
-	tm_openlist(st);
+    if (b == boolvectorNIL) {
+        tm_printword(st, "@");
+        return;
+    }
+    tm_openlist(st);
     for (i = 0; i < b->n; i++) {
-		print_boolean(st, b->arr[i]);
+        print_boolean(st, b->arr[i]);
     }
-	tm_closelist(st);
+    tm_closelist(st);
 }
 
-void print_inumvector(TMPRINTSTATE *st, inumvector v)
-{
-	inum i;
+void print_inumvector(TMPRINTSTATE *st, inumvector v) {
+    inum i;
 
-	if (v == inumvectorNIL) {
-		tm_printword(st, "@" );
-		return;
-	}
-	tm_openlist(st);
+    if (v == inumvectorNIL) {
+        tm_printword(st, "@");
+        return;
+    }
+    tm_openlist(st);
     for (i = 0; i < v->n; i++) {
-		print_inum(st, v->arr[i]);
+        print_inum(st, v->arr[i]);
     }
-	tm_closelist(st);
+    tm_closelist(st);
 }
 
-void print_vector(TMPRINTSTATE *st, vector v)
-{
-	inum i;
+void print_vector(TMPRINTSTATE *st, vector v) {
+    inum i;
 
-	if (v == vectorNIL) {
-		tm_printword(st,  "@" );
-		return;
-	}
-	tm_openlist(st);
+    if (v == vectorNIL) {
+        tm_printword(st, "@");
+        return;
+    }
+    tm_openlist(st);
     for (i = 0; i < v->n; i++) {
-		print_fnum(st, v->arr[i]);
+        print_fnum(st, v->arr[i]);
     }
-	tm_closelist(st);
+    tm_closelist(st);
 }
 
-void print_matrix(TMPRINTSTATE *st, matrix m)
-{
-	inum r, c;
+void print_matrix(TMPRINTSTATE *st, matrix m) {
+    inum r, c;
 
-	if (m == matrixNIL) {
-		tm_printword(st,  "@" );
-		return;
-	}
-	tm_openlist(st);
-	for (r = 0; r < m->m; r++) {
-		tm_openlist(st);
-		for (c = 0; c < m->n; c++) {
-			print_fnum(st, (m->idx)[c][r]);
-		}
-		tm_closelist(st);
-	}
-	tm_closelist(st);
+    if (m == matrixNIL) {
+        tm_printword(st, "@");
+        return;
+    }
+    tm_openlist(st);
+    for (r = 0; r < m->m; r++) {
+        tm_openlist(st);
+        for (c = 0; c < m->n; c++) {
+            print_fnum(st, (m->idx)[c][r]);
+        }
+        tm_closelist(st);
+    }
+    tm_closelist(st);
 }
 
 /******* give statistics about primitive types defined in this file ******/
 
-void stat_atoms(FILE *f)
-{
+void stat_atoms(FILE *f) {
 #ifdef STAT
-	fprintf(f, tm_allocfreed, "statevector",
-		newcnt_statevector, frecnt_statevector,
-		((newcnt_statevector == frecnt_statevector) ? "" : "<-"));
-	fprintf(f, tm_allocfreed, "boolvector",
-		newcnt_boolvector, frecnt_boolvector,
-		((newcnt_boolvector == frecnt_boolvector) ? "" : "<-"));
-	fprintf(f, tm_allocfreed, "inumvector",
-		newcnt_inumvector, frecnt_inumvector,
-		((newcnt_inumvector == frecnt_inumvector) ? "" : "<-"));
-	fprintf(f, tm_allocfreed, "vector",
-		newcnt_vector, frecnt_vector,
-		((newcnt_vector == frecnt_vector) ? "" : "<-"));
-	fprintf(f, tm_allocfreed, "matrix",
-		newcnt_matrix, frecnt_matrix,
-		((newcnt_matrix == frecnt_matrix) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "statevector", newcnt_statevector,
+            frecnt_statevector,
+            ((newcnt_statevector == frecnt_statevector) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "boolvector", newcnt_boolvector,
+            frecnt_boolvector,
+            ((newcnt_boolvector == frecnt_boolvector) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "inumvector", newcnt_inumvector,
+            frecnt_inumvector,
+            ((newcnt_inumvector == frecnt_inumvector) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "vector", newcnt_vector, frecnt_vector,
+            ((newcnt_vector == frecnt_vector) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "matrix", newcnt_matrix, frecnt_matrix,
+            ((newcnt_matrix == frecnt_matrix) ? "" : "<-"));
 
-	fprintf(f, tm_allocfreed, "(statearray)",
-		newcnt_statearray, frecnt_statearray,
-		((newcnt_statearray == frecnt_statearray) ? "" : "<-"));
-	fprintf(f, tm_allocfreed, "(boolarray)",
-		newcnt_boolarray, frecnt_boolarray,
-		((newcnt_boolarray == frecnt_boolarray) ? "" : "<-"));
-	fprintf(f, tm_allocfreed, "(inumarray)",
-		newcnt_inumarray, frecnt_inumarray,
-		((newcnt_inumarray == frecnt_inumarray) ? "" : "<-"));
-	fprintf(f, tm_allocfreed, "(fnumarray)",
-		newcnt_fnumarray, frecnt_fnumarray,
-		((newcnt_fnumarray == frecnt_fnumarray) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "(statearray)", newcnt_statearray,
+            frecnt_statearray,
+            ((newcnt_statearray == frecnt_statearray) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "(boolarray)", newcnt_boolarray, frecnt_boolarray,
+            ((newcnt_boolarray == frecnt_boolarray) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "(inumarray)", newcnt_inumarray, frecnt_inumarray,
+            ((newcnt_inumarray == frecnt_inumarray) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "(fnumarray)", newcnt_fnumarray, frecnt_fnumarray,
+            ((newcnt_fnumarray == frecnt_fnumarray) ? "" : "<-"));
 
-	fprintf(f, tm_allocfreed, "(fnumindex)",
-		newcnt_fnumindex, frecnt_fnumindex,
-		((newcnt_fnumindex == frecnt_fnumindex) ? "" : "<-"));
+    fprintf(f, tm_allocfreed, "(fnumindex)", newcnt_fnumindex, frecnt_fnumindex,
+            ((newcnt_fnumindex == frecnt_fnumindex) ? "" : "<-"));
 #else
-	f = f; /* to prevent 'f unused' from compiler and lint */
+    f = f; /* to prevent 'f unused' from compiler and lint */
 #endif
 }

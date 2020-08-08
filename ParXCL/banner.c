@@ -19,12 +19,11 @@
 
 #include "parx.h"
 
-char *parx_banner =
-        "    PPPPPP       AAAA       RRRRRR      XX   XX  TM\n"
-        "    PP   PP     AA  AA      RR   RR     XX   XX  \n"
-        "    PP   PP    AA    AA     RR   RR      XX XX   \n"
-        "    PPPPPP     AAAAAAAA     RRRRRR        XXX    \n"
-        "    PP         AA    AA     RR  RR       XX XX   \n"
-        "    PP         AA    AA     RR   RR     XX   XX  \n"
-        "    PP         AA    AA     RR   RR     XX   XX  CL\n"
-        "\n";
+char *parx_banner = "    PPPPPP       AAAA       RRRRRR      XX   XX  TM\n"
+                    "    PP   PP     AA  AA      RR   RR     XX   XX  \n"
+                    "    PP   PP    AA    AA     RR   RR      XX XX   \n"
+                    "    PPPPPP     AAAAAAAA     RRRRRR        XXX    \n"
+                    "    PP         AA    AA     RR  RR       XX XX   \n"
+                    "    PP         AA    AA     RR   RR     XX   XX  \n"
+                    "    PP         AA    AA     RR   RR     XX   XX  CL\n"
+                    "\n";

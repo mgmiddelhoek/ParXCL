@@ -18,10 +18,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
-#include "error.h"
 #include "dbase.h"
 #include "dbio.h"
+#include "error.h"
+#include "parx.h"
 
 /* since in the linked list library you can't distinguish between
  * an empty database and no database at all, there is the flag 'gotdbase'.
@@ -39,7 +39,7 @@ static parsenode_list parselist = parsenodeNIL; /* list of parsed tokens */
 parsenode dec_sym(tmstring s) {
     parsenode pn;
     parxsymbol_list sl;
-    
+
     if (!gotparselist) {
         parselist = new_parsenode_list();
         gotparselist = TRUE;
@@ -53,7 +53,7 @@ parsenode dec_sym(tmstring s) {
 
 parsenode dec_str(tmstring s) {
     parsenode pn;
-    
+
     if (!gotparselist) {
         parselist = new_parsenode_list();
         gotparselist = TRUE;
@@ -67,7 +67,7 @@ parsenode dec_str(tmstring s) {
 
 parsenode concat_parxsymbol(parsenode pa, parsenode pb) {
     parxsymbol_list sl;
-    
+
     sl = concat_parxsymbol_list(to_Symnode(pa)->sym, to_Symnode(pb)->sym);
     to_Symnode(pa)->sym = sl;
     to_Symnode(pb)->sym = new_parxsymbol_list();
@@ -83,7 +83,6 @@ void stat_end(void) {
     gotparselist = FALSE;
 }
 
-
 /* dblist handling */
 
 /* clear dbase */
@@ -94,7 +93,6 @@ void init_dbase(void) {
     }
     gotdbase = TRUE;
     dbase = new_dbnode_list();
-    
 }
 
 /* store dbase in file */
@@ -102,11 +100,11 @@ void init_dbase(void) {
 void output_dbase(tmstring fname) {
     FILE *f;
     TMPRINTSTATE *st;
-    
+
     if (fname == tmstringNIL) {
         fname = DEF_DBASE_FILE;
     }
-    
+
     f = fopen(fname, "w");
     if (!f) {
         errcode = NO_FILE_PERR;
@@ -115,7 +113,7 @@ void output_dbase(tmstring fname) {
     }
     st = tm_setprint(f, 1, 80, 8, 0);
     print_dbnode_list(st, dbase);
-    
+
     fclose(f);
     tm_endprint(st);
     return;
@@ -126,18 +124,18 @@ void output_dbase(tmstring fname) {
 void input_dbase(tmstring fname) {
     FILE *f;
     dbnode_list newdbase;
-    
+
     if (fname == tmstringNIL) {
         fname = DEF_DBASE_FILE;
     }
-    
+
     f = fopen(fname, "r");
     if (!f) {
         errcode = NO_FILE_PERR;
         error(fname);
         return;
     }
-    
+
     if (fscan_dbnode_list(f, &newdbase)) {
         errcode = TMERROR_PERR;
         error(tm_errmsg);
@@ -147,26 +145,30 @@ void input_dbase(tmstring fname) {
         dbase = newdbase;
         gotdbase = TRUE;
     }
-    
+
     fclose(f);
 }
 
 /* return the tag of a dbnode */
 
-tags_dbnode tag_dbnode(dbnode n) {
-    return (n->tag);
-}
+tags_dbnode tag_dbnode(dbnode n) { return (n->tag); }
 
 /* return the name of a dbnode */
 
 tmstring name_dbnode(dbnode n) {
     switch (tag_dbnode(n)) {
-        case TAGModel: return (to_Model(n)->modname);
-        case TAGSystem: return (to_System(n)->sysname);
-        case TAGDatatable: return (to_Datatable(n)->dataname);
-        case TAGStimulus: return (to_Stimulus(n)->stimname);
-        case TAGMeasurement: return (to_Measurement(n)->measname);
-        default: return (tmstringNIL);
+    case TAGModel:
+        return (to_Model(n)->modname);
+    case TAGSystem:
+        return (to_System(n)->sysname);
+    case TAGDatatable:
+        return (to_Datatable(n)->dataname);
+    case TAGStimulus:
+        return (to_Stimulus(n)->stimname);
+    case TAGMeasurement:
+        return (to_Measurement(n)->measname);
+    default:
+        return (tmstringNIL);
     }
     return (tmstringNIL);
 }
@@ -175,19 +177,19 @@ tmstring name_dbnode(dbnode n) {
 
 void del_dbnode(dbnode n) {
     dbnode *p;
-    
+
     if (tag_dbnode(n) == TAGModel) {
         return;
     }
-    
+
     /* get pointer to pointer to node */
     for (p = &dbase; (*p != dbnodeNIL) && (*p != n); p = &((*p)->next)) {
     }
-    
+
     assert(*p != dbnodeNIL); /* node must be in list! */
-    
+
     *p = n->next; /* skip node in list */
-    
+
     rfre_dbnode(n);
 }
 
@@ -197,32 +199,31 @@ void copy_dbnode(dbnode dn, dbnode sn) {
         error(name_dbnode(dn));
         return;
     }
-    
+
     switch (tag_dbnode(dn)) {
-        case TAGSystem:
-            rfre_systemtemplate(to_System(dn)->sysdata);
-            to_System(dn)->sysdata =
-            rdup_systemtemplate(to_System(sn)->sysdata);
-            break;
-        case TAGDatatable:
-            rfre_datatemplate(to_Datatable(dn)->datdata);
-            to_Datatable(dn)->datdata =
+    case TAGSystem:
+        rfre_systemtemplate(to_System(dn)->sysdata);
+        to_System(dn)->sysdata = rdup_systemtemplate(to_System(sn)->sysdata);
+        break;
+    case TAGDatatable:
+        rfre_datatemplate(to_Datatable(dn)->datdata);
+        to_Datatable(dn)->datdata =
             rdup_datatemplate(to_Datatable(sn)->datdata);
-            break;
-        case TAGStimulus:
-            rfre_stimtemplate_list(to_Stimulus(dn)->stimdata);
-            to_Stimulus(dn)->stimdata =
+        break;
+    case TAGStimulus:
+        rfre_stimtemplate_list(to_Stimulus(dn)->stimdata);
+        to_Stimulus(dn)->stimdata =
             rdup_stimtemplate_list(to_Stimulus(sn)->stimdata);
-            break;
-        case TAGMeasurement:
-            rfre_meastemplate_list(to_Measurement(dn)->measdata);
-            to_Measurement(dn)->measdata =
+        break;
+    case TAGMeasurement:
+        rfre_meastemplate_list(to_Measurement(dn)->measdata);
+        to_Measurement(dn)->measdata =
             rdup_meastemplate_list(to_Measurement(sn)->measdata);
-            break;
-        default:
-            errcode = ILL_ASSIGN_PERR;
-            error(name_dbnode(dn));
-            return;
+        break;
+    default:
+        errcode = ILL_ASSIGN_PERR;
+        error(name_dbnode(dn));
+        return;
     }
 }
 
@@ -230,7 +231,7 @@ void copy_dbnode(dbnode dn, dbnode sn) {
 
 dbnode check_name(tmstring name) {
     dbnode n;
-    
+
     for (n = dbase; n != dbnodeNIL; n = n->next) {
         if (strcmp(name, name_dbnode(n)) == 0) {
             return (n);
@@ -243,7 +244,7 @@ dbnode check_name(tmstring name) {
 
 dbnode find_dbnode(tmstring name, tags_dbnode tag) {
     dbnode n;
-    
+
     for (n = dbase; n != dbnodeNIL; n = n->next) {
         if (strcmp(name, name_dbnode(n)) == 0) {
             if ((tag == TAGName) || (tag == tag_dbnode(n))) {
@@ -255,7 +256,7 @@ dbnode find_dbnode(tmstring name, tags_dbnode tag) {
             }
         }
     }
-    
+
     errcode = UNK_IDENT_PERR;
     error(name);
     return (dbnodeNIL);
@@ -265,7 +266,7 @@ dbnode find_dbnode(tmstring name, tags_dbnode tag) {
 
 void dec_dbnode(parxsymbol_list sl, tags_dbnode tag) {
     for (; sl != parxsymbolNIL; sl = sl->next) {
-        
+
         /* no redeclaration allowed */
         if (check_name(sl->name) != dbnodeNIL) {
             errcode = ILL_REDEC_PERR;
@@ -275,23 +276,23 @@ void dec_dbnode(parxsymbol_list sl, tags_dbnode tag) {
             }
             continue;
         }
-        
+
         switch (tag) {
-            case TAGSystem:
-                dec_sys(sl->name, sl->next->name);
-                sl = sl->next; /* skip model name */
-                break;
-            case TAGDatatable:
-                dec_data(sl->name);
-                break;
-            case TAGStimulus:
-                dec_stim(sl->name);
-                break;
-            case TAGMeasurement:
-                dec_meas(sl->name);
-                break;
-            default:
-                break;
+        case TAGSystem:
+            dec_sys(sl->name, sl->next->name);
+            sl = sl->next; /* skip model name */
+            break;
+        case TAGDatatable:
+            dec_data(sl->name);
+            break;
+        case TAGStimulus:
+            dec_stim(sl->name);
+            break;
+        case TAGMeasurement:
+            dec_meas(sl->name);
+            break;
+        default:
+            break;
         }
     }
 }
@@ -306,47 +307,41 @@ systemtemplate mod_sys(dbnode mnode) {
     fspec fs;
     systemtemplate st;
     modeltemplate mt;
-    
+
     mt = to_Model(mnode)->moddata;
-    
+
     /* copy default parameter list from model to system */
-    
+
     pl = new_syspar_list();
-    
+
     for (ps = mt->parm; ps != pspecNIL; ps = ps->next) {
-        sp = new_syspar(new_tmstring(ps->name), new_Punkn(ps->dval, ps->lval, ps->uval));
+        sp = new_syspar(new_tmstring(ps->name),
+                        new_Punkn(ps->dval, ps->lval, ps->uval));
         pl = append_syspar_list(pl, sp);
     }
-    
+
     /* copy default constant list from model to system */
-    
+
     for (cs = mt->cons; cs != cspecNIL; cs = cs->next)
-        pl = append_syspar_list(pl,
-                                new_syspar(new_tmstring(cs->name),
-                                           new_Pconst(cs->dval)
-                                           )
-                                );
-    
+        pl = append_syspar_list(
+            pl, new_syspar(new_tmstring(cs->name), new_Pconst(cs->dval)));
+
     /* copy default flag list from model to system */
-    
+
     for (fs = mt->flags; fs != fspecNIL; fs = fs->next)
-        pl = append_syspar_list(pl,
-                                new_syspar(new_tmstring(fs->name),
-                                           new_Pflag(fs->dval)
-                                           )
-                                );
-    
-    
+        pl = append_syspar_list(
+            pl, new_syspar(new_tmstring(fs->name), new_Pflag(fs->dval)));
+
     st = new_systemtemplate(new_tmstring(""),
                             new_tmstring(to_Model(mnode)->modname), pl);
-    
+
     return (st);
 }
 
 dbnode find_model_dbnode(tmstring mname) {
     dbnode mnode;
     modeltemplate mt;
-    
+
     mnode = check_name(mname);
     if (mnode != dbnodeNIL) {
         if (tag_dbnode(mnode) == TAGModel) {
@@ -357,85 +352,84 @@ dbnode find_model_dbnode(tmstring mname) {
             return (dbnodeNIL);
         }
     }
-    
+
     /* model not in dbase, try to load it */
-    
+
     if ((mt = get_model(mname)) == modeltemplateNIL) {
         return (dbnodeNIL);
     }
-    
+
     mnode = new_Model(new_tmstring(mname), mt);
     dbase = append_dbnode_list(dbase, mnode);
-    
+
     return (mnode);
 }
 
 void dec_sys(tmstring sname, tmstring mname) {
     dbnode mnode, snode;
-    
+
     if ((mnode = find_model_dbnode(mname)) == dbnodeNIL) {
         return;
     }
-    
+
     snode = new_System(new_tmstring(sname), mod_sys(mnode));
-    
+
     dbase = append_dbnode_list(dbase, snode);
 }
 
 void dec_data(tmstring name) {
     datatemplate dt;
     dbnode dtab;
-    
-    dt = new_datatemplate(
-                          new_tmstring(""),
-                          new_colhead_list(),
-                          new_datarow_list()
-                          );
+
+    dt = new_datatemplate(new_tmstring(""), new_colhead_list(),
+                          new_datarow_list());
     dtab = new_Datatable(new_tmstring(name), dt);
     dbase = append_dbnode_list(dbase, dtab);
 }
 
 void dec_stim(tmstring name) {
-    dbase = append_dbnode_list(dbase, new_Stimulus(new_tmstring(name), new_stimtemplate_list()));
+    dbase = append_dbnode_list(
+        dbase, new_Stimulus(new_tmstring(name), new_stimtemplate_list()));
 }
 
 void dec_meas(tmstring name) {
-    dbase = append_dbnode_list(dbase, new_Measurement(new_tmstring(name), new_meastemplate_list()));
+    dbase = append_dbnode_list(
+        dbase, new_Measurement(new_tmstring(name), new_meastemplate_list()));
 }
 
 void input_dbnode(tmstring s, tmstring f) {
     dbnode n;
     systemtemplate st;
     datatemplate dt;
-    
+
     if ((n = find_dbnode(s, TAGName)) == dbnodeNIL) {
         return;
     }
-    
+
     switch (tag_dbnode(n)) {
-        case TAGSystem:
-            if ((st = get_system(f)) == systemtemplateNIL)
-                return;
-            if (strcmp(st->model, to_System(n)->sysdata->model) == 0) {
-                rfre_systemtemplate(to_System(n)->sysdata);
-                to_System(n)->sysdata = st;
-            } else {
-                rfre_systemtemplate(st);
-                errcode = ILL_TYPE_PERR;
-                error(s);
-            }
-            break;
-        case TAGDatatable:
-            if ((dt = get_datatable(f)) == datatemplateNIL) {
-                return;
-            }
-            rfre_datatemplate(to_Datatable(n)->datdata);
-            to_Datatable(n)->datdata = dt;
-            break;
-        default:
-            errcode = WRONG_ARG_PERR;
+    case TAGSystem:
+        if ((st = get_system(f)) == systemtemplateNIL)
+            return;
+        if (strcmp(st->model, to_System(n)->sysdata->model) == 0) {
+            rfre_systemtemplate(to_System(n)->sysdata);
+            to_System(n)->sysdata = st;
+        } else {
+            rfre_systemtemplate(st);
+            errcode = ILL_TYPE_PERR;
             error(s);
-            break;
+        }
+        break;
+    case TAGDatatable:
+        if ((dt = get_datatable(f)) == datatemplateNIL) {
+            return;
+        }
+        rfre_datatemplate(to_Datatable(n)->datdata);
+        to_Datatable(n)->datdata = dt;
+        break;
+    default:
+        errcode = WRONG_ARG_PERR;
+        error(s);
+        break;
     }
 }
 
@@ -443,30 +437,30 @@ void output_dbnode(tmstring s, tmstring f) {
     dbnode n;
     systemtemplate st;
     datatemplate dt;
-    
+
     if ((n = find_dbnode(s, TAGName)) == dbnodeNIL) {
         return;
     }
-    
+
     switch (tag_dbnode(n)) {
-        case TAGSystem:
-            st = to_System(n)->sysdata;
-            if (st == systemtemplateNIL) {
-                return;
-            }
-            put_system(st, f);
-            break;
-        case TAGDatatable:
-            dt = to_Datatable(n)->datdata;
-            if (dt == datatemplateNIL) {
-                return;
-            }
-            put_datatable(dt, f);
-            break;
-        default:
-            errcode = WRONG_ARG_PERR;
-            error(s);
-            break;
+    case TAGSystem:
+        st = to_System(n)->sysdata;
+        if (st == systemtemplateNIL) {
+            return;
+        }
+        put_system(st, f);
+        break;
+    case TAGDatatable:
+        dt = to_Datatable(n)->datdata;
+        if (dt == datatemplateNIL) {
+            return;
+        }
+        put_datatable(dt, f);
+        break;
+    default:
+        errcode = WRONG_ARG_PERR;
+        error(s);
+        break;
     }
 }
 
@@ -504,13 +498,13 @@ meastemplate find_meas(meastemplate_list l, tmstring name) {
 syspar sys_set(dbnode n, tmstring name) {
     systemtemplate st;
     syspar_list l;
-    
+
     st = to_System(n)->sysdata;
-    
+
     l = (st == systemtemplateNIL) ? sysparNIL : st->parm;
-    
+
     l = find_syspar(l, name);
-    
+
     if (l == sysparNIL) {
         errcode = UNK_FIELD_PERR;
         error(name);
@@ -520,47 +514,49 @@ syspar sys_set(dbnode n, tmstring name) {
 
 stimtemplate stim_set(dbnode n, tmstring name) {
     stimtemplate_list l;
-    
+
     l = to_Stimulus(n)->stimdata;
-    
+
     l = find_stim(l, name);
-    
+
     if (l != stimtemplateNIL) {
         return (l);
     }
-    
+
     /* not in list so make a new one */
-    
+
     l = new_stimtemplate(new_tmstring(name), 0.0, 0.0, 0, SLIN);
-    
-    to_Stimulus(n)->stimdata = append_stimtemplate_list(to_Stimulus(n)->stimdata, l);
-    
+
+    to_Stimulus(n)->stimdata =
+        append_stimtemplate_list(to_Stimulus(n)->stimdata, l);
+
     return (l);
 }
 
 meastemplate meas_set(dbnode n, tmstring name) {
     meastemplate_list l;
-    
+
     l = to_Measurement(n)->measdata;
-    
+
     l = find_meas(l, name);
-    
+
     if (l != meastemplateNIL) {
         return (l);
     }
-    
+
     /* not in list so make a new one */
-    
+
     if (name[0] == '0') { /* group spec. */
         l = new_meastemplate(new_tmstring(name), 0L, -1.0, 1.0, 1);
-    } else if(isdigit(name[0])) { /* curve nr. */
+    } else if (isdigit(name[0])) { /* curve nr. */
         l = new_meastemplate(new_tmstring(name), atoi(name), -INF, INF, 1);
     } else { /* external quant. */
         l = new_meastemplate(new_tmstring(name), -1L, -INF, INF, 1);
     }
-    
-    to_Measurement(n)->measdata = append_meastemplate_list(to_Measurement(n)->measdata, l);
-    
+
+    to_Measurement(n)->measdata =
+        append_meastemplate_list(to_Measurement(n)->measdata, l);
+
     return (l);
 }
 
@@ -571,21 +567,21 @@ void init_sys_set(dbnode n, syspar p) {
     pspec_list mp;
     cspec_list mc;
     fspec_list mf;
-    
+
     st = to_System(n)->sysdata;
-    
+
     mnode = check_name(st->model);
-    
+
     mt = to_Model(mnode)->moddata;
-    
+
     mp = mt->parm;
-    
+
     for (; mp != pspecNIL; mp = mp->next) {
         if (strcmp(p->name, mp->name) == 0) {
             break;
         }
     }
-    
+
     if (mp != pspecNIL) {
         cast_syspar(p, UNKN);
         to_Punkn(p->val)->unknval = mp->dval;
@@ -593,28 +589,28 @@ void init_sys_set(dbnode n, syspar p) {
         to_Punkn(p->val)->unknuval = mp->uval;
         return;
     }
-    
+
     mc = mt->cons;
-    
+
     for (; mc != cspecNIL; mc = mc->next) {
         if (strcmp(p->name, mc->name) == 0) {
             break;
         }
     }
-    
+
     if (mc != cspecNIL) {
         to_Pconst(p->val)->constval = mc->dval;
         return;
     }
-    
+
     mf = mt->flags;
-    
+
     for (; mf != fspecNIL; mf = mf->next) {
         if (strcmp(p->name, mf->name) == 0) {
             break;
         }
     }
-    
+
     if (mf != fspecNIL) {
         to_Pflag(p->val)->flagval = mf->dval;
         return;
@@ -623,96 +619,104 @@ void init_sys_set(dbnode n, syspar p) {
 
 void init_stim_set(dbnode n, stimtemplate st) {
     stimtemplate *p;
-    
+
     /* get pointer to pointer to node */
-    
+
     p = &(to_Stimulus(n)->stimdata);
     for (; (*p != stimtemplateNIL) && (*p != st); p = &((*p)->next)) {
     }
-    
+
     assert(*p != stimtemplateNIL); /* node must be in list! */
-    
+
     *p = st->next; /* skip node in list */
-    
+
     rfre_stimtemplate(st);
 }
 
 void init_meas_set(dbnode n, meastemplate mt) {
     meastemplate *p;
-    
+
     /* get pointer to pointer to node */
-    
+
     p = &(to_Measurement(n)->measdata);
     for (; (*p != meastemplateNIL) && (*p != mt); p = &((*p)->next)) {
     }
-    
+
     assert(*p != meastemplateNIL); /* node must be in list! */
-    
+
     *p = mt->next; /* skip node in list */
-    
+
     rfre_meastemplate(mt);
 }
 
 void cast_syspar(syspar p, stateflag f) {
     parmval np;
     fnum val, lval, uval, intv;
-    
+
     /* write to tmp variables */
-    
+
     switch (p->val->tag) {
-        case TAGPunkn:
-            val = to_Punkn(p->val)->unknval;
-            lval = to_Punkn(p->val)->unknlval;
-            uval = to_Punkn(p->val)->unknuval;
-            intv = INF;
-            break;
-        case TAGPmeas:
-            val = to_Pmeas(p->val)->measval;
-            lval = MININF;
-            uval = INF;
-            intv = to_Pmeas(p->val)->measint;
-            break;
-        case TAGPcalc:
-            val = to_Pcalc(p->val)->calcval;
-            lval = MININF;
-            uval = INF;
-            intv = to_Pcalc(p->val)->calcint;
-            break;
-        case TAGPfact:
-            val = to_Pfact(p->val)->factval;
-            lval = MININF;
-            uval = INF;
-            intv = 0.0;
-            break;
-        default:
-            val = to_Punkn(p->val)->unknval;
-            lval = to_Punkn(p->val)->unknlval;
-            uval = to_Punkn(p->val)->unknuval;
-            intv = INF;
-            break;
+    case TAGPunkn:
+        val = to_Punkn(p->val)->unknval;
+        lval = to_Punkn(p->val)->unknlval;
+        uval = to_Punkn(p->val)->unknuval;
+        intv = INF;
+        break;
+    case TAGPmeas:
+        val = to_Pmeas(p->val)->measval;
+        lval = MININF;
+        uval = INF;
+        intv = to_Pmeas(p->val)->measint;
+        break;
+    case TAGPcalc:
+        val = to_Pcalc(p->val)->calcval;
+        lval = MININF;
+        uval = INF;
+        intv = to_Pcalc(p->val)->calcint;
+        break;
+    case TAGPfact:
+        val = to_Pfact(p->val)->factval;
+        lval = MININF;
+        uval = INF;
+        intv = 0.0;
+        break;
+    default:
+        val = to_Punkn(p->val)->unknval;
+        lval = to_Punkn(p->val)->unknlval;
+        uval = to_Punkn(p->val)->unknuval;
+        intv = INF;
+        break;
     }
-    
+
     switch (f) {
-        case UNKN:
-            if (p->val->tag == TAGPunkn) { return; }
-            np = new_Punkn(val, lval, uval);
-            break;
-        case MEAS:
-            if (p->val->tag == TAGPmeas) { return; }
-            np = new_Pmeas(val, intv);
-            break;
-        case CALC:
-            if (p->val->tag == TAGPcalc) { return; }
-            np = new_Pcalc(val, intv);
-            break;
-        case FACT:
-            if (p->val->tag == TAGPfact) { return; }
-            np = new_Pfact(val);
-            break;
-        default:
+    case UNKN:
+        if (p->val->tag == TAGPunkn) {
             return;
+        }
+        np = new_Punkn(val, lval, uval);
+        break;
+    case MEAS:
+        if (p->val->tag == TAGPmeas) {
+            return;
+        }
+        np = new_Pmeas(val, intv);
+        break;
+    case CALC:
+        if (p->val->tag == TAGPcalc) {
+            return;
+        }
+        np = new_Pcalc(val, intv);
+        break;
+    case FACT:
+        if (p->val->tag == TAGPfact) {
+            return;
+        }
+        np = new_Pfact(val);
+        break;
+    default:
+        return;
     }
-    
+
     fre_parmval(p->val);
     p->val = np;
 }

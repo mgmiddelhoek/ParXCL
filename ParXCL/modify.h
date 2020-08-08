@@ -23,32 +23,31 @@
 
 #include "primtype.h"
 
-extern boolean proximity(
-                         vector res, /* residuals */
+extern boolean proximity(vector res,   /* residuals */
                          vector s_val, /* singular values */
-                         inum ng, /* number of equations per point */
-                         inum rank, /* dimension of the parameter space */
-                         opttype opt, /* optimization type */
-                         fnum tol, /* required tolerance */
+                         inum ng,      /* number of equations per point */
+                         inum rank,    /* dimension of the parameter space */
+                         opttype opt,  /* optimization type */
+                         fnum tol,     /* required tolerance */
                          fnum *pmc, /* previous value of maximum consistancy */
                          inum trace /* trace level */
 );
 
-extern boolean modify_point_set(
-                                vector res, /* residual vector */
-                                inum ng, /* number of equations per point */
-                                vector sv, /* S, singular values */
-                                matrix pt, /* Pt, right hand singular vectors */
-                                matrix q, /* Q, left hand singular vectors */
-                                inum rank, /* rank of the Jacobian matrix */
-                                vector dp, /* corrected step direction */
-                                fnum *dc, /* correction on objective function */
-                                fnum *res_norm, /* corrected norm of the residual vector */
-                                inum *npoints, /* number of data points */
-                                vector wrkp, /* workspace, same dimension as dp */
-                                vector wrkv, /* workspace, same dimension as res */
-                                matrix wrkm, /* workspace, same dimensions as q */
-                                inum trace /* trace level */
+extern boolean
+modify_point_set(vector res,     /* residual vector */
+                 inum ng,        /* number of equations per point */
+                 vector sv,      /* S, singular values */
+                 matrix pt,      /* Pt, right hand singular vectors */
+                 matrix q,       /* Q, left hand singular vectors */
+                 inum rank,      /* rank of the Jacobian matrix */
+                 vector dp,      /* corrected step direction */
+                 fnum *dc,       /* correction on objective function */
+                 fnum *res_norm, /* corrected norm of the residual vector */
+                 inum *npoints,  /* number of data points */
+                 vector wrkp,    /* workspace, same dimension as dp */
+                 vector wrkv,    /* workspace, same dimension as res */
+                 matrix wrkm,    /* workspace, same dimensions as q */
+                 inum trace      /* trace level */
 );
 
 #endif

@@ -23,15 +23,14 @@
 
 #include "primtype.h"
 
-extern boolean golden(
-                      fnum ax, /* left point */
-                      fnum bx, /* mid point */
-                      fnum cx, /* right point */
-                      fnum(*f)(fnum x), /* objective function */
-                      fnum rtol, /* tolerance */
-                      inum *itmax, /* maximum number of iterations */
-                      fnum *xmin, /* minimum point */
-                      fnum *fmin /* minimum value */
+extern boolean golden(fnum ax,           /* left point */
+                      fnum bx,           /* mid point */
+                      fnum cx,           /* right point */
+                      fnum (*f)(fnum x), /* objective function */
+                      fnum rtol,         /* tolerance */
+                      inum *itmax,       /* maximum number of iterations */
+                      fnum *xmin,        /* minimum point */
+                      fnum *fmin         /* minimum value */
 );
 
 #endif

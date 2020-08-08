@@ -23,18 +23,18 @@
 
 #include "primtype.h"
 
-extern boolean modes(
-                     inum neq, /* maximum number of equations */
-                     inum ng, /* number of equations per point */
-                     vector pval, /* initial and final scaled parameter values */
-                     vector plow, /* lower bounds on the parameter values */
-                     vector pup, /* upper bounds on the parameter values */
-                     opttype opt, /* type of optimization needed */
-                     fnum tol, /* modes tolerance factor */
-                     fnum prec, /* relative precision */
-                     fnum sens, /* sensitivity threshold */
-                     inum maxiter, /* maximum number of iterations */
-                     inum trace /* trace level */
+extern boolean
+modes(inum neq,     /* maximum number of equations */
+      inum ng,      /* number of equations per point */
+      vector pval,  /* initial and final scaled parameter values */
+      vector plow,  /* lower bounds on the parameter values */
+      vector pup,   /* upper bounds on the parameter values */
+      opttype opt,  /* type of optimization needed */
+      fnum tol,     /* modes tolerance factor */
+      fnum prec,    /* relative precision */
+      fnum sens,    /* sensitivity threshold */
+      inum maxiter, /* maximum number of iterations */
+      inum trace    /* trace level */
 );
 
 #endif

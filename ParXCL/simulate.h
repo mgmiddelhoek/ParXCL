@@ -21,19 +21,18 @@
 #ifndef __SIMULATE_H
 #define __SIMULATE_H
 
-#include "primtype.h"
 #include "datastruct.h"
 #include "numdat.h"
+#include "primtype.h"
 
 extern boolean simulate(numblock numb, fnum tol, inum maxiter, inum trace);
 
-extern boolean sim_constraints(
-                               vector x, /* variable vector */
-                               boolean *rf, /* want residuals? */
-                               vector r, /* residual vector */
+extern boolean sim_constraints(vector x,     /* variable vector */
+                               boolean *rf,  /* want residuals? */
+                               vector r,     /* residual vector */
                                boolean *jxf, /* want Jacobian? */
-                               matrix jx, /* Jacobian matrix */
-                               inum trace /* trace level */
+                               matrix jx,    /* Jacobian matrix */
+                               inum trace    /* trace level */
 );
 
 #endif

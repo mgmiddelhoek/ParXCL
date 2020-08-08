@@ -17,14 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
 #include "modlib.h"
+#include "parx.h"
 
 /* find a named entry in the model library */
 
 parxmodel find_model_proc(tmstring name) {
     inum i;
-    
+
     for (i = 0; i < modlib_size; i++) {
         if (strcmp(modlib[i].name, name) == 0) {
             return (modlib[i].p);
@@ -37,9 +37,9 @@ parxmodel find_model_proc(tmstring name) {
 
 xset_list rev_xset_list(xset_list l) {
     xset_list last, next;
-    
+
     last = xsetNIL;
-    
+
     while (l != xsetNIL) {
         next = l->next;
         l->next = last;

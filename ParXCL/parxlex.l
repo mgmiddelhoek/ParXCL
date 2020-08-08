@@ -19,7 +19,7 @@
  */
 
 %{
-    
+
 #pragma clang diagnostic ignored "-Wunused-function"
 #pragma clang diagnostic ignored "-Wdocumentation"
 
@@ -40,9 +40,9 @@
 #define ENDRETURN(T)        {yymainprompt(); return(T);}       /* outside statement */
 
 #undef YY_READ_BUF_SIZE
-#define YY_READ_BUF_SIZE        512
+#define YY_READ_BUF_SIZE 512
 
-#define MAX_READ_DEPTH          3L
+#define MAX_READ_DEPTH 3L
 
 /* context stacks for read's */
 

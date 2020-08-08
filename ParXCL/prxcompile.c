@@ -22,9 +22,9 @@
 #include "primtype.h"
 #include "prx_def.h"
 
-#define FILENN	1024
+#define FILENN 1024
 char prx_filename[FILENN]; /* name model file */
-int prx_lineno; /* line number model file */
+int prx_lineno;            /* line number model file */
 
 int prx_compile(tmstring mdlFileName) {
     FILE *inFile;
@@ -33,11 +33,11 @@ int prx_compile(tmstring mdlFileName) {
     char fileName[FILENN];
     char *pe;
     int bError;
-    
+
     /* opening 1 input file and 2 output files */
-    
+
     printf("ParX - Model Code generator\n");
-    
+
     if (!mdlFileName) {
         printf("No model file specified\n");
         return (1);
@@ -51,9 +51,9 @@ int prx_compile(tmstring mdlFileName) {
     if (!pe || strcmp(pe, MODEL_EXT)) { /* no extension, add one */
         strcat(fileName, MODEL_EXT);
     }
-    
+
     strcpy(prx_filename, fileName); /* copy input filename to global */
-    
+
     inFile = fopen(fileName, "r");
     if (!inFile) {
         printf("Error opening model file '%s'\n", fileName);
@@ -61,7 +61,7 @@ int prx_compile(tmstring mdlFileName) {
     } else {
         printf("   Reading '%s'\n", fileName);
     }
-    
+
     pe = strrchr(fileName, '.');
     strcpy(pe, MODEL_CODE_EXT);
     codeFile = fopen(fileName, "w");
@@ -72,7 +72,7 @@ int prx_compile(tmstring mdlFileName) {
     } else {
         printf("   Writing code file '%s'\n", fileName);
     }
-    
+
     strcpy(pe, MODEL_INTERFACE_EXT);
     modFile = fopen(fileName, "w");
     if (!modFile) {
@@ -83,30 +83,30 @@ int prx_compile(tmstring mdlFileName) {
     } else {
         printf("   Writing definition file '%s'\n\n", fileName);
     }
-    
+
     /* initialization of variables and fields */
     if (!prx_init(codeFile, modFile)) {
         goto error;
     }
-    
+
     /* parse the model file */
     if (!prx_parse(inFile)) {
         goto error;
     }
-    
+
     bError = prx_error();
     if (bError & 2) {
         goto error;
     }
-    
+
     if (!prx_check()) {
         goto error;
     }
-    
+
     if (!prx_deriv_all()) {
         goto error;
     }
-    
+
     bError = prx_error();
     if (bError & 2) {
         goto error;
@@ -114,16 +114,16 @@ int prx_compile(tmstring mdlFileName) {
     if (bError & 1) {
         printf("Warning(s) during creation of model code\n");
     }
-    
+
     prx_exit();
-    
+
     /* closing files */
     fclose(inFile);
     fclose(codeFile);
     fclose(modFile);
     printf("Creation of model code successfully completed\n");
     return 0;
-    
+
     /* abnormal end of program execution */
 error:
     prx_exit();
@@ -139,11 +139,11 @@ int prx_parse(FILE *inFile) {
     char Buf[MAXLINE + 4];
     char Cmd[4096];
     char *pe, *pa;
-    int bComment; /* comment switch */
+    int bComment;     /* comment switch */
     int bLineComment; /* line comment switch */
-    int bString; /* string switch */
-    int bCont; /* continuation line switch */
-    
+    int bString;      /* string switch */
+    int bCont;        /* continuation line switch */
+
     /* parsing header part of PARX model description file */
     bComment = bLineComment = bString = bCont = prx_lineno = 0;
     pe = Buf;
@@ -228,14 +228,14 @@ int prx_parse(FILE *inFile) {
         }
         *(pa++) = *(pe++);
     }
-    
+
     if (prx_error() & 2) {
         return 0;
     }
     if (!prx_derivLists()) {
         return 0;
     }
-    
+
     /* parsing equation part of PARX model description file */
     bComment = bLineComment = bCont = 0;
     pe = Buf;

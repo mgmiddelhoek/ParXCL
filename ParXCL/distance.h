@@ -23,25 +23,23 @@
 
 #include "primtype.h"
 
-extern void new_distance(
-                         inum nl, /* number of Lagrange multipliers */
-                         inum nx, /* number of variables */
-                         inum na, /* number of aux. variables */
-                         fnum prec, /* global relative precision */
-                         fnum tol, /* modes tolerance factor */
+extern void new_distance(inum nl,      /* number of Lagrange multipliers */
+                         inum nx,      /* number of variables */
+                         inum na,      /* number of aux. variables */
+                         fnum prec,    /* global relative precision */
+                         fnum tol,     /* modes tolerance factor */
                          vector auxtol /* abstol of aux. variables */
 );
 
 extern void fre_distance(void);
 
-extern boolean distance(
-                        vector dist, /* distance vector */
-                        vector aux, /* auxilary vector */
+extern boolean distance(vector dist,     /* distance vector */
+                        vector aux,      /* auxilary vector */
                         vector lagrange, /* Lagrange multipliers */
-                        matrix jx, /* Jacobian matrix */
-                        matrix ja, /* Jacobian matrix */
-                        inum maxiter, /* maximum number of iterations */
-                        inum trace /* trace level */
+                        matrix jx,       /* Jacobian matrix */
+                        matrix ja,       /* Jacobian matrix */
+                        inum maxiter,    /* maximum number of iterations */
+                        inum trace       /* trace level */
 );
 
 #endif

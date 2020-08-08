@@ -18,12 +18,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
-#include "error.h"
-#include "primtype.h"
 #include "datastruct.h"
 #include "datatpl.h"
+#include "error.h"
 #include "jsonio.h"
+#include "parx.h"
+#include "primtype.h"
 
 /**
  * Convert a stateflag to a string representation
@@ -33,14 +33,22 @@
  */
 char *stateflag2string(stateflag s) {
     switch (s) {
-        case UNKN: return ("unkn");
-        case MEAS: return ("meas");
-        case CALC: return ("calc");
-        case FACT: return ("fact");
-        case STIM: return ("stim");
-        case SWEEP: return ("sweep");
-        case ERR: return ("err");
-        default: return ("null");
+    case UNKN:
+        return ("unkn");
+    case MEAS:
+        return ("meas");
+    case CALC:
+        return ("calc");
+    case FACT:
+        return ("fact");
+    case STIM:
+        return ("stim");
+    case SWEEP:
+        return ("sweep");
+    case ERR:
+        return ("err");
+    default:
+        return ("null");
     }
 }
 
@@ -51,7 +59,7 @@ char *stateflag2string(stateflag s) {
  * @return stateflag
  */
 stateflag string2stateflag(tmstring s) {
-    
+
     if (strcmp(s, "unkn") == 0) {
         return (UNKN);
     }
@@ -89,28 +97,30 @@ void write_data_json(FILE *fp, datatemplate dt) {
     fnum_list flist;
     unsigned int i;
     char *json_out;
-    
+
     if (dt == datatemplateNIL || dt->info == tmstringNIL) {
         return;
     }
-    
+
     json_root = cJSON_CreateObject();
-    
+
     if (dt->info != tmstringNIL) {
         cJSON_AddItemToObject(json_root, "info", cJSON_CreateString(dt->info));
     } else {
-        cJSON_AddItemToObject(json_root, "info", cJSON_CreateString("no information available"));
+        cJSON_AddItemToObject(json_root, "info",
+                              cJSON_CreateString("no information available"));
     }
-    
+
     cJSON_AddItemToObject(json_root, "header", header = cJSON_CreateArray());
     hp = dt->header;
     while (hp != colheadNIL) {
         cJSON_AddItemToArray(header, key = cJSON_CreateObject());
         cJSON_AddItemToObject(key, "name", cJSON_CreateString(hp->name));
-        cJSON_AddItemToObject(key, "type", cJSON_CreateString(stateflag2string(hp->type)));
+        cJSON_AddItemToObject(key, "type",
+                              cJSON_CreateString(stateflag2string(hp->type)));
         hp = hp->next;
     }
-    
+
     cJSON_AddItemToObject(json_root, "data", data = cJSON_CreateArray());
     dr = dt->data;
     while (dr != datarowNIL) {
@@ -120,25 +130,25 @@ void write_data_json(FILE *fp, datatemplate dt) {
         cJSON_AddItemToObject(row, "rowid", cJSON_CreateNumber(dr->rowid));
         cJSON_AddItemToObject(row, "val", val = cJSON_CreateArray());
         cJSON_AddItemToObject(row, "err", err = cJSON_CreateArray());
-        
+
         flist = dr->row;
         for (i = 0; i < flist->sz; i++) {
             cJSON_AddItemToArray(val, cJSON_CreateNumber(flist->arr[i]));
         }
-        
+
         flist = dr->err;
         for (i = 0; i < flist->sz; i++) {
             cJSON_AddItemToArray(err, cJSON_CreateNumber(flist->arr[i]));
         }
-        
+
         dr = dr->next;
     }
-    
+
     json_out = cJSON_Print(json_root);
     cJSON_Delete(json_root);
     fprintf(fp, "%s\n", json_out);
     free(json_out);
-    
+
     return;
 }
 
@@ -154,7 +164,7 @@ inum read_data_json(FILE *fp, datatemplate *dt) {
     cJSON *root, *header, *data, *key, *row;
     cJSON *info, *name, *type, *grpid, *crvid, *rowid;
     cJSON *val, *err, *v, *e;
-    
+
     long len;
     inum i, j, hnum, dnum, vnum;
     colhead nw;
@@ -167,27 +177,27 @@ inum read_data_json(FILE *fp, datatemplate *dt) {
     boolean err_headers = FALSE;
     boolean err_values = FALSE;
     boolean err_rows = FALSE;
-    
-    
+
     fseek(fp, 0, SEEK_END);
     len = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     json = malloc(len + 1);
     fread(json, 1, len, fp);
-    
+
     root = cJSON_Parse(json);
     if (!root) {
-        sprintf(tm_errmsg, "JSON syntax error before: [%s]", cJSON_GetErrorPtr());
+        sprintf(tm_errmsg, "JSON syntax error before: [%s]",
+                cJSON_GetErrorPtr());
         return (1);
     }
-    
+
     info = cJSON_GetObjectItem(root, "info");
     if (info) {
         l_info = new_tmstring(info->valuestring);
     } else {
         l_info = new_tmstring("no information available");
     }
-    
+
     header = cJSON_GetObjectItem(root, "header");
     l_header = new_colhead_list();
     hnum = cJSON_GetArraySize(header);
@@ -197,19 +207,20 @@ inum read_data_json(FILE *fp, datatemplate *dt) {
         name = cJSON_GetObjectItem(key, "name");
         type = cJSON_GetObjectItem(key, "type");
         if (name && type) {
-            nw = new_colhead(new_tmstring(name->valuestring), string2stateflag(type->valuestring));
+            nw = new_colhead(new_tmstring(name->valuestring),
+                             string2stateflag(type->valuestring));
             l_header = append_colhead_list(l_header, nw);
             headers++;
         } else {
             err_headers = TRUE;
         }
     }
-    
+
     data = cJSON_GetObjectItem(root, "data");
     dnum = cJSON_GetArraySize(data);
     l_data = new_datarow_list();
     for (i = 0; i < dnum; i++) {
-        
+
         row = cJSON_GetArrayItem(data, i);
         if (row) {
             grpid = cJSON_GetObjectItem(row, "grpid");
@@ -217,12 +228,12 @@ inum read_data_json(FILE *fp, datatemplate *dt) {
             rowid = cJSON_GetObjectItem(row, "rowid");
             val = cJSON_GetObjectItem(row, "val");
             err = cJSON_GetObjectItem(row, "err");
-            
+
             if (grpid && crvid && rowid && val && err) {
-                
+
                 vl = new_fnum_list();
                 el = new_fnum_list();
-                
+
                 vnum = cJSON_GetArraySize(val);
                 values = 0;
                 for (j = 0; j < vnum; j++) {
@@ -239,7 +250,8 @@ inum read_data_json(FILE *fp, datatemplate *dt) {
                 if (values != headers) {
                     err_values = TRUE;
                 }
-                nwrow = new_datarow(grpid->valueint, crvid->valueint, rowid->valueint, vl, el);
+                nwrow = new_datarow(grpid->valueint, crvid->valueint,
+                                    rowid->valueint, vl, el);
                 l_data = append_datarow_list(l_data, nwrow);
             } else {
                 err_rows = TRUE;
@@ -248,12 +260,12 @@ inum read_data_json(FILE *fp, datatemplate *dt) {
             err_rows = TRUE;
         }
     }
-    
+
     *dt = new_datatemplate(l_info, l_header, l_data);
-    
+
     cJSON_Delete(root);
     free(json);
-    
+
     if (err_headers == TRUE || err_rows == TRUE || err_values == TRUE) {
         sprintf(tm_errmsg, "JSON structure error");
         return (1);
@@ -269,13 +281,20 @@ inum read_data_json(FILE *fp, datatemplate *dt) {
  */
 char *parmtag2string(tags_parmval tag) {
     switch (tag) {
-        case TAGPunkn: return ("unkn");
-        case TAGPmeas: return ("meas");
-        case TAGPcalc: return ("calc");
-        case TAGPfact: return ("fact");
-        case TAGPconst: return ("const");
-        case TAGPflag: return ("flag");
-        default: return ("null");
+    case TAGPunkn:
+        return ("unkn");
+    case TAGPmeas:
+        return ("meas");
+    case TAGPcalc:
+        return ("calc");
+    case TAGPfact:
+        return ("fact");
+    case TAGPconst:
+        return ("const");
+    case TAGPflag:
+        return ("flag");
+    default:
+        return ("null");
     }
 }
 
@@ -290,76 +309,92 @@ void write_sys_json(FILE *fp, systemtemplate st) {
     syspar_list p;
     parmval pv;
     char *json_out;
-    
+
     if (st == systemtemplateNIL) {
         return;
     }
-    
+
     json_root = cJSON_CreateObject();
-    
+
     if (st->info != tmstringNIL) {
         cJSON_AddItemToObject(json_root, "info", cJSON_CreateString(st->info));
     } else {
-        cJSON_AddItemToObject(json_root, "info", cJSON_CreateString("no information available"));
+        cJSON_AddItemToObject(json_root, "info",
+                              cJSON_CreateString("no information available"));
     }
-    
+
     if (st->model != tmstringNIL) {
-        cJSON_AddItemToObject(json_root, "model", cJSON_CreateString(st->model));
+        cJSON_AddItemToObject(json_root, "model",
+                              cJSON_CreateString(st->model));
     } else {
-        cJSON_AddItemToObject(json_root, "model", cJSON_CreateString("no model information available"));
+        cJSON_AddItemToObject(
+            json_root, "model",
+            cJSON_CreateString("no model information available"));
     }
-    
-    cJSON_AddItemToObject(json_root, "parameters", params = cJSON_CreateObject());
+
+    cJSON_AddItemToObject(json_root, "parameters",
+                          params = cJSON_CreateObject());
     p = st->parm;
     while (p != sysparNIL) {
-        
+
         cJSON_AddItemToObject(params, p->name, key = cJSON_CreateObject());
-        
+
         pv = p->val;
-        
-        cJSON_AddItemToObject(key, "type", cJSON_CreateString(parmtag2string(pv->tag)));
+
+        cJSON_AddItemToObject(key, "type",
+                              cJSON_CreateString(parmtag2string(pv->tag)));
         cJSON_AddItemToObject(key, "val", val = cJSON_CreateArray());
-        
+
         switch (pv->tag) {
-            case TAGPunkn:
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Punkn(pv)->unknval));
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Punkn(pv)->unknlval));
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Punkn(pv)->unknuval));
-                break;
-                
-            case TAGPmeas:
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Pmeas(pv)->measval));
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Pmeas(pv)->measint));
-                break;
-                
-            case TAGPcalc:
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Pcalc(pv)->calcval));
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Pcalc(pv)->calcint));
-                break;
-                
-            case TAGPfact:
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Pfact(pv)->factval));
-                break;
-                
-            case TAGPconst:
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Pconst(pv)->constval));
-                break;
-                
-            case TAGPflag:
-                cJSON_AddItemToArray(val, cJSON_CreateNumber(to_Pflag(pv)->flagval));
-                break;
-                
-            default:
-                break;
+        case TAGPunkn:
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Punkn(pv)->unknval));
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Punkn(pv)->unknlval));
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Punkn(pv)->unknuval));
+            break;
+
+        case TAGPmeas:
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Pmeas(pv)->measval));
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Pmeas(pv)->measint));
+            break;
+
+        case TAGPcalc:
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Pcalc(pv)->calcval));
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Pcalc(pv)->calcint));
+            break;
+
+        case TAGPfact:
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Pfact(pv)->factval));
+            break;
+
+        case TAGPconst:
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Pconst(pv)->constval));
+            break;
+
+        case TAGPflag:
+            cJSON_AddItemToArray(val,
+                                 cJSON_CreateNumber(to_Pflag(pv)->flagval));
+            break;
+
+        default:
+            break;
         }
-        
+
         p = p->next;
     }
-    
+
     json_out = cJSON_Print(json_root);
     cJSON_Delete(json_root);
     fprintf(fp, "%s\n", json_out);
     free(json_out);
-    
+
     return;
 }

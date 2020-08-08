@@ -21,71 +21,64 @@
 #ifndef __RESIDUAL_H
 #define __RESIDUAL_H
 
-#include "primtype.h"
 #include "numdat.h"
+#include "primtype.h"
 
-extern boolean residual(
-                        xset xs, /* set of measurements */
-                        vector pv, /* variable parameters */
-                        boolean rf, /* residual request flag */
-                        vector r, /* residual vector */
-                        boolean jpf, /* Jacobian request flag */
-                        matrix jp, /* Jacobian matrix */
-                        boolean sf, /* scaling matrix request flag */
-                        matrix s, /* scaling matrix */
-                        inum *mc_r, /* number of model residual evaluations */
-                        inum *mc_jx, /* number of model Jacobian_x evaluations */
-                        inum *mc_jp, /* number of model Jacobian_p evaluations */
-                        inum trace /* trace level */
+extern boolean
+residual(xset xs,     /* set of measurements */
+         vector pv,   /* variable parameters */
+         boolean rf,  /* residual request flag */
+         vector r,    /* residual vector */
+         boolean jpf, /* Jacobian request flag */
+         matrix jp,   /* Jacobian matrix */
+         boolean sf,  /* scaling matrix request flag */
+         matrix s,    /* scaling matrix */
+         inum *mc_r,  /* number of model residual evaluations */
+         inum *mc_jx, /* number of model Jacobian_x evaluations */
+         inum *mc_jp, /* number of model Jacobian_p evaluations */
+         inum trace   /* trace level */
 );
 
-
-extern boolean new_residual(
-                            modres mr, /* model result structure */
-                            moddat mi, /* model interface structure */
-                            fnum prec, /* relative precision */
-                            fnum tol, /* modes tolerance factor */
+extern boolean new_residual(modres mr,   /* model result structure */
+                            moddat mi,   /* model interface structure */
+                            fnum prec,   /* relative precision */
+                            fnum tol,    /* modes tolerance factor */
                             vector atol, /* abstol of aux. variables */
-                            inum *nup /* number of unknown parameters */
+                            inum *nup    /* number of unknown parameters */
 );
 
 extern void fre_residual(void);
 
-extern void new_pvar(
-                     pset ps, /* parameter set with upper and lower bounds */
+extern void new_pvar(pset ps, /* parameter set with upper and lower bounds */
                      vector *pval, /* scaled values */
                      vector *plow, /* scaled lower bounds */
-                     vector *pup /* scaled upper bounds */
+                     vector *pup   /* scaled upper bounds */
 );
 
-extern void fre_pvar(
-                     vector pval, /* scaled parameter values */
+extern void fre_pvar(vector pval, /* scaled parameter values */
                      vector plow, /* scaled lower bounds */
-                     vector pup, /* scaled upper bounds */
-                     pset ps /* output parameter set */
+                     vector pup,  /* scaled upper bounds */
+                     pset ps      /* output parameter set */
 );
 
-extern void set_p_scale(
-                        vector val, /* parameter values */
-                        vector lb, /* lower bounds */
-                        vector ub, /* upper bounds */
+extern void set_p_scale(vector val, /* parameter values */
+                        vector lb,  /* lower bounds */
+                        vector ub,  /* upper bounds */
                         matrix jacp /* Jacobian_p matrix */
 );
 
-extern void unscale_p(
-                      vector ps, /* scaled p */
-                      vector p /* un-scaled p */
+extern void unscale_p(vector ps, /* scaled p */
+                      vector p   /* un-scaled p */
 );
 
-extern boolean ext_constraints(
-                               vector dxv, /* difference variable x */
+extern boolean ext_constraints(vector dxv,  /* difference variable x */
                                vector auxv, /* auxiliary variable a */
-                               boolean rf, /* request flag */
-                               vector rv, /* model equation residual */
+                               boolean rf,  /* request flag */
+                               vector rv,   /* model equation residual */
                                boolean jxf, /* request flag */
-                               matrix jxv, /* Jacobian x */
-                               matrix jav, /* Jacobian a */
-                               inum trace /* trace level */
+                               matrix jxv,  /* Jacobian x */
+                               matrix jav,  /* Jacobian a */
+                               inum trace   /* trace level */
 );
 
 #endif

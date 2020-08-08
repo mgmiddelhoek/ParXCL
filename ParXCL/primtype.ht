@@ -21,45 +21,45 @@
 #ifndef __PRIMTYPE_H
 #define __PRIMTYPE_H
 
-..Definitions for primitive types
+/* Definitions for primitive types */
 
 #include "tmc.h"
 
-#if defined(__LP64__) /* In LP64 match sizes with the 32 bit ABI */
-    typedef int 		inum;       /* integer type, match with cLAPACK */
-    #define INUM_MAX    INT_MAX     /* maximum integer */
-    #define INUM_MIN    INT_MIN     /* minimum integer */
-    #define inumNIL		0
+#if defined(__LP64__)    /* In LP64 match sizes with the 32 bit ABI */
+typedef int inum;        /* integer type, match with cLAPACK */
+#define INUM_MAX INT_MAX /* maximum integer */
+#define INUM_MIN INT_MIN /* minimum integer */
+#define inumNIL 0
 #else
-    typedef long int 	inum;       /* integer type, match with cLAPACK */
-    #define INUM_MAX    LONG_MAX    /* maximum integer */
-    #define INUM_MIN    LONG_MIN    /* minimum integer */
-    #define inumNIL		0L
+typedef long int inum; /* integer type, match with cLAPACK */
+#define INUM_MAX LONG_MAX /* maximum integer */
+#define INUM_MIN LONG_MIN /* minimum integer */
+#define inumNIL 0L
 #endif
 
-typedef double fnum;                /* floating point type, match with cLAPACK */
-#define fnumNIL		0.0
-#define FNUM_EPS	DBL_EPSILON		/* machine precision */
-#define FNUM_DIG	DBL_DIG			/* decimal digits of precision */
-#define INF         DBL_MAX			/* maximum number */
-#define MININF		(- DBL_MAX)		/* minimum number */
+typedef double fnum; /* floating point type, match with cLAPACK */
+#define fnumNIL 0.0
+#define FNUM_EPS DBL_EPSILON /* machine precision */
+#define FNUM_DIG DBL_DIG     /* decimal digits of precision */
+#define INF DBL_MAX          /* maximum number */
+#define MININF (-DBL_MAX)    /* minimum number */
 
-#define FAIL	-1L
-#define OK	1L
+#define FAIL -1L
+#define OK 1L
 
-typedef enum {FALSE = 0, TRUE = 1} boolean;
+typedef enum { FALSE = 0, TRUE = 1 } boolean;
 #define booleanNIL FALSE
 
 /* scaling of axis and variables */
-typedef enum {SLIN, SLN, SLOG, ALIN, ALN, ALOG} scaleflag;
+typedef enum { SLIN, SLN, SLOG, ALIN, ALN, ALOG } scaleflag;
 #define scaleflagNIL SLIN
 
 /* type of input data */
-typedef enum {UNKN, MEAS, CALC, FACT, STIM, SWEEP, ERR} stateflag;
+typedef enum { UNKN, MEAS, CALC, FACT, STIM, SWEEP, ERR } stateflag;
 #define stateflagNIL UNKN
 
 /* data set group id's */
-typedef enum {FGROUP = -1, UGROUP = 0, SGROUP = 1} groupid;
+typedef enum { FGROUP = -1, UGROUP = 0, SGROUP = 1 } groupid;
 #define groupidNIL UGROUP
 
 typedef boolean (*procedure)();
@@ -69,7 +69,7 @@ typedef FILE *codefile;
 #define codefileNIL (codefile)0
 
 /* optimalization type */
-typedef enum {MODES, BESTFIT, CHISQ, STRICT, CONSIST} opttype;
+typedef enum { MODES, BESTFIT, CHISQ, STRICT, CONSIST } opttype;
 
 /* array types */
 
@@ -89,7 +89,6 @@ typedef fnum **fnumindex;
 #define fnumindexNIL (fnumindex)0
 
 /* insert tm types here */
-
 .insert primtype.t
 /*.include $(libpath)$(pathsep)calu.ht */
 .include calu.ht
@@ -181,7 +180,8 @@ extern vector rdup_vector(vector v);
 
 /* functions on matrix types */
 
-extern matrix new_matrix(inum sz, fnumarray arr, inum szm, inum szn, fnumindex idx);
+extern matrix new_matrix(inum sz, fnumarray arr, inum szm, inum szn,
+                         fnumindex idx);
 extern matrix rnew_matrix(inum szm, inum szn);
 extern void fre_matrix(matrix mat);
 extern void rfre_matrix(matrix mat);
@@ -193,71 +193,72 @@ extern void print_matrix(TMPRINTSTATE *st, matrix m);
 extern fnumindex new_fnumindex(inum sz);
 extern void fre_fnumindex(fnumindex idx);
 
-
 /*********** Access macros for non atomic primitive types **************/
 
 /* An illegal pointer value, that can not be dereferenced */
 
 #ifdef RANGECHECK
 extern void range_violation(char *f, int l, inum r, inum i);
-#define BADPOINTER(R,I)	(range_violation(__FILE__,__LINE__,R,I))
+#define BADPOINTER(R, I) (range_violation(__FILE__, __LINE__, R, I))
 #endif
 
 /* access fields and elements of a Tm list structure */
 
-#define LSTA(L)		((L)->arr)		/* storage array */
-#define LSTR(L)		((L)->room)		/* number of elements */
-#define LSTS(L)		((L)->sz)		/* actual number of elements */
+#define LSTA(L) ((L)->arr)  /* storage array */
+#define LSTR(L) ((L)->room) /* number of elements */
+#define LSTS(L) ((L)->sz)   /* actual number of elements */
 
-#define LSTP(L,I)	(LSTA(L) + (I))		/* pointer to element */
+#define LSTP(L, I) (LSTA(L) + (I)) /* pointer to element */
 
 #ifdef RANGECHECK
-#define LST(L,I)	(* (((I) < LSTS(L)) ? LSTP(L,I) : \
-	(BADPOINTER(LSTS(L),(I)), LSTP(L,0))))
+#define LST(L, I)                                                              \
+    (*(((I) < LSTS(L)) ? LSTP(L, I) : (BADPOINTER(LSTS(L), (I)), LSTP(L, 0))))
 #else
-#define LST(L,I)	(* LSTP(L,I))
+#define LST(L, I) (*LSTP(L, I))
 #endif
 
 /* access elements of an array type */
 
-#define ARR(A,I)	(* ((A) + (I)))
+#define ARR(A, I) (*((A) + (I)))
 
 /* access fields and elements of a vector type */
 
 /* storage vector */
-#define VECA(V)		((V)->arr)	/* storage array */
-#define VECS(V)		((V)->sz)	/* maximum number of elements */
-#define VECN(V)		((V)->n)	/* actual number of elements */
+#define VECA(V) ((V)->arr) /* storage array */
+#define VECS(V) ((V)->sz)  /* maximum number of elements */
+#define VECN(V) ((V)->n)   /* actual number of elements */
 
-#define VECP(V,I)	(VECA(V) + (I))	/* pointer to element */
+#define VECP(V, I) (VECA(V) + (I)) /* pointer to element */
 
 #ifdef RANGECHECK
-#define VEC(V,I)	(* (((I) < VECN(V)) ? VECP(V,I) : \
-	(BADPOINTER(VECN(V),(I)), VECP(V,0))))
+#define VEC(V, I)                                                              \
+    (*(((I) < VECN(V)) ? VECP(V, I) : (BADPOINTER(VECN(V), (I)), VECP(V, 0))))
 #else
-#define VEC(V,I)	(* VECP(V,I))
+#define VEC(V, I) (*VECP(V, I))
 #endif
 
 /* access fields and elements of a matrix type */
 /* elements are stored in column order */
 
 /* storage matrix */
-#define MATA(M)		((M)->arr)	/* storage array */
-#define MATS(M)		((M)->sz)	/* number of elements */
-#define MATSM(M)	((M)->szm)	/* number of rows in arr */
-#define MATSN(M)	((M)->szn)	/* number of colums in arr */
-#define MATI(M)		((M)->idx)	/* column index table */
-#define MATM(M)		((M)->m)	/* actual number of rows */
-#define MATN(M)		((M)->n)	/* actual number of colums */
+#define MATA(M) ((M)->arr)  /* storage array */
+#define MATS(M) ((M)->sz)   /* number of elements */
+#define MATSM(M) ((M)->szm) /* number of rows in arr */
+#define MATSN(M) ((M)->szn) /* number of colums in arr */
+#define MATI(M) ((M)->idx)  /* column index table */
+#define MATM(M) ((M)->m)    /* actual number of rows */
+#define MATN(M) ((M)->n)    /* actual number of colums */
 
 /* pointer arithmetic is faster than idexing */
-#define MATP(M,R,C)	(*(MATI(M) + (C)) + (R))
+#define MATP(M, R, C) (*(MATI(M) + (C)) + (R))
 
 #ifdef RANGECHECK
-#define MAT(M,R,C)	(* (((R) < MATM(M) && ((C) < MATN(M))) ? MATP(M,R,C) : \
-	(BADPOINTER(0,0), MATP(M,0,0))))
+#define MAT(M, R, C)                                                           \
+    (*(((R) < MATM(M) && ((C) < MATN(M)))                                      \
+           ? MATP(M, R, C)                                                     \
+           : (BADPOINTER(0, 0), MATP(M, 0, 0))))
 #else
-#define MAT(M,R,C)	(* MATP(M,R,C))
+#define MAT(M, R, C) (*MATP(M, R, C))
 #endif
 
 /************************************************************************/
@@ -266,16 +267,17 @@ extern void range_violation(char *f, int l, inum r, inum i);
 
 /* Macros for min/max. */
 #ifndef MIN
-#define	MIN(a,b) (((a)<(b))?(a):(b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #endif /* MIN */
 #ifndef MAX
-#define	MAX(a,b) (((a)>(b))?(a):(b))
-#endif	/* MAX */
-
-#define SIGN(a)		((a)>0?1:(a)<0?-1:0)
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif /* MAX */
+#ifndef SIGN
+#define SIGN(a) ((a) > 0 ? 1 : (a) < 0 ? -1 : 0)
+#endif /* SIGN */
 
 /************************************************************************/
 
-extern void stat_atoms(FILE *f);	/* statitics */
+extern void stat_atoms(FILE *f); /* statitics */
 
 #endif

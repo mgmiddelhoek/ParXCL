@@ -24,7 +24,7 @@
 #include "primtype.h"
 
 extern tmstring yyfilename; /* current input stream */
-extern int yylineno; /* current line counter */
+extern int yylineno;        /* current line counter */
 extern char *yytext;
 
 extern int yyparse(void);

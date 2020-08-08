@@ -18,10 +18,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
-#include "error.h"
 #include "dbio.h"
+#include "error.h"
 #include "jsonio.h"
+#include "parx.h"
 
 static char buf[1024]; /* filename buffer */
 
@@ -29,7 +29,7 @@ static char buf[1024]; /* filename buffer */
 
 boolean absolute_path(tmstring fname) {
     char *drive;
-    
+
     drive = strchr(fname, ':');
     if (drive != NULL) { /* there is a drive letter */
         drive++;
@@ -48,9 +48,9 @@ boolean absolute_path(tmstring fname) {
 
 void set_path(tmstring fname) {
     char *sep, *lsep;
-    
+
     buf[0] = '\0';
-    
+
     if (absolute_path(fname) == TRUE) {
         strcat(buf, fname);
     } else {
@@ -85,7 +85,7 @@ void set_path(tmstring fname) {
 
 tmstring find_basename(tmstring fname) {
     char *sep, *lsep;
-    
+
     sep = fname;
     lsep = NULL;
     while ((sep = strpbrk(sep, "/\\:")) != NULL) {
@@ -101,7 +101,7 @@ tmstring find_basename(tmstring fname) {
 /* find the file name extention */
 tmstring find_extention() {
     char *sep, *lsep;
-    
+
     sep = buf;
     lsep = NULL;
     while ((sep = strpbrk(sep, ".")) != NULL) {
@@ -114,7 +114,7 @@ tmstring find_extention() {
 
 void cut_extention() {
     char *sep;
-    
+
     sep = find_extention();
     if (sep != NULL) {
         *sep = '\0';
@@ -128,29 +128,32 @@ modeltemplate get_model(tmstring fname) {
     modeltemplate mt;
     int cmp;
     int extern prx_compile(tmstring);
-    
+
     set_path(fname);
     strcat(buf, find_basename(fname));
     cut_extention();
     strcat(buf, MODEL_EXT);
-    
-    if ((fp = fopen(buf, "r")) == NULL) { /* check if model definition file is present */
-        
+
+    if ((fp = fopen(buf, "r")) ==
+        NULL) { /* check if model definition file is present */
+
         if (absolute_path(fname) == FALSE) { /* relative path */
             strcpy(buf, parx_path);
-            if (strlen(buf) != 0 && strncmp(buf + strlen(buf) - 1, PATH_SEP, 1) != 0) {
+            if (strlen(buf) != 0 &&
+                strncmp(buf + strlen(buf) - 1, PATH_SEP, 1) != 0) {
                 strcat(buf, PATH_SEP);
             }
             strcat(buf, model_path);
-            if (strlen(buf) != 0 && strncmp(buf + strlen(buf) - 1, PATH_SEP, 1) != 0) {
+            if (strlen(buf) != 0 &&
+                strncmp(buf + strlen(buf) - 1, PATH_SEP, 1) != 0) {
                 strcat(buf, PATH_SEP);
             }
             strcat(buf, fname);
             cut_extention();
             strcat(buf, MODEL_EXT);
-            
-            fp = fopen(buf, "r"); /* check if model definition file is present */
-            
+
+            fp =
+                fopen(buf, "r"); /* check if model definition file is present */
         }
     }
     if (fp == NULL) {
@@ -159,18 +162,18 @@ modeltemplate get_model(tmstring fname) {
         return (modeltemplateNIL);
     }
     fclose(fp);
-    
+
     cmp = prx_compile(buf);
-    
+
     if (cmp) {
         errcode = UNK_MODEL_PERR;
         error(fname);
         return (modeltemplateNIL);
     }
-    
+
     cut_extention();
     strcat(buf, MODEL_INTERFACE_EXT);
-    
+
     if ((fp = fopen(buf, "r")) == NULL) {
         errcode = UNK_MODEL_PERR;
         error(fname);
@@ -179,7 +182,7 @@ modeltemplate get_model(tmstring fname) {
     if (error_stream != trace_stream) {
         fprintf(error_stream, "\nloading model: %s\n", fname);
     }
-    
+
     tm_lineno = 1;
     if (fscan_modeltemplate(fp, &mt)) {
         errcode = TMERROR_PERR;
@@ -188,9 +191,9 @@ modeltemplate get_model(tmstring fname) {
         rfre_modeltemplate(mt);
         mt = modeltemplateNIL;
     }
-    
+
     fclose(fp);
-    
+
     return (mt);
 }
 
@@ -199,29 +202,31 @@ modeltemplate get_model(tmstring fname) {
 codefile get_modelcode(tmstring fname) {
     FILE *fp;
     int extern prx_compile(tmstring);
-    
+
     set_path(fname);
     strcat(buf, find_basename(fname));
     cut_extention();
     strcat(buf, MODEL_CODE_EXT);
-    
+
     if ((fp = fopen(buf, "rb")) == NULL) { /* check if .mdl file is present */
-        
+
         if (absolute_path(fname) == FALSE) { /* relative path */
             strcpy(buf, parx_path);
-            if (strlen(buf) != 0 && strncmp(buf + strlen(buf) - 1, PATH_SEP, 1) != 0) {
+            if (strlen(buf) != 0 &&
+                strncmp(buf + strlen(buf) - 1, PATH_SEP, 1) != 0) {
                 strcat(buf, PATH_SEP);
             }
             strcat(buf, model_path);
-            if (strlen(buf) != 0 && strncmp(buf + strlen(buf) - 1, PATH_SEP, 1) != 0) {
+            if (strlen(buf) != 0 &&
+                strncmp(buf + strlen(buf) - 1, PATH_SEP, 1) != 0) {
                 strcat(buf, PATH_SEP);
             }
             strcat(buf, fname);
             cut_extention();
             strcat(buf, MODEL_CODE_EXT);
-            
-            fp = fopen(buf, "rb"); /* check if model definition file is present */
-            
+
+            fp = fopen(buf,
+                       "rb"); /* check if model definition file is present */
         }
     }
     if (fp == NULL) {
@@ -229,29 +234,29 @@ codefile get_modelcode(tmstring fname) {
         error(fname);
         return (codefileNIL);
     }
-    
+
     return (fp);
 }
 
 systemtemplate get_system(tmstring fname) {
     FILE *fp;
     systemtemplate st;
-    
+
     set_path(fname);
     strcat(buf, find_basename(fname));
     cut_extention();
     strcat(buf, SYSTEM_EXT);
-    
+
     if ((fp = fopen(buf, "r")) == NULL) {
         errcode = NO_FILE_PERR;
         error(buf);
         return (systemtemplateNIL);
     }
-    
+
     if (error_stream != trace_stream) {
         fprintf(error_stream, "\nloading system: %s\n", fname);
     }
-    
+
     tm_lineno = 1;
     if (fscan_systemtemplate(fp, &st)) {
         errcode = TMERROR_PERR;
@@ -260,9 +265,9 @@ systemtemplate get_system(tmstring fname) {
         rfre_systemtemplate(st);
         st = systemtemplateNIL;
     }
-    
+
     fclose(fp);
-    
+
     return (st);
 }
 
@@ -274,11 +279,11 @@ datatemplate get_datatable(tmstring fname) {
     boolean csv = FALSE;
     boolean json = FALSE;
     extern inum readcsv(FILE *, datatemplate);
-    
+
     set_path(fname);
     strcat(buf, find_basename(fname));
     dot = find_extention();
-    
+
     if (dot == NULL) { /* no extension */
         strcat(buf, DATATABLE_EXT);
         pxd = TRUE;
@@ -295,17 +300,17 @@ datatemplate get_datatable(tmstring fname) {
             return (datatemplateNIL);
         }
     }
-    
+
     if ((fp = fopen(buf, "r")) == NULL) {
         errcode = NO_FILE_PERR;
         error(buf);
         return (datatemplateNIL);
     }
-    
+
     if (error_stream != trace_stream) {
         fprintf(error_stream, "\nloading database: %s\n", fname);
     }
-    
+
     if (pxd) { /* read .pxd file */
         tm_lineno = 1;
         if (fscan_datatemplate(fp, &dt)) {
@@ -333,9 +338,9 @@ datatemplate get_datatable(tmstring fname) {
             dt = datatemplateNIL;
         }
     }
-    
+
     fclose(fp);
-    
+
     return (dt);
 }
 
@@ -345,11 +350,11 @@ void put_system(systemtemplate st, tmstring fname) {
     char *dot;
     boolean pxs = FALSE;
     boolean json = FALSE;
-    
+
     set_path(fname);
     strcat(buf, find_basename(fname));
     dot = find_extention();
-    
+
     if (dot == NULL) { /* no extension */
         strcat(buf, SYSTEM_EXT);
         pxs = TRUE;
@@ -364,17 +369,17 @@ void put_system(systemtemplate st, tmstring fname) {
             return;
         }
     }
-    
+
     if ((fp = fopen(buf, "w")) == NULL) {
         errcode = NO_FILE_PERR;
         error(buf);
         return;
     }
-    
+
     if (error_stream != trace_stream) {
         fprintf(error_stream, "\nstoring system: %s\n", fname);
     }
-    
+
     if (pxs) { /* write .pxs file */
         pst = tm_setprint(fp, 1, 80, 8, 0);
         print_systemtemplate(pst, st);
@@ -383,7 +388,7 @@ void put_system(systemtemplate st, tmstring fname) {
     if (json) { /* write .json file */
         write_sys_json(fp, st);
     }
-    
+
     fclose(fp);
 }
 
@@ -394,11 +399,11 @@ void put_datatable(datatemplate dt, tmstring fname) {
     boolean pxd = FALSE;
     boolean csv = FALSE;
     boolean json = FALSE;
-    
+
     set_path(fname);
     strcat(buf, find_basename(fname));
     dot = find_extention();
-    
+
     if (dot == NULL) { /* no extension */
         strcat(buf, DATATABLE_EXT);
         pxd = TRUE;
@@ -415,17 +420,17 @@ void put_datatable(datatemplate dt, tmstring fname) {
             return;
         }
     }
-    
+
     if ((fp = fopen(buf, "w")) == NULL) {
         errcode = NO_FILE_PERR;
         error(buf);
         return;
     }
-    
+
     if (error_stream != trace_stream) {
         fprintf(error_stream, "\nstoring database: %s\n", fname);
     }
-    
+
     if (pxd == TRUE) { /* write .pxd file */
         pst = tm_setprint(fp, 1, 80, 8, 0);
         print_datatemplate(pst, dt);
@@ -434,9 +439,9 @@ void put_datatable(datatemplate dt, tmstring fname) {
     if (json == TRUE) { /* write .json file */
         write_data_json(fp, dt);
     }
-    
+
     if (csv == TRUE) { /* do nothing, not implemented yet */
     }
-    
+
     fclose(fp);
 }

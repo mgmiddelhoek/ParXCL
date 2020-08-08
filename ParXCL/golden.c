@@ -18,29 +18,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parx.h"
 #include "golden.h"
+#include "parx.h"
 
 #define R 0.61803399
-#define C (1.0-R)
+#define C (1.0 - R)
 
-boolean golden(
-               fnum ax, /* left point */
-               fnum bx, /* mid point */
-               fnum cx, /* right point */
-               fnum(*f)(fnum x), /* objective function */
-               fnum rtol, /* tolerance */
-               inum *itmax, /* maximum number of iterations */
-               fnum *xmin, /* minimum point */
-               fnum *fmin /* minimum value */
+boolean golden(fnum ax,           /* left point */
+               fnum bx,           /* mid point */
+               fnum cx,           /* right point */
+               fnum (*f)(fnum x), /* objective function */
+               fnum rtol,         /* tolerance */
+               inum *itmax,       /* maximum number of iterations */
+               fnum *xmin,        /* minimum point */
+               fnum *fmin         /* minimum value */
 ) {
     fnum x0, x1, x2, x3;
     fnum f1, f2;
     inum iter;
-    
+
     x0 = ax;
     x3 = cx;
-    
+
     if (fabs(cx - bx) > fabs(bx - ax)) {
         x1 = bx;
         f1 = *fmin;
@@ -52,12 +51,12 @@ boolean golden(
         x1 = bx - C * (bx - ax);
         f1 = (*f)(x1);
     }
-    
+
     iter = 0;
-    
+
     while ((fabs(x3 - x0) > rtol * (fabs(x1) + fabs(x2))) &&
            (iter <= (*itmax))) {
-        
+
         if (f2 < f1) {
             x0 = x1;
             x1 = x2;
@@ -73,7 +72,7 @@ boolean golden(
         }
         iter++;
     }
-    
+
     if (f1 < f2) {
         *xmin = x1;
         *fmin = f1;
@@ -81,12 +80,12 @@ boolean golden(
         *xmin = x2;
         *fmin = f2;
     }
-    
+
     if (iter > (*itmax)) { /* to many iterations */
         return (FALSE);
     }
-    
+
     *itmax = iter;
-    
+
     return (TRUE);
 }
