@@ -39,7 +39,7 @@ extern char *parx_path;  /* ParX home directory */
 extern char *model_path; /* Model subdirectory */
 extern char *input_path; /* Input subdirectory */
 
-#define VERSION "Version: 6.7.1\n"
+#define VERSION "Version: 6.7.2\n"
 #define COPYRIGHT                                                              \
     "Copyright (c) 1989-2020 M.G. Middelhoek.\n"                               \
     "This program comes with ABSOLUTELY NO WARRANTY.\n"                        \

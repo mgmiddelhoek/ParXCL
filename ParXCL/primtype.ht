@@ -267,13 +267,13 @@ extern void range_violation(char *f, int l, inum r, inum i);
 
 /* Macros for min/max. */
 #ifndef MIN
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MIN(a, b) (((a)<(b))?(a):(b))
 #endif /* MIN */
 #ifndef MAX
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MAX(a, b) (((a)>(b))?(a):(b))
 #endif /* MAX */
 #ifndef SIGN
-#define SIGN(a) ((a) > 0 ? 1 : (a) < 0 ? -1 : 0)
+#define SIGN(a) ((a)>0?1:(a)<0?-1:0)
 #endif /* SIGN */
 
 /************************************************************************/
